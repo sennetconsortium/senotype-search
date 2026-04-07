@@ -24,8 +24,9 @@ function AppNavBar() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         
+        {!auth.name &&<Nav><Nav.Link href="/">Login</Nav.Link></Nav>  }
 
-        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+        {auth.name && <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
           <Nav>
             {/* <Nav.Link href="#home">Home</Nav.Link> */}
             <NavDropdown title={auth.name} id="basic-nav-dropdown">
@@ -36,7 +37,7 @@ function AppNavBar() {
               </NavDropdown.Item>
             </NavDropdown>
           </Nav>
-        </Navbar.Collapse>
+        </Navbar.Collapse>}
       </Container>
     </Navbar>
   );

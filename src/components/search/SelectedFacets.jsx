@@ -1,6 +1,6 @@
 import { Chip } from '@mui/material'
-import { getUBKGFullName } from '../js/functions'
 import { useSearchUIContext } from "search-ui/components/core/SearchUIContext";
+import { parseOntologyTerm } from '@/lib/general';
 
 function SelectedFacets() {
     const { facetConfig, filters, setFilter, removeFilter, findFacet } = useSearchUIContext()
@@ -34,7 +34,7 @@ function SelectedFacets() {
                 return value
             default:
                 if (!facet.transformFunction) {
-                    return getUBKGFullName(value)
+                    return parseOntologyTerm(value)
                 }
                 return facet.transformFunction(value)
         }

@@ -15,7 +15,9 @@ function page() {
   return (
     <SearchUIContainer config={SEARCH_SENOTYPE} name='senotype' authState={auth}>
       <SiderLayout prefixChildren={
+        <>
         <SearchInputField />
+        </>
       }>
         <SearchResults />
       </SiderLayout>

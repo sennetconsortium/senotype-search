@@ -36,3 +36,12 @@ export const flipObj = (obj) => {
         return ret;
     }, {})
 }
+
+export const parseOntologyTerm = (val) => {
+  if (!window.ONTOLOGY_CACHE) return val 
+  for (const o in window.ONTOLOGY_CACHE) {
+    if ( val in window.ONTOLOGY_CACHE[o].terms) {
+      return window.ONTOLOGY_CACHE[o].terms[val]
+    }
+  }
+}

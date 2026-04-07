@@ -1,12 +1,15 @@
 import AUTH from "./auth"
 
 const SEARCH = {
-  doesAggregationHaveBuckets: (field) => {
+  bucketsTransform: (ops) => {
+    const {aggregations, field} = ops
+  
+    return aggregations[field]?.buckets || aggregations[field]?.filtered_terms?.buckets?.buckets?.buckets || []
+  },
+  doesAggregationHaveBuckets: (field, values) => {
     return (filters, aggregations, auth) => {
       try {
-        return (
-          aggregations[field] !== undefined && aggregations[field].buckets.length > 0
-        )
+        return aggregations[field] !== undefined && SEARCH.bucketsTransform({aggregations, field}).length > 0
       } catch {
         return false
       }
