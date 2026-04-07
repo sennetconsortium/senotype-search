@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import React, { useContext } from 'react'
 import { SEARCH_SENOTYPE } from "@/config/search/senotype";
 import SearchResults from "@/components/search/SearchResults";
+import SearchInputField from "@/components/search/SearchInputField";
 
 const SearchUIContainer = dynamic(() => import("@/search-ui/components/core/SearchUIContainer"))
 
@@ -13,7 +14,9 @@ function page() {
 
   return (
     <SearchUIContainer config={SEARCH_SENOTYPE} name='senotype' authState={auth}>
-      <SiderLayout>
+      <SiderLayout prefixChildren={
+        <SearchInputField />
+      }>
         <SearchResults />
       </SiderLayout>
     </SearchUIContainer>

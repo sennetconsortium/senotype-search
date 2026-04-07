@@ -29,3 +29,10 @@ Object.assign(String.prototype, {
     });
   }
 })
+
+export const flipObj = (obj) => {
+    return Object.keys(obj).reduce((ret, key) => {
+        ret[obj[key]] = key;
+        return ret;
+    }, {})
+}
