@@ -10,10 +10,37 @@ const connector = new SearchAPIConnector({
     indexUrl: URLS.api.search,
     accessToken: AUTH.token(),
     beforeSearchCall: (queryOptions, next) => {
+        let filter = queryOptions?.query.bool?.filter 
+        filter = filter ? (Array.isArray(filter) ? filter : [filter]) : null
+        if (filter) {
+            let filters = []
+            let nested = ['assertions.objects']
+            let paths 
+            for (const f of filter) {
+                for (const t in f.terms) {
+                    paths = (nested.filter((n) => t.indexOf(n) !== -1))
+                    if (paths.length) {
+                        filters.push({
+                            "nested": {
+                                "path": paths[0],
+                                "query": f
+                            }
+                        })
+                    } else {
+                        filters.push(f)
+                    }
+                }
+            }
+            queryOptions.query.bool.filter = filters
+        }
+        
         const aggs = queryOptions.aggs || {};
         const nestedAggs = [
-            { k: 'source_type', v: 'in_taxon' },
-            {k: 'organ', v: 'located_in'}
+            {k: 'source_type', v: 'in_taxon'},
+            {k: 'organ', v: 'located_in'},
+            {k: 'cell_type', v: 'has_cell_type'},
+            {k: 'dataset_type', v: 'has_assay'},
+            
         ]
         for (const x of nestedAggs) {
             aggs[x.k] = {
@@ -97,6 +124,30 @@ export const SEARCH_SENOTYPE = {
                 bucketsTransform: bucketsTransform,
                 isAggregationActive: true,
                 isFacetVisible: doesAggregationHaveBuckets('organ')
+            },
+            'cell_type': {
+                label: 'Cell Type',
+                type: 'value',
+                field: 'assertions.objects.term.keyword',
+                isExpanded: false,
+                filterType: 'any',
+                isFilterable: false,
+                facetType: 'term',
+                bucketsTransform: bucketsTransform,
+                isAggregationActive: true,
+                isFacetVisible: doesAggregationHaveBuckets('cell_type')
+            },
+            'dataset_type': {
+                label: 'Dataset Type',
+                type: 'value',
+                field: 'assertions.objects.term.keyword',
+                isExpanded: false,
+                filterType: 'any',
+                isFilterable: false,
+                facetType: 'term',
+                bucketsTransform: bucketsTransform,
+                isAggregationActive: true,
+                isFacetVisible: doesAggregationHaveBuckets('dataset_type')
             },
             affiliation_group: {
                 label: 'Affiliation',
