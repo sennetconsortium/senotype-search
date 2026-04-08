@@ -14,7 +14,7 @@ function SearchResults() {
       dataIndex: 'senotype.id',
       key: 'senotype.id',
       width: 250,
-      render: (_, record) => <a>{record.senotype.id}<ClipboardCopy text={record.senotype.id} title={'Copy SenNet ID {text} to clipboard'} /></a>,
+      render: (_, record) => <a href={`/senotype/${record.senotype.id}`}>{record.senotype.id}<ClipboardCopy text={record.senotype.id} title={'Copy SenNet ID {text} to clipboard'} /></a>,
     },
     {
       title: 'Title',
