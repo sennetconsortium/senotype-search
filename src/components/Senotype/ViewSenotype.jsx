@@ -1,6 +1,7 @@
 import AppAccordion from "@/components/layout/AppAccordion";
-import React from "react";
-import {Descriptions, Table} from 'antd';
+import React, {useRef} from "react";
+import {SearchOutlined} from '@ant-design/icons';
+import {Button, Descriptions, Input, Space, Table} from 'antd';
 
 const buildSummary = (senotype) => {
     return [
@@ -346,6 +347,67 @@ const buildMarkers = (senotype, key, markerType) => {
 }
 
 export default function ViewSenotype({senotype}) {
+    const searchInput = useRef(null);
+    const handleSearch = (selectedKeys, confirm) => {
+        confirm();
+    };
+    const handleReset = (clearFilters, confirm) => {
+        clearFilters();
+        confirm();
+    };
+
+    const getColumnSearchProps = dataIndex => ({
+        filterDropdown: ({setSelectedKeys, selectedKeys, confirm, clearFilters, close}) => (
+            <div style={{padding: 8}} onKeyDown={e => e.stopPropagation()}>
+                <Input
+                    ref={searchInput}
+                    placeholder={`Search ${dataIndex}`}
+                    value={selectedKeys[0]}
+                    onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm)}
+                    style={{marginBottom: 8, display: 'block'}}
+                />
+                <Space>
+                    <Button
+                        type="primary"
+                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                        icon={<SearchOutlined/>}
+                        size="small"
+                        style={{width: 90}}
+                    >
+                        Search
+                    </Button>
+                    <Button
+                        onClick={() => clearFilters && handleReset(clearFilters, confirm)}
+                        size="small"
+                        style={{width: 90}}
+                    >
+                        Reset
+                    </Button>
+                    <Button
+                        type="link"
+                        size="small"
+                        onClick={() => {
+                            close();
+                        }}
+                    >
+                        close
+                    </Button>
+                </Space>
+            </div>
+        ),
+        filterIcon: filtered => <SearchOutlined style={{color: filtered ? '#1677ff' : undefined}}/>,
+        onFilter: (value, record) =>
+            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        filterDropdownProps: {
+            onOpenChange(open) {
+                if (open) {
+                    setTimeout(() => searchInput.current?.select(), 100);
+                }
+            },
+        }
+    });
+
     return (
         <>
             <AppAccordion title={'Summary'}>
@@ -369,7 +431,11 @@ export default function ViewSenotype({senotype}) {
             }
 
             <AppAccordion title={'Specified Markers'}>
-                <Table columns={[{title: 'Specified Marker', dataIndex: 'marker', key: 'marker'}]}
+                <Table columns={[{
+                    title: 'Specified Marker',
+                    dataIndex: 'marker',
+                    key: 'marker', ...getColumnSearchProps('marker')
+                }]}
                        dataSource={buildMarkers(senotype, 'has_characterizing_marker_set')}></Table>
             </AppAccordion>
 
@@ -377,7 +443,8 @@ export default function ViewSenotype({senotype}) {
                 <Table columns={[{
                     title: 'Regulating Marker',
                     dataIndex: 'marker',
-                    key: 'marker'
+                    key: 'marker',
+                    ...getColumnSearchProps('marker')
                 }, {title: 'Marker Type', dataIndex: 'markerType', key: 'markerType'}]}
                        dataSource={[
                            ...buildMarkers(senotype, 'down_regulates', 'down'),
