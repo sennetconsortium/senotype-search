@@ -9,6 +9,12 @@ function SearchInputField() {
     const query = document.getElementById('query').value
     setSearchTerm(query, { shouldClearFilters: true })
   }
+
+  const handleOnKeydown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e)
+    }
+  }
   return (
     <div>
       <InputGroup className="mb-3 mt-3" size="lg">
@@ -17,6 +23,7 @@ function SearchInputField() {
           name="query"
           placeholder="Search for a senotype"
           aria-label="Search for a senotype"
+          onKeyDown={handleOnKeydown} 
         />
         <Button onClick={handleSearch} variant="primary" id="searchField">
           <SearchOutlined />
