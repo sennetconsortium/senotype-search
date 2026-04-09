@@ -1,7 +1,7 @@
 import AppAccordion from "@/components/layout/AppAccordion";
 import React, {useRef, useState} from "react";
 import {LinkOutlined, SearchOutlined} from '@ant-design/icons';
-import {Button, Descriptions, Input, Space, Table} from 'antd';
+import {Anchor, Button, Col, Descriptions, Input, Row, Space, Table} from 'antd';
 import {getMarkerDetailsUrl, getOboDetailsUrl, getSciCrunchUrl} from "@/lib/senotype";
 import ClipboardCopy from "@/components/ClipboardCopy";
 
@@ -445,53 +445,74 @@ export default function ViewSenotype({senotype}) {
 
     return (
         <>
-            <h2>{senotype.senotype.id}<ClipboardCopy text={senotype.senotype.id}
-                                                     title={'Copy Senotype ID {text} to clipboard'}/></h2>
-            <Button href={`${process.env.NEXT_PUBLIC_EDITOR_URL}edit/${senotype.senotype.id}`}>Edit</Button>
+            <Row>
+                <Col span={20}>
+                    <div className={'markdown'}>
+                    <h2>{senotype.senotype.id}<ClipboardCopy text={senotype.senotype.id}
+                                                             title={'Copy Senotype ID {text} to clipboard'}/></h2>
+                    <Button href={`${process.env.NEXT_PUBLIC_EDITOR_URL}edit/${senotype.senotype.id}`}>Edit</Button>
 
-            <AppAccordion title={'Summary'}>
-                <Descriptions items={buildSummary(senotype)} column={2}/>
-            </AppAccordion>
 
-            <AppAccordion title={'Senotype'}>
-                <Descriptions items={buildSenotype(senotype)}/>
-            </AppAccordion>
+                    <AppAccordion title={'Summary'} id={'summary'}>
+                        <Descriptions items={buildSummary(senotype)} column={2}/>
+                    </AppAccordion>
 
-            {buildDemographic(senotype).length > 0 &&
-                <AppAccordion title={'Demographic'}>
-                    <Descriptions items={buildDemographic(senotype)}/>
-                </AppAccordion>
-            }
+                    <AppAccordion title={'Senotype'} id={'senotype'}>
+                        <Descriptions items={buildSenotype(senotype)}/>
+                    </AppAccordion>
 
-            {buildReferences(senotype).length > 0 &&
-                <AppAccordion title={'References'}>
-                    <Descriptions items={buildReferences(senotype)}/>
-                </AppAccordion>
-            }
-
-            <AppAccordion title={'Specified Markers'}>
-                <Table columns={markerColumns('Specified Marker', 'specified_marker', getColumnSearchProps, sortedInfo)}
-                       dataSource={buildMarkers(senotype, 'has_characterizing_marker_set')}></Table>
-            </AppAccordion>
-
-            <AppAccordion title={'Regulating Markers'}>
-                <Table columns={[
-                    ...markerColumns('Regulating Marker', 'regulating_marker', getColumnSearchProps, sortedInfo),
-                    {
-                        title: 'Marker Type',
-                        key: 'markerType',
-                        dataIndex: 'markerType',
-                        sorter: (a, b) => a.markerType.localeCompare(b.markerType),
+                    {buildDemographic(senotype).length > 0 &&
+                        <AppAccordion title={'Demographic'} id={'demographic'}>
+                            <Descriptions items={buildDemographic(senotype)}/>
+                        </AppAccordion>
                     }
-                ]}
-                       dataSource={[
-                           ...buildMarkers(senotype, 'down_regulates', 'down'),
-                           ...buildMarkers(senotype, 'up_regulates', 'up'),
-                           ...buildMarkers(senotype, 'inconclusively_regulates', '?'),
-                       ]}
-                       onChange={handleChange}
-                ></Table>
-            </AppAccordion>
+
+                    {buildReferences(senotype).length > 0 &&
+                        <AppAccordion title={'References'} id={'references'}>
+                            <Descriptions items={buildReferences(senotype)}/>
+                        </AppAccordion>
+                    }
+
+                    <AppAccordion title={'Specified Markers'} id={'specified-markers'}>
+                        <Table
+                            columns={markerColumns('Specified Marker', 'specified_marker', getColumnSearchProps, sortedInfo)}
+                            dataSource={buildMarkers(senotype, 'has_characterizing_marker_set')}></Table>
+                    </AppAccordion>
+
+                    <AppAccordion title={'Regulating Markers'} id={'regulating-markers'}>
+                        <Table columns={[
+                            ...markerColumns('Regulating Marker', 'regulating_marker', getColumnSearchProps, sortedInfo),
+                            {
+                                title: 'Marker Type',
+                                key: 'markerType',
+                                dataIndex: 'markerType',
+                                sorter: (a, b) => a.markerType.localeCompare(b.markerType),
+                            }
+                        ]}
+                               dataSource={[
+                                   ...buildMarkers(senotype, 'down_regulates', 'down'),
+                                   ...buildMarkers(senotype, 'up_regulates', 'up'),
+                                   ...buildMarkers(senotype, 'inconclusively_regulates', '?'),
+                               ]}
+                               onChange={handleChange}
+                        ></Table>
+                    </AppAccordion>
+                        </div>
+                </Col>
+                <Col span={1}></Col>
+                <Col  span={3}>
+                    <Anchor
+                        items={[
+                            {key: 'Summary', href: '#summary', title: 'Summary'},
+                            {key: 'Senotype', href: '#senotype', title: 'Senotype'},
+                            {key: 'Demographic', href: '#demographic', title: 'Demographic'},
+                            {key: 'References', href: '#references', title: 'References'},
+                            {key: 'Specified Markers', href: '#specified-markers', title: 'Specified Markers'},
+                            {key: 'Regulating Markers', href: '#regulating-markers', title: 'Regulating Markers'}
+                        ]}
+                    />
+                </Col>
+            </Row>
         </>
     )
 }
