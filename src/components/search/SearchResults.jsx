@@ -3,10 +3,12 @@ import { Table } from 'antd';
 import { useSearchUIContext } from "search-ui/components/core/SearchUIContext";
 import ClipboardCopy from '../ClipboardCopy';
 import ModalOverComponent from '../ModalOverComponent';
+import SearchResultsMeta from './SearchResultsMeta';
+import log from 'xac-loglevel'
 
 function SearchResults() {
   const [tableData, setTableData] = useState([])
-  const { wasSearched, filters, rawResponse } = useSearchUIContext()
+  const { wasSearched, filters, setPageNumber, rawResponse } = useSearchUIContext()
 
   const columns = [
     {
@@ -45,10 +47,17 @@ function SearchResults() {
   ]
   useEffect(() => {
     setTableData(rawResponse?.records?.senotypes)
+    log.debug('SearchResults', rawResponse)
   }, [rawResponse])
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    setPageNumber(pagination.current)
+  }
+
   return (
     <div>
-      <Table columns={columns} dataSource={tableData} rowKey={'id'} />
+      <SearchResultsMeta />
+      <Table columns={columns} dataSource={tableData} rowKey={'id'} onChange={handleTableChange} />
     </div>
   )
 }
