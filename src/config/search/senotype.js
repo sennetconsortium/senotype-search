@@ -3,7 +3,6 @@ import SEARCH from '@/lib/search';
 import URLS from '@/lib/urls';
 import ENVS from '@/lib/envs';
 import AUTH from '@/lib/auth';
-import { parseOntologyTerm } from '@/lib/general';
 
 const { doesAggregationHaveBuckets, bucketsTransform, submitterTransform, organBucketsTransform } = SEARCH
 const connector = new SearchAPIConnector({

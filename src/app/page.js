@@ -5,6 +5,7 @@ import BasicLayout from "@/components/layout/BasicLayout";
 import Login from "@/components/Login";
 import AppContext from "@/context/AppContext";
 import URLS from '@/lib/urls';
+import AppSpinner from '@/components/AppSpinner';
 
 
 export default function Home() {
@@ -19,7 +20,8 @@ export default function Home() {
   return (
     <div>
      <BasicLayout fluid={undefined}>
-       <Login />
+       {auth.isAuthorized == null && <AppSpinner />}
+       {auth.isAuthorized === false && <Login />}
      </BasicLayout>
     </div>
   );
