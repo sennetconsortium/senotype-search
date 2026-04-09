@@ -4,6 +4,7 @@ import {useParams} from 'next/navigation'
 import BasicLayout from "@/components/layout/BasicLayout";
 import {useSenotype} from "@/hooks/useFetchSenotype";
 import ViewSenotype from "@/components/Senotype/ViewSenotype";
+import {Skeleton, Spin} from "antd";
 
 export default function Page() {
     const params = useParams()
@@ -15,17 +16,20 @@ export default function Page() {
         <BasicLayout>
             <>
                 {loading &&
-                    <p>Loading...</p>
-                }
-                {error &&
-                    <p>{error.message}</p>
-                }
-                {data &&
                     <>
-                        <ViewSenotype senotype={data}/>
+                        <Spin percent={"auto"} fullscreen></Spin>
+                        <Skeleton></Skeleton>
                     </>
-
                 }
+                    {error &&
+                        <p>{error.message}</p>
+                    }
+                    {data &&
+                        <>
+                            <ViewSenotype senotype={data}/>
+                        </>
+
+                    }
             </>
         </BasicLayout>
     )

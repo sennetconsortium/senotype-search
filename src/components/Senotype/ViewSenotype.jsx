@@ -199,19 +199,23 @@ const buildDemographic = (senotype) => {
     let keyCounter = 0
     let items = []
     let sexChildren = senotype.assertions
-        .filter(item => item.objects[0]?.term === "sex")
+        .filter(item => item.predicate?.term === "has_sex")
         .flatMap(item => item.objects)
-        .map(obj => `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})`);
+        .map(obj => obj.term);
+
+
 
     let ageChildren = senotype.assertions
         .filter(item => item.objects[0]?.term === "age")
         .flatMap(item => item.objects)
-        .map(obj => `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})`);
+        .map(obj => obj.lowerbound && obj.upperbound ? `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})` : `${obj.value} ${obj.unit}` );
 
     let bmiChildren = senotype.assertions
         .filter(item => item.objects[0]?.term === "bmi")
         .flatMap(item => item.objects)
-        .map(obj => `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})`);
+        .map(obj => obj.lowerbound && obj.upperbound ? `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})` : `${obj.value} ${obj.unit}` );
+
+        console.log(sexChildren)
 
     if (sexChildren.length > 0) {
         keyCounter++
@@ -230,7 +234,6 @@ const buildDemographic = (senotype) => {
             }
         )
     }
-
     if (ageChildren.length > 0) {
         keyCounter++
         items.push(
