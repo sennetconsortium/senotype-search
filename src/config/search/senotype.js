@@ -4,7 +4,7 @@ import URLS from '@/lib/urls';
 import ENVS from '@/lib/envs';
 import AUTH from '@/lib/auth';
 
-const { doesAggregationHaveBuckets, bucketsTransform, submitterBucketsTransform } = SEARCH
+const { doesAggregationHaveBuckets, bucketsTransform, submitterTransform } = SEARCH
 const connector = new SearchAPIConnector({
     indexName: ENVS.index.senotype,
     indexUrl: URLS.api.search,
@@ -175,7 +175,7 @@ export const SEARCH_SENOTYPE = {
                         isFilterable: false,
                         facetType: 'term',
                         isAggregationActive: true,
-                        bucketsTransform: submitterBucketsTransform,
+                        transformFunction: submitterTransform,
                         isFacetVisible: doesAggregationHaveBuckets('submitter_name')
                     }
                 }
