@@ -4,6 +4,12 @@ import AUTH from '@/lib/auth';
 
 const SEARCH_API_URL = process.env.NEXT_PUBLIC_SEARCH_API_BASE
 const INDEX_SENOTYPE = process.env.NEXT_PUBLIC_INDEX_SENOTYPE
+const OBO_BASE_URL = process.env.NEXT_PUBLIC_OBO_BASE_URL
+const CL_HOME_URL = process.env.NEXT_PUBLIC_CL_HOME_URL
+const DOID_HOME_URL = process.env.NEXT_PUBLIC_DOID_HOME_URL
+const HGNC_BASE_URL = process.env.NEXT_PUBLIC_HGNC_BASE_URL
+const HGNC_HOME_URL = process.env.NEXT_PUBLIC_HGNC_HOME_URL
+const UNIPROTKB_BASE_URL = process.env.NEXT_PUBLIC_UNIPROTKB_BASE_URL
 
 export async function fetchSenotype(senotype_id, auth = null) {
     let data = {}
@@ -53,4 +59,33 @@ export async function fetchSenotype(senotype_id, auth = null) {
     }
 
     return data
+}
+
+export function getMarkerDetailsUrl(id) {
+    if (id.toUpperCase().includes('HGNC'))
+        return getBioDetailUrl('HGNC', id)
+    else
+        return getBioDetailUrl('UNIPROTKB', id)
+}
+
+export function getBioDetailUrl(sab, id = '') {
+    let idSubmit = id
+    let baseURL = ''
+    if (sab.toUpperCase() === 'OBO') {
+        baseURL = OBO_BASE_URL
+    } else if (sab.toUpperCase() === 'HGNC') {
+        if (id === '') {
+            baseURL = HGNC_HOME_URL
+        } else {
+            baseURL = HGNC_BASE_URL
+        }
+    } else if (sab.toUpperCase() === 'UNIPROTKB') {
+        // Strip the SAB from the code.
+        baseURL = UNIPROTKB_BASE_URL
+        idSubmit = id.split(':')[1]
+    } else {
+        return null
+    }
+
+    return `${baseURL}${idSubmit}`
 }

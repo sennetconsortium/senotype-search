@@ -1,7 +1,8 @@
 import AppAccordion from "@/components/layout/AppAccordion";
-import React, {useRef} from "react";
-import {SearchOutlined} from '@ant-design/icons';
+import React, {useRef, useState} from "react";
+import {LinkOutlined, SearchOutlined} from '@ant-design/icons';
 import {Button, Descriptions, Input, Space, Table} from 'antd';
+import {getMarkerDetailsUrl} from "@/lib/senotype";
 
 const buildSummary = (senotype) => {
     return [
@@ -346,8 +347,27 @@ const buildMarkers = (senotype, key, markerType) => {
         }));
 }
 
+const markerColumns = (title, key, getColumnSearchProps, sortedInfo) => [
+    {
+        title: title,
+        dataIndex: key,
+        key: key,
+        ...getColumnSearchProps(key),
+        sorter: (a, b) => a.marker.localeCompare(b.marker),
+        render: (_, record) =>
+            <span>{record.marker} <a target={'_blank'}
+                                     href={getMarkerDetailsUrl(record.key)}><LinkOutlined/></a> </span>
+    }
+]
+
 export default function ViewSenotype({senotype}) {
+    const [sortedInfo, setSortedInfo] = useState({});
     const searchInput = useRef(null);
+
+    const handleChange = (pagination, filters, sorter) => {
+        setSortedInfo(sorter);
+    };
+
     const handleSearch = (selectedKeys, confirm) => {
         confirm();
     };
@@ -431,26 +451,27 @@ export default function ViewSenotype({senotype}) {
             }
 
             <AppAccordion title={'Specified Markers'}>
-                <Table columns={[{
-                    title: 'Specified Marker',
-                    dataIndex: 'marker',
-                    key: 'marker', ...getColumnSearchProps('marker')
-                }]}
+                <Table columns={markerColumns('Specified Marker', 'specified_marker', getColumnSearchProps, sortedInfo)}
                        dataSource={buildMarkers(senotype, 'has_characterizing_marker_set')}></Table>
             </AppAccordion>
 
             <AppAccordion title={'Regulating Markers'}>
-                <Table columns={[{
-                    title: 'Regulating Marker',
-                    dataIndex: 'marker',
-                    key: 'marker',
-                    ...getColumnSearchProps('marker')
-                }, {title: 'Marker Type', dataIndex: 'markerType', key: 'markerType'}]}
+                <Table columns={[
+                    ...markerColumns('Regulating Marker', 'regulating_marker', getColumnSearchProps, sortedInfo),
+                    {
+                        title: 'Marker Type',
+                        key: 'markerType',
+                        dataIndex: 'markerType',
+                        sorter: (a, b) => a.markerType.localeCompare(b.markerType),
+                    }
+                ]}
                        dataSource={[
                            ...buildMarkers(senotype, 'down_regulates', 'down'),
                            ...buildMarkers(senotype, 'up_regulates', 'up'),
                            ...buildMarkers(senotype, 'inconclusively_regulates', '?'),
-                       ]}></Table>
+                       ]}
+                       onChange={handleChange}
+                ></Table>
             </AppAccordion>
         </>
     )
