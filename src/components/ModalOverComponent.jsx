@@ -3,11 +3,11 @@ import { EllipsisOutlined } from '@ant-design/icons';
 import {useState} from "react";
 import AppModal from "@/components/AppModal";
 
-function ModalOverComponent({children, maxLength, modalContent, childrenAsTrigger = false, popoverText = 'Click to view full content.', modalOps = {width: 700}}) {
+function ModalOverComponent({children, maxLength, modalContent, childrenAsTrigger = false, tag="div", popoverText = 'Click to view full content.', modalOps = {width: 700}}) {
     const [modal, setModal] = useState({cancelCSS: 'none', okText: 'OK'})
-
+    const CustomTag = tag
     if(maxLength && modalContent.length <= maxLength) {
-      return <div>{modalContent}</div>
+      return <CustomTag>{modalContent}</CustomTag>
     }
 
     return (

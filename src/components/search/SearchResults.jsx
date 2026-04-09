@@ -23,7 +23,7 @@ function SearchResults() {
       width: 350,
       render: (_, record) => {
         return <div>{record.senotype.name}<br />
-          <ModalOverComponent modalContent={record.senotype.definition} maxLength={100}>
+          <ModalOverComponent modalContent={record.senotype.definition} tag="small" maxLength={100}>
             <small>{record.senotype.definition.substr(0, 100)}</small>
           </ModalOverComponent>
           
