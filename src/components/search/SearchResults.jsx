@@ -53,7 +53,7 @@ function SearchResults() {
     for (const o of organs) {
       if (o) {
         OrganIcon = () => <img height={16} width={16} src={URLS.organIcon(o)} />
-        list.push(<a key={o} href={`https://data.sennetconsortium.org/organs/${o?.toLowerCase()}`}><Button icon={<Icon component={OrganIcon} />} iconPlacement='end'>{o}</Button></a>)
+        list.push(<a key={o} href={`${URLS.portal}organs/${o?.toLowerCase()}`}><Button icon={<Icon component={OrganIcon} />} iconPlacement='end'>{o}</Button></a>)
       }
     }
     return <div>{list}</div>
@@ -61,9 +61,9 @@ function SearchResults() {
 
   const cellTypesRender = (filtered) => {
     const list = []
-    for (const i of filtered) {
-      for (const c of i.objects) {
-        list.push(<span key={c.code}><a href="x" className='text-secondary'>{c.term}</a>, </span>)
+    for (const a of filtered) {
+      for (const [i, c] of a.objects.entries()) {
+        list.push(<span key={c.code}><a href={`${URLS.obo}${c.code.replaceAll(':', "_")}`} className='text-black'>{c.term} <i className="bi bi-link-45deg text-primary"></i></a>{i < a.objects.length -1 ? ',' : ''} </span>)
       }
     }
 
@@ -84,7 +84,7 @@ function SearchResults() {
           title: p.name || (p.k.replaceAll('_', ' ').titleCase()),
           dataIndex: `assertions.predicate.term.${p.k}`,
           key: `assertions.predicate.term.${p.k}`,
-          
+          width: 350,
           render: (_, record) => {
             const filtered = p.k === 'other' ? record.assertions.filter((r) => assertionsWithIndividualColumns.indexOf(r.predicate.term) === -1) : record.assertions.filter((r) => r.predicate.term === p.v)
             const terms = filtered.map((a) => a.objects?.map((o) => o.term))

@@ -14,6 +14,8 @@ const URLS = {
     search: process.env.NEXT_PUBLIC_SEARCH_API_BASE,
     ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE,
   },
+  portal: process.env.NEXT_PUBLIC_PORTAL_URL,
+  obo: process.env.NEXT_PUBLIC_OBO_BASE_URL,
   organIcon: (o) => {
     let imgName = o.toLowerCase()
     if (imgName === 'lung') {
