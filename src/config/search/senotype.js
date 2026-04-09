@@ -207,6 +207,8 @@ export const SEARCH_SENOTYPE = {
         ],
         conditionalFacets: {},
         search_fields: {
+            'senotype.id^4': {type: 'value'},
+            'senotype.name^4': {type: 'value'},
             all_text: { type: 'value' },
         },
         source_fields: [
