@@ -7,7 +7,6 @@ import SearchResultsMeta from './SearchResultsMeta';
 import log from 'xac-loglevel'
 import { assertionPredicates } from '@/config/search/senotype';
 import '@/lib/general'
-import { Tag } from 'antd';
 import { ontology } from '@/cache/ontology';
 import Icon from '@ant-design/icons';
 import URLS from '@/lib/urls';
@@ -23,6 +22,7 @@ function SearchResults() {
       dataIndex: 'senotype.id',
       key: 'senotype.id',
       width: 250,
+      sorter: (a,b) => a.senotype.id.localeCompare(b.senotype.id),
       render: (_, record) => <><a href={`/senotype/${record.senotype.id}`}>{record.senotype.id}</a><ClipboardCopy text={record.senotype.id} title={'Copy SenNet ID {text} to clipboard'} /></>,
     },
     {
@@ -30,6 +30,7 @@ function SearchResults() {
       dataIndex: 'senotype.name',
       key: 'senotype.name',
       width: 350,
+      sorter: (a,b) => a.senotype.name.localeCompare(b.senotype.name),
       render: (_, record) => {
         return <div>{record.senotype.name}<br />
           <ModalOverComponent modalContent={record.senotype.definition} tag="small" maxLength={100}>
