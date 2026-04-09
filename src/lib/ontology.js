@@ -8,6 +8,7 @@ import { flipObj } from './general'
 const ONTOLOGY_CACHE_PATH = path.join(process.cwd(), 'src/cache')
 const IMPORT_PATH = './../cache/ontology.js'
 const delay = (ms) => new Promise(res => setTimeout(res, ms));
+const exportString = 'export const ontology='
 
 const ONTOLOGY = {
   fetch: async (codes, code) => {
@@ -50,7 +51,7 @@ const ONTOLOGY = {
     for (const d of data) {
       terms[d[keyKey]] = d[valueKey]
       if (isOrgans) {
-        hierarchy[d[keyKey]] = d.category?.hierarchy || d[keyKey]
+        hierarchy[d[keyKey]] = d.category?.term || d[keyKey]
       }
     }
     if (isOrgans) {
@@ -77,31 +78,28 @@ const ONTOLOGY = {
         }
       }
       await fs.mkdir(path.dirname(filePath), { recursive: true });
-      await fs.writeFile(filePath, 'export const ontology=' + JSON.stringify(ontologyResults), 'utf8');
-      await delay(500);
-      return await import(`${IMPORT_PATH}?update=${Date.now()}`)
+      await fs.writeFile(filePath, exportString + JSON.stringify(ontologyResults), 'utf8');
+      let ontology = await fs.readFile(filePath, 'utf8')
+      return JSON.parse(ontology.replace(exportString, ''))
     } catch (e) {
       log.error('Error.Ontology.createImport.catch', e)
     }
   },
   getImport: async () => {
-    
     try {
       log.info('Ontology.getImport', '...')
-      const module = await import(IMPORT_PATH)
-      await delay(500);
+      let ontology = await fs.readFile(filePath, 'utf8')
+      ontology = JSON.parse(ontology.replace(exportString, ''))
       log.info('Ontology.getImport', '...', module.ontology)
-      //ontology = await fs.readFile(filePath, 'utf8')
-      if (!module || !Object.values(module.ontology).length) {
+      
+      if (!ontology || !Object.values(ontology).length) {
         return await ONTOLOGY.createImport()
       }
-      return null
-
+      return ontology
     } catch (e) {
       log.error('Error.Ontology.getImport', e)
       return await ONTOLOGY.createImport()
     }
-    
   }
 }
 
