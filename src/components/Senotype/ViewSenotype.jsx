@@ -3,6 +3,7 @@ import React, {useRef, useState} from "react";
 import {LinkOutlined, SearchOutlined} from '@ant-design/icons';
 import {Button, Descriptions, Input, Space, Table} from 'antd';
 import {getMarkerDetailsUrl, getOboDetailsUrl, getSciCrunchUrl} from "@/lib/senotype";
+import ClipboardCopy from "@/components/ClipboardCopy";
 
 const buildSummary = (senotype) => {
     return [
@@ -204,18 +205,17 @@ const buildDemographic = (senotype) => {
         .map(obj => obj.term);
 
 
-
     let ageChildren = senotype.assertions
         .filter(item => item.objects[0]?.term === "age")
         .flatMap(item => item.objects)
-        .map(obj => obj.lowerbound && obj.upperbound ? `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})` : `${obj.value} ${obj.unit}` );
+        .map(obj => obj.lowerbound && obj.upperbound ? `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})` : `${obj.value} ${obj.unit}`);
 
     let bmiChildren = senotype.assertions
         .filter(item => item.objects[0]?.term === "bmi")
         .flatMap(item => item.objects)
-        .map(obj => obj.lowerbound && obj.upperbound ? `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})` : `${obj.value} ${obj.unit}` );
+        .map(obj => obj.lowerbound && obj.upperbound ? `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})` : `${obj.value} ${obj.unit}`);
 
-        console.log(sexChildren)
+    console.log(sexChildren)
 
     if (sexChildren.length > 0) {
         keyCounter++
@@ -445,6 +445,10 @@ export default function ViewSenotype({senotype}) {
 
     return (
         <>
+            <h2>{senotype.senotype.id}<ClipboardCopy text={senotype.senotype.id}
+                                                     title={'Copy Senotype ID {text} to clipboard'}/></h2>
+            <Button href={`${process.env.NEXT_PUBLIC_EDITOR_URL}edit/${senotype.senotype.id}`}>Edit</Button>
+
             <AppAccordion title={'Summary'}>
                 <Descriptions items={buildSummary(senotype)} column={2}/>
             </AppAccordion>
