@@ -1,20 +1,17 @@
-"use client";
-import React, { useEffect, useContext } from 'react'
-import { Row, Col, Container } from 'react-bootstrap'
-import AppContext from "@/context/AppContext";
-import ENVS from '@/lib/envs'
-import URLS from '@/lib/urls'
+'use client';
+import React, { useEffect, useContext } from 'react';
+import { Row, Col, Container } from 'react-bootstrap';
+import AppContext from '@/context/AppContext';
+import ENVS from '@/lib/envs';
+import URLS from '@/lib/urls';
 
 function Login() {
+  const { isAuthorized } = useContext(AppContext);
 
-  const { isAuthorized } = useContext(AppContext)
-
-  
   useEffect(() => {
     if (isAuthorized) {
-
     }
-  })
+  });
 
   return (
     <div>
@@ -25,18 +22,14 @@ function Login() {
             <div className="card-body">
               <h3 className="card-title">{ENVS.app.name}</h3>
               <div className="card-text">
-                User authentication is required to search
-                the dataset catalog. Please click the button
-                below and you will be redirected to a Globus
-                page to select your institution. After
-                selecting your institution, you will be
-                redirected to your institutional login page
-                to enter your credentials.
+                User authentication is required to search the dataset catalog.
+                Please click the button below and you will be redirected to a
+                Globus page to select your institution. After selecting your
+                institution, you will be redirected to your institutional login
+                page to enter your credentials.
               </div>
               <hr />
-              <div
-                className={'d-flex justify-content-center'}
-              >
+              <div className={'d-flex justify-content-center'}>
                 <a
                   className="btn btn-outline-success rounded-0 btn-lg js-btn--login"
                   href={URLS.login}
@@ -50,7 +43,7 @@ function Login() {
         <Col></Col>
       </Row>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

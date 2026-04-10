@@ -1,23 +1,22 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useEffect, useState } from 'react';
 
-const EditContext = createContext({})
+const EditContext = createContext({});
 
 export const EditProvider = ({ children }) => {
-  const [senotype, setSenotype] = useState(null)
+  const [senotype, setSenotype] = useState(null);
 
-  useEffect(() => {
-  
-  }, [])
+  useEffect(() => {}, []);
 
   return (
     <EditContext.Provider
       value={{
-       senotype,
-       setSenotype
-      }}>
-        {children}
+        senotype,
+        setSenotype,
+      }}
+    >
+      {children}
     </EditContext.Provider>
-  )
-}
+  );
+};
 
-export default EditContext
+export default EditContext;

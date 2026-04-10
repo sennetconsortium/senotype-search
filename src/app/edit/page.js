@@ -1,8 +1,7 @@
-'use client'
-import BasicLayout from '@/components/layout/BasicLayout'
-import Senotype from '@/components/Senotype/Senotype'
-import { EditProvider } from '@/context/EditContext'
-
+'use client';
+import BasicLayout from '@/components/layout/BasicLayout';
+import Senotype from '@/components/Senotype/Senotype';
+import { EditProvider } from '@/context/EditContext';
 
 function page() {
   return (
@@ -11,7 +10,7 @@ function page() {
         <Senotype />
       </BasicLayout>
     </EditProvider>
-  )
+  );
 }
 
-export default page
+export default page;

@@ -1,10 +1,8 @@
-import React from 'react'
-import {Spin} from "antd";
+import React from 'react';
+import { Spin } from 'antd';
 
 function AppSpinner() {
-  return (
-    <Spin percent={"auto"} fullscreen></Spin>
-  )
+  return <Spin percent={'auto'} fullscreen></Spin>;
 }
 
-export default AppSpinner
+export default AppSpinner;

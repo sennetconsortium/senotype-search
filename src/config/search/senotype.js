@@ -5,238 +5,238 @@ import ENVS from '@/lib/envs';
 import AUTH from '@/lib/auth';
 
 export const assertionPredicates = [
-    {k: 'source_type', name: 'Taxon', v: 'in_taxon', ui: {w: 100}},
-    {k: 'organ', v: 'located_in', ui: {w: 150}},
-    {k: 'cell_type', v: 'has_cell_type', ui: {w: 300}},
-    {k: 'dataset_type', v: 'has_assay', ui: {w: 200}},
-]
+  { k: 'source_type', name: 'Taxon', v: 'in_taxon', ui: { w: 100 } },
+  { k: 'organ', v: 'located_in', ui: { w: 150 } },
+  { k: 'cell_type', v: 'has_cell_type', ui: { w: 300 } },
+  { k: 'dataset_type', v: 'has_assay', ui: { w: 200 } },
+];
 
-const { doesAggregationHaveBuckets, bucketsTransform, submitterTransform, organBucketsTransform } = SEARCH
+const {
+  doesAggregationHaveBuckets,
+  bucketsTransform,
+  submitterTransform,
+  organBucketsTransform,
+} = SEARCH;
 const connector = new SearchAPIConnector({
-    indexName: ENVS.index.senotype,
-    indexUrl: URLS.api.search,
-    accessToken: AUTH.token(),
-    beforeSearchCall: (queryOptions, next) => {
-        let filter = queryOptions?.query.bool?.filter 
-        filter = filter ? (Array.isArray(filter) ? filter : [filter]) : null
-        if (filter) {
-            let filters = []
-            let nested = ['assertions.objects']
-            let paths 
-            for (const f of filter) {
-                for (const t in f.terms) {
-                    paths = (nested.filter((n) => t.indexOf(n) !== -1))
-                    if (paths.length) {
-                        filters.push({
-                            "nested": {
-                                "path": paths[0],
-                                "query": f
-                            }
-                        })
-                    } else {
-                        filters.push(f)
-                    }
-                }
-            }
-            queryOptions.query.bool.filter = filters
+  indexName: ENVS.index.senotype,
+  indexUrl: URLS.api.search,
+  accessToken: AUTH.token(),
+  beforeSearchCall: (queryOptions, next) => {
+    let filter = queryOptions?.query.bool?.filter;
+    filter = filter ? (Array.isArray(filter) ? filter : [filter]) : null;
+    if (filter) {
+      let filters = [];
+      let nested = ['assertions.objects'];
+      let paths;
+      for (const f of filter) {
+        for (const t in f.terms) {
+          paths = nested.filter((n) => t.indexOf(n) !== -1);
+          if (paths.length) {
+            filters.push({
+              nested: {
+                path: paths[0],
+                query: f,
+              },
+            });
+          } else {
+            filters.push(f);
+          }
         }
-        
-        const aggs = queryOptions.aggs || {};
-       
-        for (const x of assertionPredicates) {
-            aggs[x.k] = {
-                    nested: {
-                        path: "assertions"
-                    },
-                    aggs: {
-                        filtered_terms: {
-                            filter: {
-                                term: {
-                                    "assertions.predicate.term": x.v
-                                }
-                            },
-                            aggs: {
-                                buckets: {
-                                    nested: {
-                                        path: "assertions.objects"
-                                    },
-                                    aggs: {
-                                        buckets: {
-                                            terms: {
-                                                field: "assertions.objects.term.keyword",
-                                                size: 100
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-            delete aggs.source_type.terms
-        }
-
-        aggs.submitter_name.aggs = {
-            meta: {
-                top_hits: {
-                    size: 1,
-                    _source: ["submitter.name"]
-                }
-            }
-        }
-
-        queryOptions.aggs = aggs;
-
-        return next(queryOptions)
+      }
+      queryOptions.query.bool.filter = filters;
     }
-})
+
+    const aggs = queryOptions.aggs || {};
+
+    for (const x of assertionPredicates) {
+      aggs[x.k] = {
+        nested: {
+          path: 'assertions',
+        },
+        aggs: {
+          filtered_terms: {
+            filter: {
+              term: {
+                'assertions.predicate.term': x.v,
+              },
+            },
+            aggs: {
+              buckets: {
+                nested: {
+                  path: 'assertions.objects',
+                },
+                aggs: {
+                  buckets: {
+                    terms: {
+                      field: 'assertions.objects.term.keyword',
+                      size: 100,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      };
+
+      delete aggs.source_type.terms;
+    }
+
+    aggs.submitter_name.aggs = {
+      meta: {
+        top_hits: {
+          size: 1,
+          _source: ['submitter.name'],
+        },
+      },
+    };
+
+    queryOptions.aggs = aggs;
+
+    return next(queryOptions);
+  },
+});
 
 export const SEARCH_SENOTYPE = {
-    alwaysSearchOnInitialLoad: true,
-    searchQuery: {
-        excludeFilters: [
-
-        ],
+  alwaysSearchOnInitialLoad: true,
+  searchQuery: {
+    excludeFilters: [],
+    facets: {
+      sennet_id: {
+        label: 'SenNet ID',
+        type: 'value',
+        field: 'senotype.id',
+        isExpanded: false,
+        filterType: 'any',
+        isFilterable: false,
+        facetType: 'term',
+        facetChipType: 'bulk',
+        isAggregationActive: true,
+        isFacetVisible: false,
+      },
+      source_type: {
+        label: 'Source Type',
+        type: 'value',
+        field: 'assertions.objects.term.keyword',
+        filterType: 'any',
+        isExpanded: false,
+        isFilterable: false,
+        facetType: 'term',
+        bucketsTransform: bucketsTransform,
+        isAggregationActive: true,
+        isFacetVisible: doesAggregationHaveBuckets('source_type'),
+      },
+      // 'organ': {
+      //     label: 'Organ',
+      //     type: 'value',
+      //     field: 'assertions.objects.term.keyword',
+      //     isExpanded: false,
+      //     filterType: 'any',
+      //     isFilterable: false,
+      //     facetType: 'term',
+      //     bucketsTransform: bucketsTransform,
+      //     isAggregationActive: true,
+      //     isFacetVisible: doesAggregationHaveBuckets('organ')
+      // },
+      organ: {
+        label: 'Organ',
+        type: 'value',
+        field: 'assertions.objects.term.keyword',
+        isExpanded: false,
+        filterType: 'any',
+        isFilterable: false,
+        facetType: 'hierarchy',
+        bucketsTransform: organBucketsTransform,
+        groupByField: 'assertions.objects.term.keyword',
+        isHierarchyOption: (option) => {
+          return ONTOLOGY_CACHE.organ_types.laterals.includes(option);
+        },
+        filterSubValues: (value, subValues) => {
+          return subValues.filter((subValue) => {
+            return subValue.key.toLowerCase().startsWith(value.toLowerCase());
+          });
+        },
+        isAggregationActive: true,
+        isFacetVisible: doesAggregationHaveBuckets('organ'),
+      },
+      cell_type: {
+        label: 'Cell Type',
+        type: 'value',
+        field: 'assertions.objects.term.keyword',
+        isExpanded: false,
+        filterType: 'any',
+        isFilterable: false,
+        facetType: 'term',
+        bucketsTransform: bucketsTransform,
+        isAggregationActive: true,
+        isFacetVisible: doesAggregationHaveBuckets('cell_type'),
+      },
+      dataset_type: {
+        label: 'Dataset Type',
+        type: 'value',
+        field: 'assertions.objects.term.keyword',
+        isExpanded: false,
+        filterType: 'any',
+        isFilterable: false,
+        facetType: 'term',
+        bucketsTransform: bucketsTransform,
+        isAggregationActive: true,
+        isFacetVisible: doesAggregationHaveBuckets('dataset_type'),
+      },
+      affiliation_group: {
+        label: 'Affiliation',
+        facetType: 'group',
+        isExpanded: false,
+        isFacetVisible: (filters, aggregations, auth, visibleChildren) => {
+          return visibleChildren.length > 0;
+        },
         facets: {
-            sennet_id: {
-                label: 'SenNet ID',
-                type: 'value',
-                field: 'senotype.id',
-                isExpanded: false,
-                filterType: 'any',
-                isFilterable: false,
-                facetType: 'term',
-                facetChipType: 'bulk',
-                isAggregationActive: true,
-                isFacetVisible: false
-            },
-            'source_type': {
-                label: 'Source Type',
-                type: 'value',
-                field: 'assertions.objects.term.keyword',
-                filterType: 'any',
-                isExpanded: false,
-                isFilterable: false,
-                facetType: 'term',
-                bucketsTransform: bucketsTransform,
-                isAggregationActive: true,
-                isFacetVisible: doesAggregationHaveBuckets('source_type')
-            },
-            // 'organ': {
-            //     label: 'Organ',
-            //     type: 'value',
-            //     field: 'assertions.objects.term.keyword',
-            //     isExpanded: false,
-            //     filterType: 'any',
-            //     isFilterable: false,
-            //     facetType: 'term',
-            //     bucketsTransform: bucketsTransform,
-            //     isAggregationActive: true,
-            //     isFacetVisible: doesAggregationHaveBuckets('organ')
-            // },
-            'organ': {
-                label: 'Organ',
-                type: 'value',
-                field: 'assertions.objects.term.keyword',
-                isExpanded: false,
-                filterType: 'any',
-                isFilterable: false,
-                facetType: 'hierarchy',
-                bucketsTransform: organBucketsTransform,
-                groupByField: 'assertions.objects.term.keyword',
-                isHierarchyOption: (option) => {
-                    return ONTOLOGY_CACHE.organ_types.laterals.includes(option)
-                },
-                filterSubValues: (value, subValues) => {
-                    return subValues.filter((subValue) => {
-                        return subValue.key.toLowerCase().startsWith(value.toLowerCase())
-                    })
-                },
-                isAggregationActive: true,
-                isFacetVisible: doesAggregationHaveBuckets('organ')
-            },
-            'cell_type': {
-                label: 'Cell Type',
-                type: 'value',
-                field: 'assertions.objects.term.keyword',
-                isExpanded: false,
-                filterType: 'any',
-                isFilterable: false,
-                facetType: 'term',
-                bucketsTransform: bucketsTransform,
-                isAggregationActive: true,
-                isFacetVisible: doesAggregationHaveBuckets('cell_type')
-            },
-            'dataset_type': {
-                label: 'Dataset Type',
-                type: 'value',
-                field: 'assertions.objects.term.keyword',
-                isExpanded: false,
-                filterType: 'any',
-                isFilterable: false,
-                facetType: 'term',
-                bucketsTransform: bucketsTransform,
-                isAggregationActive: true,
-                isFacetVisible: doesAggregationHaveBuckets('dataset_type')
-            },
-            affiliation_group: {
-                label: 'Affiliation',
-                facetType: 'group',
-                isExpanded: false,
-                isFacetVisible: (filters, aggregations, auth, visibleChildren) => {
-                    return visibleChildren.length > 0
-                },
-                facets: {
-                    submitter_name: {
-                        label: 'Registered By',
-                        type: 'value',
-                        field: 'submitter.email',
-                        isExpanded: false,
-                        filterType: 'any',
-                        isFilterable: false,
-                        facetType: 'term',
-                        isAggregationActive: true,
-                        transformFunction: submitterTransform,
-                        isFacetVisible: doesAggregationHaveBuckets('submitter_name')
-                    }
-                }
-            },
+          submitter_name: {
+            label: 'Registered By',
+            type: 'value',
+            field: 'submitter.email',
+            isExpanded: false,
+            filterType: 'any',
+            isFilterable: false,
+            facetType: 'term',
+            isAggregationActive: true,
+            transformFunction: submitterTransform,
+            isFacetVisible: doesAggregationHaveBuckets('submitter_name'),
+          },
         },
-        disjunctiveFacets: [
-
-        ],
-        conditionalFacets: {},
-        search_fields: {
-            'senotype.id^4': {type: 'value'},
-            'senotype.name^4': {type: 'value'},
-            all_text: { type: 'value' },
-        },
-        source_fields: [
-            'senotype',
-            'submitter',
-            'assertions',
-            'assertions.objects.term',
-            'assertions.predicate.term'
-
-        ],
-        // Moving this configuration into `searchQuery` so the config inside search-tools can read this
-        trackTotalHits: true,
+      },
     },
-    initialState: {
-        current: 1,
-        resultsPerPage: 20,
-        // sortList: [{
-        //     field: 'senotype.id.keyword',
-        //     direction: 'desc'
-        // }]
+    disjunctiveFacets: [],
+    conditionalFacets: {},
+    search_fields: {
+      'senotype.id^4': { type: 'value' },
+      'senotype.name^4': { type: 'value' },
+      all_text: { type: 'value' },
     },
-    urlPushDebounceLength: 100,
-    trackUrlState: true,
-    apiConnector: connector,
-    hasA11yNotifications: true,
-    a11yNotificationMessages: {
-        searchResults: ({ start, end, totalResults, searchTerm }) =>
-            `Searching for '${searchTerm}'. Showing ${start} to ${end} results out of ${totalResults}.`,
-    },
-}
+    source_fields: [
+      'senotype',
+      'submitter',
+      'assertions',
+      'assertions.objects.term',
+      'assertions.predicate.term',
+    ],
+    // Moving this configuration into `searchQuery` so the config inside search-tools can read this
+    trackTotalHits: true,
+  },
+  initialState: {
+    current: 1,
+    resultsPerPage: 20,
+    // sortList: [{
+    //     field: 'senotype.id.keyword',
+    //     direction: 'desc'
+    // }]
+  },
+  urlPushDebounceLength: 100,
+  trackUrlState: true,
+  apiConnector: connector,
+  hasA11yNotifications: true,
+  a11yNotificationMessages: {
+    searchResults: ({ start, end, totalResults, searchTerm }) =>
+      `Searching for '${searchTerm}'. Showing ${start} to ${end} results out of ${totalResults}.`,
+  },
+};
