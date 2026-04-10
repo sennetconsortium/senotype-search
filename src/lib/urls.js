@@ -21,6 +21,7 @@ const URLS = {
   obo: process.env.NEXT_PUBLIC_OBO_BASE_URL,
   organIcon: (o) => {
     let imgName = o.toDashedCase();
+    imgName = imgName[imgName.length - 1] === '-' ? imgName.substr(0, imgName.length - 1) : imgName;
     if (imgName === 'lung') {
       imgName = 'lungs';
     }
