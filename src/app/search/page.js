@@ -6,8 +6,6 @@ import dynamic from 'next/dynamic';
 import { SEARCH_SENOTYPE } from '@/config/search/senotype';
 import SearchResults from '@/components/search/SearchResults';
 import SearchInputField from '@/components/search/SearchInputField';
-import { FloatButton } from 'antd';
-import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons';
 import AppFloatingButton from '@/components/AppFloatingButton';
 import SelectedFacets from '@/components/search/SelectedFacets';
 

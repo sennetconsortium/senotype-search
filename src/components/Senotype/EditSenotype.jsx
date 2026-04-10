@@ -2,6 +2,11 @@ import EditContext from '@/context/EditContext';
 import React, { useContext } from 'react';
 import SenotypeForm from './SenotypeForm';
 
+/**
+ * TODO:// build edit form
+ * @param {*} param0 
+ * @returns 
+ */
 function EditSenotype({}) {
   const { senotype } = useContext(EditContext);
   if (!senotype) {

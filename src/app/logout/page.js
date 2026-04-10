@@ -2,7 +2,7 @@
 import AUTH from '@/lib/auth';
 import { useEffect } from 'react';
 
-function page() {
+function Page() {
   useEffect(() => {
     AUTH.logout();
     window.location = '/';
@@ -10,4 +10,4 @@ function page() {
   return <div>page</div>;
 }
 
-export default page;
+export default Page;
