@@ -1,1 +1,1 @@
-export const ontology = {}
+export const ontology = {};

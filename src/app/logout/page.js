@@ -1,15 +1,13 @@
-'use client'
-import AUTH from '@/lib/auth'
-import {useEffect} from 'react'
+'use client';
+import AUTH from '@/lib/auth';
+import { useEffect } from 'react';
 
 function page() {
   useEffect(() => {
-    AUTH.logout()
-    window.location = '/'
-  }, [])
-  return (
-    <div>page</div>
-  )
+    AUTH.logout();
+    window.location = '/';
+  }, []);
+  return <div>page</div>;
 }
 
-export default page
+export default page;

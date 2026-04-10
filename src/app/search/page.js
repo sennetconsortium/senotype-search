@@ -1,36 +1,47 @@
-'use client'
-import { useContext, useState } from 'react'
-import AppContext from "@/context/AppContext";
-import SiderLayout from '@/components/layout/SiderLayout'
-import dynamic from "next/dynamic";
-import { SEARCH_SENOTYPE } from "@/config/search/senotype";
-import SearchResults from "@/components/search/SearchResults";
-import SearchInputField from "@/components/search/SearchInputField";
+'use client';
+import { useContext, useState } from 'react';
+import AppContext from '@/context/AppContext';
+import SiderLayout from '@/components/layout/SiderLayout';
+import dynamic from 'next/dynamic';
+import { SEARCH_SENOTYPE } from '@/config/search/senotype';
+import SearchResults from '@/components/search/SearchResults';
+import SearchInputField from '@/components/search/SearchInputField';
 import { FloatButton } from 'antd';
 import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons';
 import AppFloatingButton from '@/components/AppFloatingButton';
 
-const SearchUIContainer = dynamic(() => import("@/search-ui/components/core/SearchUIContainer"))
+const SearchUIContainer = dynamic(
+  () => import('@/search-ui/components/core/SearchUIContainer'),
+);
 
 function Page() {
-    const { auth } = useContext(AppContext)
-    const [ showSider, setShowSider ] = useState(true)
-   
-    return (
-        <SearchUIContainer config={SEARCH_SENOTYPE} name='senotype' authState={auth}>
-            <SiderLayout
-                showSider={showSider}
-                prefixChildren={
-                    <>
-                        <SearchInputField />
-                    </>
-                }>
-                <AppFloatingButton show={showSider} setShow={setShowSider} text={'Search Facets'} />
-                
-                <SearchResults />
-            </SiderLayout>
-        </SearchUIContainer>
-    )
+  const { auth } = useContext(AppContext);
+  const [showSider, setShowSider] = useState(true);
+
+  return (
+    <SearchUIContainer
+      config={SEARCH_SENOTYPE}
+      name="senotype"
+      authState={auth}
+    >
+      <SiderLayout
+        showSider={showSider}
+        prefixChildren={
+          <>
+            <SearchInputField />
+          </>
+        }
+      >
+        <AppFloatingButton
+          show={showSider}
+          setShow={setShowSider}
+          text={'Search Facets'}
+        />
+
+        <SearchResults />
+      </SiderLayout>
+    </SearchUIContainer>
+  );
 }
 
-export default Page
+export default Page;

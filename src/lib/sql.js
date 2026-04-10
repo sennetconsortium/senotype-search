@@ -1,5 +1,5 @@
 import mysql from 'mysql2/promise';
-import log from 'xac-loglevel'
+import log from 'xac-loglevel';
 
 const connection = await mysql.createConnection({
   host: process.env.SENOTYPE_DB_HOST,
@@ -11,13 +11,13 @@ const connection = await mysql.createConnection({
 const SQL = {
   exec: async (q, values) => {
     try {
-      log.debug('SQL.exec', q); 
-      const [results] = await connection.query(q,values);
-      return results
+      log.debug('SQL.exec', q);
+      const [results] = await connection.query(q, values);
+      return results;
     } catch (err) {
       log.error('Error.SQL.exec', err);
     }
-  }
-}
+  },
+};
 
-export default SQL
+export default SQL;
