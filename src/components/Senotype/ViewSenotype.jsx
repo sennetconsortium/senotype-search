@@ -398,14 +398,14 @@ export default function ViewSenotype({ senotype }) {
         });
     });
 
-    codesToFetch.forEach((code) => {
-      fetchUBKG(code).then((result) => {
-        setMarkerMap((prev) => ({
-          ...prev,
-          [code]: result,
-        }));
-      });
-    });
+    // codesToFetch.forEach((code) => {
+    //   fetchUBKG(code).then((result) => {
+    //     setMarkerMap((prev) => ({
+    //       ...prev,
+    //       [code]: result,
+    //     }));
+    //   });
+    // });
   }, [senotype, fetchUBKG, markerMap]);
 
   const handleChange = (pagination, filters, sorter) => {
