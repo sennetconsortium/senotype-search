@@ -58,5 +58,9 @@ const API = {
       }
     }
   },
+  fetchUBKG: async (endpoint) => {
+    console.log(`${URLS.api.ontology}${endpoint}`)
+    return await API.fetch({url: `${URLS.api.ontology}${endpoint}`, method: 'GET'});
+  }
 };
 export default API;

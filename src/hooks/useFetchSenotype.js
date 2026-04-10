@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import API from '@/lib/api';
 
-export function useSenotype(senotype_id, auth) {
+export function useSenotype(senotype_id) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
