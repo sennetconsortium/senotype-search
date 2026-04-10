@@ -7,7 +7,7 @@ function Page() {
     AUTH.logout();
     window.location = '/';
   }, []);
-  return <div>page</div>;
+  return <div>Logging you out, one moment ...</div>;
 }
 
 export default Page;
