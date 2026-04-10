@@ -79,8 +79,10 @@ const buildSenotype = (assertions) => {
         <span className={'flex'}>
           {locationChildren.map((item, index) => (
             <div key={`location_${index}`} className={'mb-1'}>
-              {item.value}{' '}
+              {item.value}&nbsp;
+              <img src={URLS.organIcon(item.value)} className='w-fixed' width={16} height={16} alt={item.value} /> &nbsp;
               <a
+                aria-label={`Outgoing link to ontology for ${item.value}`}
                 target={'_blank'}
                 href={URLS.getOboDetailsUrl(item.key.replace(':', '_'))}
               >
