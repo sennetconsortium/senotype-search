@@ -4,7 +4,12 @@ import { ontology } from "@/cache/ontology"
 
 const SEARCH = {
   submitterTransform: (value, facet) => {
-    let name = facet.data.meta.hits.hits[0]._source.submitter.name
+    let name = value
+    try {
+      name = facet?.data?.meta?.hits?.hits[0]?._source.submitter.name
+    } catch(e) {
+      log.error('SEARCH.submitterTransform', value, facet)
+    }
     return <span title={value}>{`${name.first} ${name.last}`}</span>
   },
   organBucketsTransform: (ops) => {

@@ -15,6 +15,7 @@ function SearchResults() {
   const [tableData, setTableData] = useState([])
 
   const { wasSearched, filters, setPageNumber, rawResponse, pageSize, setPageSize } = useSearchUIContext()
+  const [_pageSize, _setPageSize] = useState(pageSize)
 
   const columns = [
     {
@@ -22,7 +23,7 @@ function SearchResults() {
       dataIndex: 'senotype.id',
       key: 'senotype.id',
       width: 250,
-      sorter: (a,b) => a.senotype.id.localeCompare(b.senotype.id),
+      sorter: (a, b) => a.senotype.id.localeCompare(b.senotype.id),
       render: (_, record) => <><a href={`/senotype/${record.senotype.id}`}>{record.senotype.id}</a><ClipboardCopy text={record.senotype.id} title={'Copy SenNet ID {text} to clipboard'} /></>,
     },
     {
@@ -30,13 +31,12 @@ function SearchResults() {
       dataIndex: 'senotype.name',
       key: 'senotype.name',
       width: 350,
-      sorter: (a,b) => a.senotype.name.localeCompare(b.senotype.name),
+      sorter: (a, b) => a.senotype.name.localeCompare(b.senotype.name),
       render: (_, record) => {
         return <div>{record.senotype.name}<br />
           <ModalOverComponent modalContent={record.senotype.definition} tag="small" maxLength={100}>
             <small>{record.senotype.definition.substr(0, 100)}</small>
           </ModalOverComponent>
-
         </div>
       },
     }
@@ -49,7 +49,7 @@ function SearchResults() {
     }
     organs = Array.from(organs)
     const list = []
-    
+
     let OrganIcon
     for (const o of organs) {
       if (o) {
@@ -64,7 +64,7 @@ function SearchResults() {
     const list = []
     for (const a of filtered) {
       for (const [i, c] of a.objects.entries()) {
-        list.push(<span key={c.code}><a href={`${URLS.obo}${c.code.replaceAll(':', "_")}`} className='text-black'>{c.term} <i className="bi bi-link-45deg text-primary"></i></a>{i < a.objects.length -1 ? ',' : ''} </span>)
+        list.push(<span key={c.code}><a href={`${URLS.obo}${c.code.replaceAll(':', "_")}`} className='text-black'>{c.term} <i className="bi bi-link-45deg text-primary"></i></a>{i < a.objects.length - 1 ? ',' : ''} </span>)
       }
     }
 
@@ -77,44 +77,60 @@ function SearchResults() {
     allAssertions.push({
       name: 'Other Assertions',
       k: 'other',
-      v: ''
+      v: '',
+      ui: {w: 300}
     })
+    const getTerms = (p, record) => {
+      const filtered = p.k === 'other' ? record.assertions.filter((r) => assertionsWithIndividualColumns.indexOf(r.predicate.term) === -1) : record.assertions.filter((r) => r.predicate.term === p.v)
+      const terms = filtered.map((a) => a.objects?.map((o) => o.term))
+      const content = terms.join(', ')
+      return {filtered, terms, content}
+    }
     for (const p of allAssertions) {
       columns.push(
         {
           title: p.name || (p.k.replaceAll('_', ' ').titleCase()),
           dataIndex: `assertions.predicate.term.${p.k}`,
           key: `assertions.predicate.term.${p.k}`,
-          width: 350,
+          sorter: (a, b) => {
+            const termsA = getTerms(p, a)
+            const termsB = getTerms(p, b)
+            return termsA.content.localeCompare(termsB.content)
+          },
+          width: p.ui.w,
           render: (_, record) => {
-            const filtered = p.k === 'other' ? record.assertions.filter((r) => assertionsWithIndividualColumns.indexOf(r.predicate.term) === -1) : record.assertions.filter((r) => r.predicate.term === p.v)
-            const terms = filtered.map((a) => a.objects?.map((o) => o.term))
-          
+            const {filtered, terms, content} = getTerms(p, record)
+
             if (p.k === 'organ') {
               return organIconRender(terms)
             } if (p.k === 'cell_type') {
               return cellTypesRender(filtered)
             } else {
-              const content = terms.join(', ')
               return <div><ModalOverComponent maxLength={100} modalContent={content}>
-                <p style={{wordBreak: 'break-all'}}>{content.substr(0, 100)}</p>
+                <p style={{ wordBreak: 'break-all' }}>{content.substr(0, 100)}</p>
               </ModalOverComponent></div>
             }
-            
+
           },
         }
       )
     }
     return columns
   }
+
   useEffect(() => {
     setTableData(rawResponse?.records?.senotypes)
-    log.debug('SearchResults', rawResponse)
+    log.debug('SearchResults.useEffect', rawResponse)
   }, [rawResponse])
 
+  useEffect(() => {
+    setPageSize(_pageSize)
+  }, [_pageSize])
+
   const handleTableChange = (pagination, filters, sorter) => {
+    log.debug('SearchResults.handleTableChange', pagination)
     setPageNumber(pagination.current)
-    setPageSize(pagination.pageSize)
+    _setPageSize(pagination.pageSize)
   }
 
   const getPageSizeOptions = () => {
@@ -138,12 +154,14 @@ function SearchResults() {
   return (
     <div>
       <SearchResultsMeta />
-      <Table columns={getColumns()} dataSource={tableData} rowKey={'id'} onChange={handleTableChange} pagination={{
-        total: rawResponse?.info?.senotypes?.total_result_count, 
-        pageSize: pageSize,
-        showSizeChanger: pageSizeOptions.length > 0, 
-        pageSizeOptions
-      }}
+      <Table columns={getColumns()} dataSource={tableData} rowKey={'id'} onChange={handleTableChange}
+        scroll={{ x: 1500, y: 1500 }}
+        pagination={{
+          total: rawResponse?.info?.senotypes?.total_result_count,
+          pageSize: pageSize,
+          showSizeChanger: pageSizeOptions.length > 0,
+          pageSizeOptions
+        }}
       />
     </div>
   )

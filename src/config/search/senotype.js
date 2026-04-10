@@ -5,10 +5,10 @@ import ENVS from '@/lib/envs';
 import AUTH from '@/lib/auth';
 
 export const assertionPredicates = [
-    {k: 'source_type', name: 'Taxon', v: 'in_taxon'},
-    {k: 'organ', v: 'located_in'},
-    {k: 'cell_type', v: 'has_cell_type'},
-    {k: 'dataset_type', v: 'has_assay'},
+    {k: 'source_type', name: 'Taxon', v: 'in_taxon', ui: {w: 100}},
+    {k: 'organ', v: 'located_in', ui: {w: 150}},
+    {k: 'cell_type', v: 'has_cell_type', ui: {w: 300}},
+    {k: 'dataset_type', v: 'has_assay', ui: {w: 200}},
 ]
 
 const { doesAggregationHaveBuckets, bucketsTransform, submitterTransform, organBucketsTransform } = SEARCH

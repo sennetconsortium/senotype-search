@@ -18,11 +18,11 @@ const SiderLayout = ({ children, prefixChildren, sider }) => {
           </Col>
         </Row>
         <Row>
-          <Col lg={3}>
+          <Col lg={2}>
           {!sider && <SiderFacets />}
           {sider}
           </Col>
-          <Col lg={9}>
+          <Col lg={10}>
             <main className='c-main container--card' >
               {children}
             </main>

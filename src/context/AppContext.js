@@ -14,7 +14,7 @@ export const AppProvider = ({ children }) => {
     const ops = {token: info.groups_token, method: 'GET'}
     const admin = await API.fetch({url: URLS.api.ingest.privs.admin, ...ops})
     const groups = await API.fetch({url: URLS.api.ingest.privs.groups, ...ops})
-    setAuth({...info, isAuthenticated: admin !== null, isAuthorized: admin !== null, isAdmin: admin.has_data_admin_privs, userGroups: groups.user_write_groups})
+    setAuth({...info, isAuthenticated: admin !== null, isAuthorized: admin !== null, isAdmin: admin?.has_data_admin_privs, userGroups: groups?.user_write_groups})
   }
 
   const fetchOntology = async () => {
