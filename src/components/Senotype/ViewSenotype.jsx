@@ -1,4 +1,4 @@
-import AppAccordion from '@/components/layout/AppAccordion';
+import AppAccordion from '@/components/AppAccordion';
 import React, { useRef, useState } from 'react';
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Col, Descriptions, Input, Row, Space, Table } from 'antd';
@@ -8,7 +8,7 @@ import {
   getSciCrunchUrl,
 } from '@/lib/senotype';
 import ClipboardCopy from '@/components/ClipboardCopy';
-import AppAnchor from '@/components/layout/AppAnchor';
+import AppAnchor from '@/components/AppAnchor';
 
 const buildAssertionChildren = (assertions, term) => {
   return assertions
