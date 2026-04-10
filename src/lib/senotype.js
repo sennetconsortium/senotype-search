@@ -1,46 +1,16 @@
 import { simple_query_builder } from '@/search-ui/lib/search-tools';
 import log from 'xac-loglevel';
-import AUTH from '@/lib/auth';
+import URLS from './urls';
+import ENVS from './envs';
+import API from './api';
 
-const SEARCH_API_URL = process.env.NEXT_PUBLIC_SEARCH_API_BASE;
-const INDEX_SENOTYPE = process.env.NEXT_PUBLIC_INDEX_SENOTYPE;
-const OBO_BASE_URL = process.env.NEXT_PUBLIC_OBO_BASE_URL;
-const CL_HOME_URL = process.env.NEXT_PUBLIC_CL_HOME_URL;
-const DOID_HOME_URL = process.env.NEXT_PUBLIC_DOID_HOME_URL;
-const HGNC_BASE_URL = process.env.NEXT_PUBLIC_HGNC_BASE_URL;
-const HGNC_HOME_URL = process.env.NEXT_PUBLIC_HGNC_HOME_URL;
-const UNIPROTKB_BASE_URL = process.env.NEXT_PUBLIC_UNIPROTKB_BASE_URL;
-
-const SCICRUNCH_BASE_URL = process.env.NEXT_PUBLIC_SCICRUNCH_BASE_URL;
-const SCICRUNCH_EXPLORE_URL = process.env.NEXT_PUBLIC_SCICRUNCH_EXPLORE_URL;
-const SCICRUNCH_HIGHER_URL = process.env.NEXT_PUBLIC_SCICRUNCH_HIGHER_URL;
-
-export async function fetchSenotype(senotype_id, auth = null) {
+export async function fetchSenotype(senotypeId, auth = null) {
   let data = {};
 
-  let url = SEARCH_API_URL + INDEX_SENOTYPE + '/search';
-  let queryBody = simple_query_builder('senotype.id', senotype_id);
+  let url = URLS.api.search + ENVS.index.senotype + '/search';
+  const body = simple_query_builder('senotype.id', senotypeId);
 
-  let myHeaders = new Headers();
-  let authInfo = AUTH.info();
-  if (authInfo) {
-    myHeaders.append('Authorization', 'Bearer ' + authInfo.groups_token);
-  }
-  myHeaders.append('Content-Type', 'application/json');
-
-  let requestOptions = {
-    method: 'POST',
-    headers: myHeaders,
-    body: JSON.stringify(queryBody),
-  };
-
-  const res = await fetch(url, requestOptions);
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch senotype: ${res.status}`);
-  }
-
-  let jsonData = await res.json();
+  let jsonData = API.fetch({url, body});
   if (jsonData.hasOwnProperty('error')) {
     log.error(jsonData.error);
     return data;
@@ -49,7 +19,7 @@ export async function fetchSenotype(senotype_id, auth = null) {
     if (total !== 0) {
       let senotype; //result["hits"]["hits"][0]["_source"]
       jsonData['hits']['hits'].forEach((hit) => {
-        if (hit['_source']['senotype']['id'] === senotype_id) {
+        if (hit['_source']['senotype']['id'] === senotypeId) {
           senotype = hit['_source'];
         }
       });
@@ -65,11 +35,11 @@ export async function fetchSenotype(senotype_id, auth = null) {
 export function getSciCrunchUrl(searchTerm) {
   let baseUrl = '';
   if (searchTerm.includes('-')) {
-    baseUrl = SCICRUNCH_HIGHER_URL;
+    baseUrl =  URLS.sciCrunch.higher;
     let lowerParam = searchTerm.split('-')[0];
     searchTerm = `${lowerParam}?i=rrid%3A${searchTerm}`;
   } else {
-    baseUrl = SCICRUNCH_BASE_URL;
+    baseUrl = URLS.sciCrunch.base;
   }
   return `${baseUrl}${searchTerm}`;
 }
@@ -87,16 +57,16 @@ export function getBioDetailUrl(sab, id = '') {
   let idSubmit = id;
   let baseURL = '';
   if (sab.toUpperCase() === 'OBO') {
-    baseURL = OBO_BASE_URL;
+    baseURL = URLS.obo;
   } else if (sab.toUpperCase() === 'HGNC') {
     if (id === '') {
-      baseURL = HGNC_HOME_URL;
+      baseURL = URLS.hgnc.home;
     } else {
-      baseURL = HGNC_BASE_URL;
+      baseURL = URLS.hgnc.base;
     }
   } else if (sab.toUpperCase() === 'UNIPROTKB') {
     // Strip the SAB from the code.
-    baseURL = UNIPROTKB_BASE_URL;
+    baseURL = URLS.uniprotkb;
     idSubmit = id.split(':')[1];
   } else {
     return null;

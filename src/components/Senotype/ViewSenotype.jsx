@@ -5,10 +5,10 @@ import { Button, Col, Descriptions, Input, Row, Space, Table } from 'antd';
 import {
   getMarkerDetailsUrl,
   getOboDetailsUrl,
-  getSciCrunchUrl,
 } from '@/lib/senotype';
 import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
+import URLS from '@/lib/urls';
 
 const buildAssertionChildren = (assertions, term) => {
   return assertions
@@ -332,7 +332,7 @@ const buildReferences = (assertions) => {
           {originChildren.map((item, index) => (
             <div key={`origin_${index}`} className={'mb-2'}>
               {item.value}{' '}
-              <a target={'_blank'} href={getSciCrunchUrl(item.key)}>
+              <a target={'_blank'} href={URLS.getSciCrunchUrl(item.key)}>
                 <LinkOutlined />
               </a>
             </div>
