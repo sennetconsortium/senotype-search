@@ -1,4 +1,4 @@
-import '@/lib/general'
+
 
 const URLS = {
   login: process.env.NEXT_PUBLIC_LOGIN_URL,

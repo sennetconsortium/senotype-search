@@ -6,7 +6,6 @@ import ModalOverComponent from '../ModalOverComponent';
 import SearchResultsMeta from './SearchResultsMeta';
 import log from 'xac-loglevel';
 import { assertionPredicates } from '@/config/search/senotype';
-import '@/lib/general';
 import { ontology } from '@/cache/ontology';
 import Icon from '@ant-design/icons';
 import URLS from '@/lib/urls';

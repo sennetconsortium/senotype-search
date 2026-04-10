@@ -3,7 +3,6 @@ import { Layout, Menu, Skeleton } from 'antd';
 import Facets from 'search-ui/components/core/Facets';
 import { useSearchUIContext } from 'search-ui/components/core/SearchUIContext';
 const { Content, Sider } = Layout;
-import '@/lib/general';
 import ClearFiltersButton from './ClearFiltersButton';
 
 function SiderFacets({}) {

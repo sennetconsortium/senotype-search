@@ -1,6 +1,5 @@
 import React from 'react';
 import { Form, InputGroup } from 'react-bootstrap';
-import '@/lib/general';
 
 function InputField({
   id,
