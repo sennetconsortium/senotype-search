@@ -1,7 +1,13 @@
 import AppAccordion from '@/components/AppAccordion';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
-import {Row, Col, Container} from 'react-bootstrap'
+import { Col, Container, Row } from 'react-bootstrap';
 import { Button, Descriptions, Input, Space, Table } from 'antd';
 import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
@@ -393,7 +399,7 @@ export default function ViewSenotype({ senotype }) {
       'inconclusively_regulates',
     ];
 
-    const codesToFetch = {}
+    const codesToFetch = {};
 
     termKeys.forEach((key) => {
       senotype.assertions
@@ -408,7 +414,7 @@ export default function ViewSenotype({ senotype }) {
 
     console.log(codesToFetch);
 
-    for(let code in codesToFetch) {
+    for (let code in codesToFetch) {
       fetchUBKGMarkers(code, codesToFetch[code]).then((result) => {
         setMarkerMap((prev) => {
           if (prev[code]) return prev;
@@ -430,103 +436,149 @@ export default function ViewSenotype({ senotype }) {
     confirm();
   };
 
-  const buildMarkers = (assertions, dataIndex, key, markerType) => {
-    return assertions
-      .filter((item) => item.predicate?.term === key)
-      .flatMap((item) => item.objects)
-      .map((obj) =>
-        markerType
-          ? {
-              key: obj.code,
-              [dataIndex]: `${markerMap[obj.code] ?? 'loading...'} (${obj.code})`,
-              markerType: markerType,
+  const buildMarkers = useCallback(
+    (assertions, dataIndex, key, markerType) => {
+      return assertions
+        .filter((item) => item.predicate?.term === key)
+        .flatMap((item) => item.objects)
+        .map((obj) =>
+          markerType
+            ? {
+                key: obj.code,
+                [dataIndex]: `${markerMap[obj.code] ?? 'loading...'} (${obj.code})`,
+                markerType,
+              }
+            : {
+                key: obj.code,
+                [dataIndex]: `${markerMap[obj.code] ?? 'loading...'} (${obj.code})`,
+              },
+        );
+    },
+    [markerMap],
+  );
+
+  const getColumnSearchProps = useCallback(
+    (dataIndex) => ({
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+        close,
+      }) => (
+        <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+          <Input
+            ref={searchInput}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
             }
-          : {
-              key: obj.code,
-              [dataIndex]: `${markerMap[obj.code] ?? 'loading...'} (${obj.code})`,
-            },
-      );
-  };
-
-  const markerColumns = (title, dataIndex) => [
-    {
-      title: title,
-      dataIndex: dataIndex,
-      key: dataIndex,
-      ...getColumnSearchProps(dataIndex),
-      sorter: (a, b) => a[dataIndex].localeCompare(b[dataIndex]),
-      render: (_, record) => (
-        <span>
-          {record[dataIndex]}{' '}
-          <a target={'_blank'} href={URLS.getMarkerDetailsUrl(record.key)}>
-            <LinkOutlined />
-          </a>{' '}
-        </span>
+            onPressEnter={() => handleSearch(selectedKeys, confirm)}
+            style={{ marginBottom: 8, display: 'block' }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters, confirm)}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                close();
+              }}
+            >
+              close
+            </Button>
+          </Space>
+        </div>
       ),
-    },
-  ];
-
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-      close,
-    }) => (
-      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
+      ),
+      onFilter: (value, record) =>
+        record[dataIndex]
+          .toString()
+          .toLowerCase()
+          .includes(value.toLowerCase()),
+      filterDropdownProps: {
+        onOpenChange(open) {
+          if (open) {
+            setTimeout(() => searchInput.current?.select(), 100);
           }
-          onPressEnter={() => handleSearch(selectedKeys, confirm)}
-          style={{ marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters, confirm)}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Reset
-          </Button>
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    filterDropdownProps: {
-      onOpenChange(open) {
-        if (open) {
-          setTimeout(() => searchInput.current?.select(), 100);
-        }
+        },
       },
-    },
-  });
+    }),
+    [],
+  );
+
+  const specifiedMarkerData = useMemo(
+    () =>
+      buildMarkers(
+        senotype.assertions,
+        'specified_marker',
+        'has_characterizing_marker_set',
+      ),
+    [senotype.assertions, buildMarkers],
+  );
+
+  const regulatingMarkerData = useMemo(
+    () => [
+      ...buildMarkers(
+        senotype.assertions,
+        'regulating_marker',
+        'down_regulates',
+        'down',
+      ),
+      ...buildMarkers(
+        senotype.assertions,
+        'regulating_marker',
+        'up_regulates',
+        'up',
+      ),
+      ...buildMarkers(
+        senotype.assertions,
+        'regulating_marker',
+        'inconclusively_regulates',
+        '?',
+      ),
+    ],
+    [senotype.assertions, buildMarkers],
+  );
+
+  const markerColumns = useCallback(
+    (title, dataIndex) => [
+      {
+        title: title,
+        dataIndex: dataIndex,
+        key: dataIndex,
+        ...getColumnSearchProps(dataIndex),
+        sorter: (a, b) => a[dataIndex].localeCompare(b[dataIndex]),
+        render: (_, record) => (
+          <span>
+            {record[dataIndex]}{' '}
+            <a target={'_blank'} href={URLS.getMarkerDetailsUrl(record.key)}>
+              <LinkOutlined />
+            </a>{' '}
+          </span>
+        ),
+      },
+    ],
+    [getColumnSearchProps],
+  );
 
   return (
     <Container fluid>
@@ -570,7 +622,7 @@ export default function ViewSenotype({ senotype }) {
             setSpan={setSpan}
           />
         </Col>
-       
+
         <Col lg={span} id={'view-senotype-col'}>
           <div className={'markdown'}>
             <h2>
@@ -608,12 +660,13 @@ export default function ViewSenotype({ senotype }) {
 
             <AppAccordion title={'Specified Markers'} id={'specified-markers'}>
               <Table
+                pagination={{
+                  total: specifiedMarkerData.length,
+                  showTotal: (total, range) =>
+                    `${range[0]}-${range[1]} of ${total} items`,
+                }}
                 columns={markerColumns('Specified Marker', 'specified_marker')}
-                dataSource={buildMarkers(
-                  senotype.assertions,
-                  'specified_marker',
-                  'has_characterizing_marker_set',
-                )}
+                dataSource={specifiedMarkerData}
               ></Table>
             </AppAccordion>
 
@@ -622,6 +675,11 @@ export default function ViewSenotype({ senotype }) {
               id={'regulating-markers'}
             >
               <Table
+                pagination={{
+                  total: regulatingMarkerData.length,
+                  showTotal: (total, range) =>
+                    `${range[0]}-${range[1]} of ${total} items`,
+                }}
                 columns={[
                   ...markerColumns('Regulating Marker', 'regulating_marker'),
                   {
@@ -631,26 +689,7 @@ export default function ViewSenotype({ senotype }) {
                     sorter: (a, b) => a.markerType.localeCompare(b.markerType),
                   },
                 ]}
-                dataSource={[
-                  ...buildMarkers(
-                    senotype.assertions,
-                    'regulating_marker',
-                    'down_regulates',
-                    'down',
-                  ),
-                  ...buildMarkers(
-                    senotype.assertions,
-                    'regulating_marker',
-                    'up_regulates',
-                    'up',
-                  ),
-                  ...buildMarkers(
-                    senotype.assertions,
-                    'regulating_marker',
-                    'inconclusively_regulates',
-                    '?',
-                  ),
-                ]}
+                dataSource={regulatingMarkerData}
                 onChange={handleChange}
               ></Table>
             </AppAccordion>

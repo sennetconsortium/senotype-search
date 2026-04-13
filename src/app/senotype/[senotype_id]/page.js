@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation';
 import BasicLayout from '@/components/layout/BasicLayout';
 import { useSenotype } from '@/hooks/useFetchSenotype';
 import ViewSenotype from '@/components/Senotype/ViewSenotype';
-import { Skeleton, Spin } from 'antd';
+import AppSpinner from '@/components/AppSpinner';
 
 export default function Page() {
   const params = useParams();
@@ -17,8 +17,7 @@ export default function Page() {
       <>
         {loading && (
           <>
-            <Spin percent={'auto'} fullscreen></Spin>
-            <Skeleton></Skeleton>
+            <AppSpinner />
           </>
         )}
         {error && <p>{error.message}</p>}

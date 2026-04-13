@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import API from '@/lib/api';
 import { loadCache, saveCache } from '@/lib/localStorage';
+import log from 'xac-loglevel';
 
 export function useFetchUBKGMarkers() {
   const [data, setData] = useState(null);
@@ -22,7 +23,7 @@ export function useFetchUBKGMarkers() {
     const ubkgInFlight = ubkgInFlightRef.current;
 
     if (ubkgCache.has(code)) {
-      console.log('Cache found code: ', code);
+      log.debug('Cache found code: ', code);
       const cached = ubkgCache.get(code);
       setData(cached);
       return Promise.resolve(cached);

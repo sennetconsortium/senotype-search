@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Button, Table } from 'antd';
 import { useSearchUIContext } from 'search-ui/components/core/SearchUIContext';
 import ClipboardCopy from '../ClipboardCopy';
@@ -9,14 +9,11 @@ import { assertionPredicates } from '@/config/search/senotype';
 import { ontology } from '@/cache/ontology';
 import Icon from '@ant-design/icons';
 import URLS from '@/lib/urls';
-import { Row, Col } from 'react-bootstrap';
-import PageSizer from './PageSizer';
+import { Col, Row } from 'react-bootstrap';
 import ResultsExport from './ResultsExport';
+import Image from 'next/image';
 
 function SearchResults() {
-  const [tableData, setTableData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
   const {
     wasSearched,
     filters,
@@ -25,7 +22,14 @@ function SearchResults() {
     pageSize,
     setPageSize,
   } = useSearchUIContext();
-  
+
+  const tableData = useMemo(
+    () => rawResponse?.records?.senotypes ?? [],
+    [rawResponse],
+  );
+
+  const isLoading = rawResponse == null;
+
   const columns = [
     {
       title: 'SenNet ID',
@@ -78,12 +82,23 @@ function SearchResults() {
     let OrganIcon;
     for (const o of organs) {
       if (o) {
-        OrganIcon = () => (
-          <img height={16} width={16} src={URLS.organIcon(o)} />
-        );
         list.push(
           <a key={o} href={`${URLS.portal}organs/${o?.toLowerCase()}`}>
-            <Button icon={<Icon component={OrganIcon} />} iconPlacement="end">
+            <Button
+              icon={
+                <Icon
+                  component={() => (
+                    <Image
+                      height={16}
+                      width={16}
+                      src={URLS.organIcon(o)}
+                      alt={o}
+                    />
+                  )}
+                />
+              }
+              iconPlacement="end"
+            >
               {o}
             </Button>
           </a>,
@@ -171,23 +186,10 @@ function SearchResults() {
     return columns;
   };
 
-  useEffect(() => {
-    setTableData(rawResponse?.records?.senotypes);
-    log.debug('SearchResults.useEffect', rawResponse);
-    setIsLoading(false);
-  }, [rawResponse]);
-
- 
-
   const handleTableChange = (pagination, filters, sorter) => {
     log.debug('SearchResults.handleTableChange', pagination);
-    setIsLoading(true);
     setPageNumber(pagination.current);
-    if (pagination.pageSize !== pageSize) {
-       setTableData([]);
-    }
     setPageSize(pagination.pageSize);
-    
   };
 
   const getPageSizeOptions = () => {
@@ -207,7 +209,7 @@ function SearchResults() {
   };
 
   const pageSizeOptions = getPageSizeOptions();
-  const totalRows = rawResponse?.info?.senotypes?.total_result_count
+  const totalRows = rawResponse?.info?.senotypes?.total_result_count;
   return (
     <div className="c-searchResults">
       <div className="c-searchResults__headerTools mb-3">
@@ -216,13 +218,6 @@ function SearchResults() {
             <SearchResultsMeta />
           </Col>
           <Col className="d-flex flex-row-reverse">
-            <PageSizer
-              setTableData={setTableData}
-              options={pageSizeOptions.map((x) => ({
-                label: `${x} / page`,
-                value: x,
-              }))}
-            />
             <ResultsExport />
           </Col>
         </Row>
@@ -236,6 +231,8 @@ function SearchResults() {
         scroll={{ x: 1500, y: 1500 }}
         pagination={{
           total: totalRows,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total} items`,
           pageSize: pageSize,
           showSizeChanger: pageSizeOptions.length > 0,
           pageSizeOptions,
