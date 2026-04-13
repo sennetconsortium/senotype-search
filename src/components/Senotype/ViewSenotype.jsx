@@ -5,7 +5,7 @@ import { Button, Col, Descriptions, Input, Row, Space, Table } from 'antd';
 import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
-import { useFetchUBKG } from '@/hooks/useFetchUBKG';
+import { useFetchUBKGMarkers } from '@/hooks/useFetchUBKGMarkers';
 
 const buildAssertionChildren = (assertions, term) => {
   return assertions
@@ -379,7 +379,7 @@ export default function ViewSenotype({ senotype }) {
   const [sortedInfo, setSortedInfo] = useState({});
   const searchInput = useRef(null);
 
-  const { data, error, fetchUBKG } = useFetchUBKG();
+  const { data, error, fetchUBKGMarkers } = useFetchUBKGMarkers();
   const [markerMap, setMarkerMap] = useState({});
 
   useEffect(() => {
@@ -408,14 +408,14 @@ export default function ViewSenotype({ senotype }) {
     console.log(codesToFetch);
 
     codesToFetch.forEach((code) => {
-      fetchUBKG(code).then((result) => {
+      fetchUBKGMarkers(code).then((result) => {
         setMarkerMap((prev) => {
           if (prev[code]) return prev;
           return { ...prev, [code]: result };
         });
       });
     });
-  }, [senotype, fetchUBKG]);
+  }, [senotype, fetchUBKGMarkers]);
 
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
