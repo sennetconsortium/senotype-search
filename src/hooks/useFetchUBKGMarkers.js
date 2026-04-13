@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 import API from '@/lib/api';
 import { loadCache, saveCache } from '@/lib/localStorage';
 
-export function useFetchUBKG() {
+export function useFetchUBKGMarkers() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
@@ -13,7 +13,7 @@ export function useFetchUBKG() {
   const ubkgInFlightRef = useRef(new Map());
 
   // Utilizing useCallback to prevent creating this function on every render
-  const fetchUBKG = useCallback((code) => {
+  const fetchUBKGMarkers = useCallback((code) => {
     if (!code || !code.includes(':')) {
       return Promise.resolve(null);
     }
@@ -67,5 +67,5 @@ export function useFetchUBKG() {
     return request;
   }, []);
 
-  return { data, error, fetchUBKG };
+  return { data, error, fetchUBKGMarkers };
 }
