@@ -236,6 +236,8 @@ function SearchResults() {
         scroll={{ x: 1500, y: 1500 }}
         pagination={{
           total: totalRows,
+          showTotal: (total, range) =>
+            `${range[0]}-${range[1]} of ${total} items`,
           pageSize: pageSize,
           showSizeChanger: pageSizeOptions.length > 0,
           pageSizeOptions,
