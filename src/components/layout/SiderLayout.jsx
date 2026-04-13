@@ -4,7 +4,13 @@ import AppFooter from './AppFooter';
 import { Row, Col, Container } from 'react-bootstrap';
 import SiderFacets from '@/components/search/SiderFacets';
 
-const SiderLayout = ({ children, prefixChildren, sider, showSider = true, classNameMain = '' }) => {
+const SiderLayout = ({
+  children,
+  prefixChildren,
+  sider,
+  showSider = true,
+  classNameMain = '',
+}) => {
   return (
     <div className="body__wrapper bg--dirtyWhite">
       <AppNavBar />
@@ -20,7 +26,9 @@ const SiderLayout = ({ children, prefixChildren, sider, showSider = true, classN
             </Col>
           )}
           <Col lg={showSider ? 10 : 12}>
-            <main className={`c-main container--card ${classNameMain}`}>{children}</main>
+            <main className={`c-main container--card ${classNameMain}`}>
+              {children}
+            </main>
           </Col>
         </Row>
       </Container>

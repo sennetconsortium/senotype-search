@@ -13,7 +13,7 @@ export default function Page() {
   const { data, loading, error } = useSenotype(senotype_id);
 
   return (
-    <BasicLayout classNameMain='mt-2'>
+    <BasicLayout classNameMain="mt-2">
       <>
         {loading && (
           <>

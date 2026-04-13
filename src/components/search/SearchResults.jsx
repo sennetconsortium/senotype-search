@@ -205,15 +205,19 @@ function SearchResults() {
   const pageSizeOptions = getPageSizeOptions();
 
   return (
-    <div className='c-searchResults'>
-      <div className='c-searchResults__headerTools mb-3'>
+    <div className="c-searchResults">
+      <div className="c-searchResults__headerTools mb-3">
         <Row>
           <Col>
             <SearchResultsMeta />
           </Col>
-          <Col className='d-flex flex-row-reverse'>
-  
-            <PageSizer options={pageSizeOptions.map((x) => ({label: `${x} / page`, value: x}))} />
+          <Col className="d-flex flex-row-reverse">
+            <PageSizer
+              options={pageSizeOptions.map((x) => ({
+                label: `${x} / page`,
+                value: x,
+              }))}
+            />
             <ResultsExport />
           </Col>
         </Row>

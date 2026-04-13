@@ -8,7 +8,7 @@ export function useSenotype(senotype_id) {
 
   useEffect(() => {
     if (!senotype_id) return;
-    
+
     API.fetchSenotype(senotype_id)
       .then(setData)
       .catch((err) => setError(err.message))

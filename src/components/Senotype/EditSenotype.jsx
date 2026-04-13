@@ -4,8 +4,8 @@ import SenotypeForm from './SenotypeForm';
 
 /**
  * TODO:// build edit form
- * @param {*} param0 
- * @returns 
+ * @param {*} param0
+ * @returns
  */
 function EditSenotype({}) {
   const { senotype } = useContext(EditContext);

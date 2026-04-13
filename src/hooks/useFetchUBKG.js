@@ -21,7 +21,6 @@ export function useFetchUBKG() {
     const ubkgCache = ubkgCacheRef.current;
     const ubkgInFlight = ubkgInFlightRef.current;
 
-
     if (ubkgCache.has(code)) {
       console.log('Cache found code: ', code);
       const cached = ubkgCache.get(code);

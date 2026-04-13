@@ -59,8 +59,8 @@ const API = {
     }
   },
   fetchUBKG: (endpoint) => {
-    console.log(`${URLS.api.ontology}${endpoint}`)
-    return API.fetch({url: `${URLS.api.ontology}${endpoint}`, method: 'GET'});
-  }
+    console.log(`${URLS.api.ontology}${endpoint}`);
+    return API.fetch({ url: `${URLS.api.ontology}${endpoint}`, method: 'GET' });
+  },
 };
 export default API;
