@@ -13,7 +13,7 @@ export function useFetchUBKGMarkers() {
   const ubkgInFlightRef = useRef(new Map());
 
   // Utilizing useCallback to prevent creating this function on every render
-  const fetchUBKGMarkers = useCallback((code) => {
+  const fetchUBKGMarkers = useCallback((code, defaultValue) => {
     if (!code || !code.includes(':')) {
       return Promise.resolve(null);
     }
@@ -43,7 +43,7 @@ export function useFetchUBKGMarkers() {
           ubkgInFlight.delete(code);
           setError('Failed to fetch UBKG marker for ' + code);
           console.error('Failed to fetch UBKG marker for ' + code);
-          return code;
+          return defaultValue;
         }
         let name = '';
         if (markerType === 'HGNC') {

@@ -393,7 +393,7 @@ export default function ViewSenotype({ senotype }) {
       'inconclusively_regulates',
     ];
 
-    const codesToFetch = new Set();
+    const codesToFetch = {}
 
     termKeys.forEach((key) => {
       senotype.assertions
@@ -401,21 +401,21 @@ export default function ViewSenotype({ senotype }) {
         .flatMap((item) => item.objects)
         .forEach((obj) => {
           if (obj.code && !markerMap[obj.code]) {
-            codesToFetch.add(obj.code);
+            codesToFetch[obj.code] = obj.term;
           }
         });
     });
 
     console.log(codesToFetch);
 
-    codesToFetch.forEach((code) => {
-      fetchUBKGMarkers(code).then((result) => {
+    for(let code in codesToFetch) {
+      fetchUBKGMarkers(code, codesToFetch[code]).then((result) => {
         setMarkerMap((prev) => {
           if (prev[code]) return prev;
           return { ...prev, [code]: result };
         });
       });
-    });
+    }
   }, [senotype, fetchUBKGMarkers]);
 
   const handleChange = (pagination, filters, sorter) => {
