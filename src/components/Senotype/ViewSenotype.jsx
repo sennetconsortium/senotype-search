@@ -1,6 +1,6 @@
 import AppAccordion from '@/components/AppAccordion';
 import React, { useEffect, useRef, useState } from 'react';
-import Icon, { LinkOutlined, SearchOutlined } from '@ant-design/icons';
+import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Col, Descriptions, Input, Row, Space, Table } from 'antd';
 import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
@@ -81,7 +81,14 @@ const buildSenotype = (assertions) => {
           {locationChildren.map((item, index) => (
             <div key={`location_${index}`} className={'mb-1'}>
               {item.value}&nbsp;
-              <img src={URLS.organIcon(item.value)} className='w-fixed' width={16} height={16} alt={item.value} /> &nbsp;
+              <img
+                src={URLS.organIcon(item.value)}
+                className="w-fixed"
+                width={16}
+                height={16}
+                alt={item.value}
+              />{' '}
+              &nbsp;
               <a
                 aria-label={`Outgoing link to ontology for ${item.value}`}
                 target={'_blank'}
@@ -376,7 +383,7 @@ export default function ViewSenotype({ senotype }) {
   const [markerMap, setMarkerMap] = useState({});
 
   useEffect(() => {
-    if (!senotype?.assertions) return;
+    if (!senotype && senotype?.assertions.length > 0) return;
 
     const termKeys = [
       'has_characterizing_marker_set',
@@ -398,15 +405,17 @@ export default function ViewSenotype({ senotype }) {
         });
     });
 
-    // codesToFetch.forEach((code) => {
-    //   fetchUBKG(code).then((result) => {
-    //     setMarkerMap((prev) => ({
-    //       ...prev,
-    //       [code]: result,
-    //     }));
-    //   });
-    // });
-  }, [senotype, fetchUBKG, markerMap]);
+    console.log(codesToFetch);
+
+    codesToFetch.forEach((code) => {
+      fetchUBKG(code).then((result) => {
+        setMarkerMap((prev) => {
+          if (prev[code]) return prev;
+          return { ...prev, [code]: result };
+        });
+      });
+    });
+  }, [senotype, fetchUBKG]);
 
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);

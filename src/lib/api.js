@@ -27,9 +27,9 @@ const API = {
       }
       return res.json();
     } catch (error) {
-      log.error(error);
+      log.error(error, url);
+      return null;
     }
-    return null;
   },
   search: async (body, index = 'entities') => {
     return await API.fetch({ url: `${URLS.api.search}${index}/search`, body });
@@ -58,9 +58,9 @@ const API = {
       }
     }
   },
-  fetchUBKG: async (endpoint) => {
+  fetchUBKG: (endpoint) => {
     console.log(`${URLS.api.ontology}${endpoint}`)
-    return await API.fetch({url: `${URLS.api.ontology}${endpoint}`, method: 'GET'});
+    return API.fetch({url: `${URLS.api.ontology}${endpoint}`, method: 'GET'});
   }
 };
 export default API;
