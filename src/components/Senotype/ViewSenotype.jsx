@@ -1,44 +1,28 @@
 import AppAccordion from '@/components/AppAccordion';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Button, Descriptions, Input, Space, Table } from 'antd';
 import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
-import { useFetchUBKGMarkers } from '@/hooks/useFetchUBKGMarkers';
-
-const buildAssertionChildren = (assertions, term) => {
-  return assertions
-    .filter((item) => item.predicate?.term === term)
-    .flatMap((item) => item.objects)
-    .map((obj) => ({ key: obj.code, value: obj.term }));
-};
 
 const buildSummary = (senotype) => {
   return [
     {
       key: '1',
-      label: 'Name',
-      children: senotype.senotype.name,
+      label: 'Title',
+      children: senotype.title,
     },
     {
       key: '2',
       label: 'Submitter',
       children: (
         <span className={'flex'}>
+          <div>{senotype.created_by_user_displayname}</div>
           <div>
-            {senotype.submitter.name.first} {senotype.submitter.name.last}
-          </div>
-          <div>
-            <a href={`mailto:${senotype.submitter.email}`}>
-              {senotype.submitter.email}
+            <a href={`mailto:${senotype.created_by_user_email}`}>
+              {senotype.created_by_user_email}
             </a>
           </div>
         </span>
@@ -47,24 +31,12 @@ const buildSummary = (senotype) => {
     {
       key: '3',
       label: 'Description',
-      children: senotype.senotype.definition,
+      children: senotype.definition,
     },
   ];
 };
 
-const buildSenotype = (assertions) => {
-  let taxonChildren = buildAssertionChildren(assertions, 'in_taxon');
-  let locationChildren = buildAssertionChildren(assertions, 'located_in');
-  let celltypeChildren = buildAssertionChildren(assertions, 'has_cell_type');
-  let hallmarkChildren = buildAssertionChildren(assertions, 'has_hallmark');
-  let microenvironmentChildren = buildAssertionChildren(
-    assertions,
-    'has_microenvironment',
-  );
-  let inducerChildren = buildAssertionChildren(assertions, 'has_inducer');
-  let assayChildren = buildAssertionChildren(assertions, 'has_assay');
-  let diagnosisChildren = buildAssertionChildren(assertions, 'has_diagnosis');
-
+const buildSenotype = (senotype) => {
   let keyCounter = 4;
   let items = [
     {
@@ -72,9 +44,9 @@ const buildSenotype = (assertions) => {
       label: 'Taxon',
       children: (
         <span className={'flex'}>
-          {taxonChildren.map((item, index) => (
+          {senotype['in_taxon'].map((item, index) => (
             <div key={`taxon_${index}`} className={'mb-1'}>
-              {item.value}
+              {item.term}
             </div>
           ))}
         </span>
@@ -85,21 +57,21 @@ const buildSenotype = (assertions) => {
       label: 'Location',
       children: (
         <span className={'flex'}>
-          {locationChildren.map((item, index) => (
+          {senotype['located_in'].map((item, index) => (
             <div key={`location_${index}`} className={'mb-1'}>
-              {item.value}&nbsp;
+              {item.term}&nbsp;
               <img
-                src={URLS.organIcon(item.value)}
+                src={URLS.organIcon(item.code)}
                 className="w-fixed"
                 width={16}
                 height={16}
-                alt={item.value}
+                alt={item.code}
               />{' '}
               &nbsp;
               <a
-                aria-label={`Outgoing link to ontology for ${item.value}`}
+                aria-label={`Outgoing link to ontology for ${item.code}`}
                 target={'_blank'}
-                href={URLS.getOboDetailsUrl(item.key.replace(':', '_'))}
+                href={URLS.getOboDetailsUrl(item.code.replace(':', '_'))}
               >
                 <LinkOutlined />
               </a>
@@ -113,12 +85,12 @@ const buildSenotype = (assertions) => {
       label: 'Celltype',
       children: (
         <span className={'flex'}>
-          {celltypeChildren.map((item, index) => (
+          {senotype['has_cell_type'].map((item, index) => (
             <div key={`celltype_${index}`} className={'mb-1'}>
-              {item.key} ({item.value}){' '}
+              {item.term} ({item.code}){' '}
               <a
                 target={'_blank'}
-                href={URLS.getOboDetailsUrl(item.key.replace(':', '_'))}
+                href={URLS.getOboDetailsUrl(item.code.replace(':', '_'))}
               >
                 <LinkOutlined />
               </a>
@@ -132,25 +104,25 @@ const buildSenotype = (assertions) => {
       label: 'Hallmark',
       children: (
         <span className={'flex'}>
-          {hallmarkChildren.map((item, index) => (
+          {senotype['has_hallmark'].map((item, index) => (
             <div key={`hallmark_${index}`} className={'mb-1'}>
-              {item.value}
+              {item.term}
             </div>
           ))}
         </span>
       ),
     },
   ];
-  if (microenvironmentChildren.length > 0) {
+  if (senotype?.has_mircoenvironment) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Microenvironment',
       children: (
         <span className={'flex'}>
-          {microenvironmentChildren.map((item, index) => (
+          {senotype['has_mircoenvironment'].map((item, index) => (
             <div key={`microenvironment_${index}`} className={'mb-1'}>
-              {item.value}
+              {item.term}
             </div>
           ))}
         </span>
@@ -158,16 +130,16 @@ const buildSenotype = (assertions) => {
     });
   }
 
-  if (inducerChildren.length > 0) {
+  if (senotype?.has_inducer) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Inducer',
       children: (
         <span className={'flex'}>
-          {inducerChildren.map((item, index) => (
+          {senotype['has_inducer'].map((item, index) => (
             <div key={`inducer_${index}`} className={'mb-1'}>
-              {item.value}
+              {item.term}
             </div>
           ))}
         </span>
@@ -175,16 +147,16 @@ const buildSenotype = (assertions) => {
     });
   }
 
-  if (assayChildren.length > 0) {
+  if (senotype?.has_assay) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Assay',
       children: (
         <span className={'flex'}>
-          {assayChildren.map((item, index) => (
+          {senotype['has_assay'].map((item, index) => (
             <div key={`assay_${index}`} className={'mb-1'}>
-              {item.value}
+              {item.term}
             </div>
           ))}
         </span>
@@ -192,19 +164,19 @@ const buildSenotype = (assertions) => {
     });
   }
 
-  if (diagnosisChildren.length > 0) {
+  if (senotype?.has_diagnosis) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Diagnosis',
       children: (
         <span className={'flex'}>
-          {diagnosisChildren.map((item, index) => (
+          {senotype['has_diagnosis'].map((item, index) => (
             <div key={`diagnosis_${index}`} className={'mb-1'}>
-              {item.value}{' '}
+              {item.term}{' '}
               <a
                 target={'_blank'}
-                href={URLS.getOboDetailsUrl(item.key.replace(':', '_'))}
+                href={URLS.getOboDetailsUrl(item.code.replace(':', '_'))}
               >
                 <LinkOutlined />
               </a>
@@ -218,74 +190,51 @@ const buildSenotype = (assertions) => {
   return items;
 };
 
-const buildDemographic = (assertions) => {
+const buildDemographic = (senotype) => {
   let keyCounter = 0;
   let items = [];
-  let sexChildren = buildAssertionChildren(assertions, 'has_sex');
 
-  let ageChildren = assertions
-    .filter((item) => item.objects[0]?.term === 'age')
-    .flatMap((item) => item.objects)
-    .map((obj) =>
-      obj.lowerbound && obj.upperbound
-        ? `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})`
-        : `${obj.value} ${obj.unit}`,
-    );
-
-  let bmiChildren = assertions
-    .filter((item) => item.objects[0]?.term === 'bmi')
-    .flatMap((item) => item.objects)
-    .map((obj) =>
-      obj.lowerbound && obj.upperbound
-        ? `${obj.value} ${obj.unit} (range: ${obj.lowerbound}-${obj.upperbound} ${obj.unit})`
-        : `${obj.value} ${obj.unit}`,
-    );
-
-  if (sexChildren.length > 0) {
+  if (senotype?.sex) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Sex',
       children: (
         <span className={'flex'}>
-          {sexChildren.map((item, index) => (
+          {senotype['sex'].map((item, index) => (
             <div key={`sex_${index}`} className={'mb-1'}>
-              {item.value}
+              {item}
             </div>
           ))}
         </span>
       ),
     });
   }
-  if (ageChildren.length > 0) {
+  if (senotype?.age) {
     keyCounter++;
     items.push({
-      key: ageChildren,
+      key: keyCounter,
       label: 'Age',
       children: (
         <span className={'flex'}>
-          {ageChildren.map((item, index) => (
-            <div key={`age_${index}`} className={'mb-1'}>
-              {item}
-            </div>
-          ))}
+          {senotype.age.lowerbound && senotype.age.upperbound
+            ? `${senotype.age.value} ${senotype.age.unit} (range: ${senotype.age.lowerbound}-${senotype.age.upperbound} ${senotype.age.unit})`
+            : `${senotype.age.value} ${senotype.age.unit}`}
         </span>
       ),
     });
   }
 
-  if (bmiChildren.length > 0) {
+  if (senotype?.bmi) {
     keyCounter++;
     items.push({
-      key: bmiChildren,
+      key: keyCounter,
       label: 'BMI',
       children: (
         <span className={'flex'}>
-          {bmiChildren.map((item, index) => (
-            <div key={`bmi_${index}`} className={'mb-1'}>
-              {item}
-            </div>
-          ))}
+          {senotype.bmi.lowerbound && senotype.bmi.upperbound
+            ? `${senotype.bmi.value} ${senotype.bmi.unit} (range: ${senotype.bmi.lowerbound}-${senotype.bmi.upperbound} ${senotype.bmi.unit})`
+            : `${senotype.bmi.value} ${senotype.bmi.unit}`}
         </span>
       ),
     });
@@ -294,36 +243,25 @@ const buildDemographic = (assertions) => {
   return items;
 };
 
-const buildReferences = (assertions) => {
+const buildReferences = (senotype) => {
   let keyCounter = 0;
   let items = [];
-  let citationChildren = buildAssertionChildren(assertions, 'has_citation');
 
-  let originChildren = assertions
-    .filter((item) => item.predicate?.term === 'has_origin')
-    .flatMap((item) => item.objects)
-    .map((obj) => ({ key: obj.code, value: `${obj.code} (${obj.term})` }));
-
-  let datasetChildren = assertions
-    .filter((item) => item.predicate?.term === 'has_dataset')
-    .flatMap((item) => item.objects)
-    .map((obj) => ({ key: obj.uuid, value: `${obj.code} (${obj.term})` }));
-
-  if (citationChildren.length > 0) {
+  if (senotype?.has_citation) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Citation',
       children: (
         <span className={'flex'}>
-          {citationChildren.map((item, index) => (
+          {senotype['has_citation'].map((item, index) => (
             <div key={`citation_${index}`} className={'mb-2'}>
-              {item.value}{' '}
+              {item.term}{' '}
               <a
                 target={'_blank'}
                 href={
                   process.env.NEXT_PUBLIC_PUBMED_BASE_URL +
-                  item.key.replace('PMID:', '')
+                  item.code.replace('PMID:', '')
                 }
               >
                 <LinkOutlined />
@@ -335,17 +273,17 @@ const buildReferences = (assertions) => {
     });
   }
 
-  if (originChildren.length > 0) {
+  if (senotype?.has_origin) {
     keyCounter++;
     items.push({
-      key: originChildren,
+      key: keyCounter,
       label: 'Origin',
       children: (
         <span className={'flex'}>
-          {originChildren.map((item, index) => (
+          {senotype['has_origin'].map((item, index) => (
             <div key={`origin_${index}`} className={'mb-2'}>
-              {item.value}{' '}
-              <a target={'_blank'} href={URLS.getSciCrunchUrl(item.key)}>
+              {item.term}{' '}
+              <a target={'_blank'} href={URLS.getSciCrunchUrl(item.code)}>
                 <LinkOutlined />
               </a>
             </div>
@@ -355,19 +293,19 @@ const buildReferences = (assertions) => {
     });
   }
 
-  if (datasetChildren.length > 0) {
+  if (senotype?.has_dataset) {
     keyCounter++;
     items.push({
-      key: datasetChildren,
+      key: keyCounter,
       label: 'Dataset',
       children: (
         <span className={'flex'}>
-          {datasetChildren.map((item, index) => (
+          {senotype['has_dataset'].map((item, index) => (
             <div key={`dataset_${index}`} className={'mb-2'}>
-              {item.value}{' '}
+              {item.term}{' '}
               <a
                 target={'_blank'}
-                href={`${process.env.NEXT_PUBLIC_PORTAL_URL}dataset?uuid=${item.key}`}
+                href={`${process.env.NEXT_PUBLIC_PORTAL_URL}dataset?uuid=${item.uuid}`}
               >
                 <LinkOutlined />
               </a>
@@ -386,44 +324,6 @@ export default function ViewSenotype({ senotype }) {
   const [sortedInfo, setSortedInfo] = useState({});
   const searchInput = useRef(null);
 
-  const { data, error, fetchUBKGMarkers } = useFetchUBKGMarkers();
-  const [markerMap, setMarkerMap] = useState({});
-
-  useEffect(() => {
-    if (!senotype && senotype?.assertions.length > 0) return;
-
-    const termKeys = [
-      'has_characterizing_marker_set',
-      'down_regulates',
-      'up_regulates',
-      'inconclusively_regulates',
-    ];
-
-    const codesToFetch = {};
-
-    termKeys.forEach((key) => {
-      senotype.assertions
-        .filter((item) => item.predicate?.term === key)
-        .flatMap((item) => item.objects)
-        .forEach((obj) => {
-          if (obj.code && !markerMap[obj.code]) {
-            codesToFetch[obj.code] = obj.term;
-          }
-        });
-    });
-
-    console.log(codesToFetch);
-
-    for (let code in codesToFetch) {
-      fetchUBKGMarkers(code, codesToFetch[code]).then((result) => {
-        setMarkerMap((prev) => {
-          if (prev[code]) return prev;
-          return { ...prev, [code]: result };
-        });
-      });
-    }
-  }, [senotype, fetchUBKGMarkers]);
-
   const handleChange = (pagination, filters, sorter) => {
     setSortedInfo(sorter);
   };
@@ -436,26 +336,24 @@ export default function ViewSenotype({ senotype }) {
     confirm();
   };
 
-  const buildMarkers = useCallback(
-    (assertions, dataIndex, key, markerType) => {
-      return assertions
-        .filter((item) => item.predicate?.term === key)
-        .flatMap((item) => item.objects)
-        .map((obj) =>
-          markerType
-            ? {
-                key: obj.code,
-                [dataIndex]: `${markerMap[obj.code] ?? 'loading...'} (${obj.code})`,
-                markerType,
-              }
-            : {
-                key: obj.code,
-                [dataIndex]: `${markerMap[obj.code] ?? 'loading...'} (${obj.code})`,
-              },
-        );
-    },
-    [markerMap],
-  );
+  const buildMarkers = useCallback((markerSet, dataIndex, markerType) => {
+    if (markerSet) {
+      return markerSet.map((obj) =>
+        markerType
+          ? {
+              key: obj.code,
+              [dataIndex]: `${obj.name} (${obj.code})`,
+              markerType,
+            }
+          : {
+              key: obj.code,
+              [dataIndex]: `${obj.name} (${obj.code})`,
+            },
+      );
+    } else {
+      return [];
+    }
+  }, []);
 
   const getColumnSearchProps = useCallback(
     (dataIndex) => ({
@@ -528,35 +426,24 @@ export default function ViewSenotype({ senotype }) {
   const specifiedMarkerData = useMemo(
     () =>
       buildMarkers(
-        senotype.assertions,
+        senotype?.has_characterizing_marker_set,
         'specified_marker',
-        'has_characterizing_marker_set',
+        null,
       ),
-    [senotype.assertions, buildMarkers],
+    [senotype, buildMarkers],
   );
 
   const regulatingMarkerData = useMemo(
     () => [
+      ...buildMarkers(senotype['down_regulates'], 'regulating_marker', 'down'),
+      ...buildMarkers(senotype['up_regulates'], 'regulating_marker', 'up'),
       ...buildMarkers(
-        senotype.assertions,
+        senotype['inconclusively_regulates'],
         'regulating_marker',
-        'down_regulates',
-        'down',
-      ),
-      ...buildMarkers(
-        senotype.assertions,
-        'regulating_marker',
-        'up_regulates',
-        'up',
-      ),
-      ...buildMarkers(
-        senotype.assertions,
-        'regulating_marker',
-        'inconclusively_regulates',
         '?',
       ),
     ],
-    [senotype.assertions, buildMarkers],
+    [senotype, buildMarkers],
   );
 
   const markerColumns = useCallback(
@@ -588,7 +475,7 @@ export default function ViewSenotype({ senotype }) {
             items={[
               { key: 'Summary', href: '#summary', title: 'Summary' },
               { key: 'Senotype', href: '#senotype', title: 'Senotype' },
-              ...(buildDemographic(senotype.assertions).length > 0
+              ...(buildDemographic(senotype).length > 0
                 ? [
                     {
                       key: 'Demographic',
@@ -597,7 +484,7 @@ export default function ViewSenotype({ senotype }) {
                     },
                   ]
                 : []),
-              ...(buildReferences(senotype.assertions).length > 0
+              ...(buildReferences(senotype).length > 0
                 ? [
                     {
                       key: 'References',
@@ -606,16 +493,24 @@ export default function ViewSenotype({ senotype }) {
                     },
                   ]
                 : []),
-              {
-                key: 'Specified Markers',
-                href: '#specified-markers',
-                title: 'Specified Markers',
-              },
-              {
-                key: 'Regulating Markers',
-                href: '#regulating-markers',
-                title: 'Regulating Markers',
-              },
+              ...(specifiedMarkerData.length > 0
+                ? [
+                    {
+                      key: 'Specified Markers',
+                      href: '#specified-markers',
+                      title: 'Specified Markers',
+                    },
+                  ]
+                : []),
+              ...(regulatingMarkerData.length > 0
+                ? [
+                    {
+                      key: 'Regulating Markers',
+                      href: '#regulating-markers',
+                      title: 'Regulating Markers',
+                    },
+                  ]
+                : [])
             ]}
             contentId={'view-senotype-col'}
             span={span}
@@ -626,14 +521,14 @@ export default function ViewSenotype({ senotype }) {
         <Col lg={span} id={'view-senotype-col'}>
           <div className={'markdown'}>
             <h2>
-              {senotype.senotype.id}
+              {senotype.sennet_id}
               <ClipboardCopy
-                text={senotype.senotype.id}
+                text={senotype.sennet_id}
                 title={'Copy Senotype ID {text} to clipboard'}
               />
             </h2>
             <Button
-              href={`${process.env.NEXT_PUBLIC_EDITOR_URL}edit/${senotype.senotype.id}`}
+              href={`${process.env.NEXT_PUBLIC_EDITOR_URL}edit/${senotype.sennet_id}`}
             >
               Edit
             </Button>
@@ -643,56 +538,67 @@ export default function ViewSenotype({ senotype }) {
             </AppAccordion>
 
             <AppAccordion title={'Senotype'} id={'senotype'}>
-              <Descriptions items={buildSenotype(senotype.assertions)} />
+              <Descriptions items={buildSenotype(senotype)} />
             </AppAccordion>
 
-            {buildDemographic(senotype.assertions).length > 0 && (
+            {buildDemographic(senotype).length > 0 && (
               <AppAccordion title={'Demographic'} id={'demographic'}>
-                <Descriptions items={buildDemographic(senotype.assertions)} />
+                <Descriptions items={buildDemographic(senotype)} />
               </AppAccordion>
             )}
 
-            {buildReferences(senotype.assertions).length > 0 && (
+            {buildReferences(senotype).length > 0 && (
               <AppAccordion title={'References'} id={'references'}>
-                <Descriptions items={buildReferences(senotype.assertions)} />
+                <Descriptions items={buildReferences(senotype)} />
               </AppAccordion>
             )}
 
-            <AppAccordion title={'Specified Markers'} id={'specified-markers'}>
-              <Table
-                pagination={{
-                  total: specifiedMarkerData.length,
-                  showTotal: (total, range) =>
-                    `${range[0]}-${range[1]} of ${total} items`,
-                }}
-                columns={markerColumns('Specified Marker', 'specified_marker')}
-                dataSource={specifiedMarkerData}
-              ></Table>
-            </AppAccordion>
+            {specifiedMarkerData.length > 0 && (
+              <AppAccordion
+                title={'Specified Markers'}
+                id={'specified-markers'}
+              >
+                <Table
+                  pagination={{
+                    total: specifiedMarkerData.length,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} of ${total} items`,
+                  }}
+                  columns={markerColumns(
+                    'Specified Marker',
+                    'specified_marker',
+                  )}
+                  dataSource={specifiedMarkerData}
+                ></Table>
+              </AppAccordion>
+            )}
 
-            <AppAccordion
-              title={'Regulating Markers'}
-              id={'regulating-markers'}
-            >
-              <Table
-                pagination={{
-                  total: regulatingMarkerData.length,
-                  showTotal: (total, range) =>
-                    `${range[0]}-${range[1]} of ${total} items`,
-                }}
-                columns={[
-                  ...markerColumns('Regulating Marker', 'regulating_marker'),
-                  {
-                    title: 'Marker Type',
-                    key: 'markerType',
-                    dataIndex: 'markerType',
-                    sorter: (a, b) => a.markerType.localeCompare(b.markerType),
-                  },
-                ]}
-                dataSource={regulatingMarkerData}
-                onChange={handleChange}
-              ></Table>
-            </AppAccordion>
+            {regulatingMarkerData.length > 0 && (
+              <AppAccordion
+                title={'Regulating Markers'}
+                id={'regulating-markers'}
+              >
+                <Table
+                  pagination={{
+                    total: regulatingMarkerData.length,
+                    showTotal: (total, range) =>
+                      `${range[0]}-${range[1]} of ${total} items`,
+                  }}
+                  columns={[
+                    ...markerColumns('Regulating Marker', 'regulating_marker'),
+                    {
+                      title: 'Marker Type',
+                      key: 'markerType',
+                      dataIndex: 'markerType',
+                      sorter: (a, b) =>
+                        a.markerType.localeCompare(b.markerType),
+                    },
+                  ]}
+                  dataSource={regulatingMarkerData}
+                  onChange={handleChange}
+                ></Table>
+              </AppAccordion>
+            )}
           </div>
         </Col>
       </Row>
