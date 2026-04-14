@@ -2,6 +2,7 @@ import API from '@/lib/api';
 import AUTH from '@/lib/auth';
 import URLS from '@/lib/urls';
 import { createContext, useEffect, useState } from 'react';
+import log from 'xac-loglevel';
 
 const AppContext = createContext({});
 
@@ -12,11 +13,27 @@ export const AppProvider = ({ children }) => {
   const fetchAuth = async () => {
     const info = AUTH.info();
     const ops = { token: info.groups_token, method: 'GET' };
-    const admin = await API.fetch({ url: URLS.api.ingest.privs.admin, ...ops });
-    const groups = await API.fetch({
-      url: URLS.api.ingest.privs.groups,
-      ...ops,
-    });
+
+    let admin;
+    let groups;
+    try {
+      admin = await API.fetch({
+        url: URLS.api.ingest.privs.admin,
+        ...ops,
+      });
+    } catch (error) {
+      admin = null;
+      log.error(error);
+    }
+    try {
+      groups = await API.fetch({
+        url: URLS.api.ingest.privs.groups,
+        ...ops,
+      });
+    } catch (error) {
+      groups = null;
+      log.error(error);
+    }
     const isAuthenticated = groups?.user_write_groups !== undefined;
     setAuth({
       ...info,

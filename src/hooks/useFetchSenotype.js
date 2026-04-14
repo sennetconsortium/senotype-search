@@ -11,7 +11,7 @@ export function useSenotype(senotype_id) {
 
     API.fetchSenotype(senotype_id)
       .then(setData)
-      .catch((err) => setError(err.message))
+      .catch((err) => setError(err))
       .finally(() => setLoading(false));
   }, [senotype_id]);
 

@@ -12,6 +12,10 @@ export default function Page() {
 
   const { data, loading, error } = useSenotype(senotype_id);
 
+  if (error) {
+    throw error;
+  }
+
   return (
     <BasicLayout>
       <>
@@ -20,7 +24,6 @@ export default function Page() {
             <AppSpinner />
           </>
         )}
-        {error && <p>{error.message}</p>}
         {data && (
           <>
             <ViewSenotype senotype={data} />

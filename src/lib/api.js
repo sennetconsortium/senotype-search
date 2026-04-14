@@ -23,12 +23,16 @@ const API = {
         body: body ? JSON.stringify(body) : undefined,
       });
       if (!res.ok) {
-        return null;
+        let newError = new Error(
+          res.statusText ? res.statusText : await res.text(),
+        );
+        newError.status = res.status;
+        throw newError;
       }
+
       return res.json();
     } catch (error) {
-      log.error(error, url);
-      return null;
+      throw error;
     }
   },
   search: async (body, index = 'entities') => {

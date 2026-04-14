@@ -1,4 +1,3 @@
-import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 import './main.css';
@@ -10,11 +9,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <ErrorBoundary>
           <AntdRegistry>
             <MountedWrapper>{children}</MountedWrapper>
           </AntdRegistry>
-        </ErrorBoundary>
       </body>
     </html>
   );
