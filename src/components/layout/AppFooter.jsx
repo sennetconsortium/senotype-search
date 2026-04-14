@@ -1,12 +1,11 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
-import { Layout } from 'antd';
 import ENVS from '@/lib/envs';
-const { Footer } = Layout;
 
 function AppFooter() {
+  const year = new Date().getFullYear();
   return (
-    <Footer className="c-footer bg-light">
+    <div className="c-footer bg-light">
       <Container>
         <footer className={`py-3`}>
           <Row>
@@ -111,12 +110,12 @@ function AppFooter() {
           </Row>
           <Row>
             <div className={'text-center text-muted nav--copyright'}>
-              Copyright {new Date().getFullYear()}
+              Copyright {year}
             </div>
           </Row>
         </footer>
       </Container>
-    </Footer>
+    </div>
   );
 }
 

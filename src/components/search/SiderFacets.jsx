@@ -6,13 +6,13 @@ const { Content, Sider } = Layout;
 import ClearFiltersButton from './ClearFiltersButton';
 
 function SiderFacets({}) {
-  const { wasSearched } = useSearchUIContext();
+  const { wasSearched, rawResponse } = useSearchUIContext();
   const transformFunction = (value, facet) => {
     return value.upCaseFirst();
   };
 
   return (
-    <div className="c-SiderFacets">
+    <div className="c-siderFacets">
       <ClearFiltersButton />
       <Sider className="mt-4 mb-4 container--card bg-white" width={'100%'}>
         {!wasSearched && (
@@ -25,6 +25,7 @@ function SiderFacets({}) {
           </>
         )}
         {wasSearched && <Facets transformFunction={transformFunction} />}
+        {wasSearched && rawResponse?.records?.senotypes.length <= 0 && <span>No facets to show.</span>}
       </Sider>
     </div>
   );
