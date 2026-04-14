@@ -56,4 +56,4 @@ export function autoBlobDownloader(data, type, filename) {
   a.click();
   a.remove();
   window.URL.revokeObjectURL(url);
-};
+}

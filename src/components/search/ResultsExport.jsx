@@ -2,20 +2,18 @@ import { DownloadOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { Button } from 'react-bootstrap';
 
-
 /**
  * Generates a tsv of passed data
  *
- * @param {{ data: any; columns: any; }} props 
+ * @param {{ data: any; columns: any; }} props
  * @param {array} props.data List of data
  * @param {array} props.columns antd.Table columns
- * @returns {*} 
+ * @returns {*}
  */
 function ResultsExport({ data, columns }) {
-
   const handleExport = () => {
     let tableDataTSV = '';
-    const _columns = Array.from(columns)
+    const _columns = Array.from(columns);
     for (let col of _columns) {
       if (col.name.length) {
         tableDataTSV += `${col.name}\t`;
@@ -35,7 +33,7 @@ function ResultsExport({ data, columns }) {
       'text/tab-separated-values',
       `senotypes-${new Date().toLocaleString()}.tsv`,
     );
-  }
+  };
 
   return (
     <div className="c-searchResults__export mx-2">

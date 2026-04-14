@@ -3,19 +3,18 @@ import { EllipsisOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import AppModal from '@/components/AppModal';
 
-
 /**
  * Allows for using a modal for any overflowing content.
  *
- * @param {{ children: any; maxLength: any; modalContent: any; childrenAsTrigger?: boolean; tag?: string; popoverText?: string; modalOps?: { width: number; }; }} props 
- * @param {node} props.children 
+ * @param {{ children: any; maxLength: any; modalContent: any; childrenAsTrigger?: boolean; tag?: string; popoverText?: string; modalOps?: { width: number; }; }} props
+ * @param {node} props.children
  * @param {number} props.maxLength If modalContent is a string, checks length of string against this max specified value.
- * @param {string|node} props.modalContent 
+ * @param {string|node} props.modalContent
  * @param {boolean} [props.childrenAsTrigger=false] Whether the children of the component is used trigger for opening modal
  * @param {string} [props.tag='div'] A custom tag for displaying modalContent when it doesn't go beyond maxContent
- * @param {string} [props.popoverText='Click to view full content.'] 
- * @param {{ width: number; }} [props.modalOps={ width: 700 }] 
- * @returns {*} 
+ * @param {string} [props.popoverText='Click to view full content.']
+ * @param {{ width: number; }} [props.modalOps={ width: 700 }]
+ * @returns {*}
  */
 function ModalOverComponent({
   children,

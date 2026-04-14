@@ -1,19 +1,18 @@
 import { useRef, useState } from 'react';
 import { Tooltip } from 'antd';
 
-
 /**
  * Copies provided text to clipboard when element tag is clicked.
  *
- * @param {{ children: any; text: any; title?: string; className?: string; size?: number; timeout?: number; tag?: string; }} props 
- * @param {node} props.children 
+ * @param {{ children: any; text: any; title?: string; className?: string; size?: number; timeout?: number; tag?: string; }} props
+ * @param {node} props.children
  * @param {string} props.text The content to be copied to clipboard
- * @param {string} [props.title='Copy SenNet ID to clipboard'] 
- * @param {string} [props.className=''] 
- * @param {number} [props.size=12] 
+ * @param {string} [props.title='Copy SenNet ID to clipboard']
+ * @param {string} [props.className='']
+ * @param {number} [props.size=12]
  * @param {number} [props.timeout=1000] Timeout before the tooltip auto closes
  * @param {string} [props.tag='sup'] Custom tag of content that describes the copy action
- * @returns {*} 
+ * @returns {*}
  */
 function ClipboardCopy({
   children,

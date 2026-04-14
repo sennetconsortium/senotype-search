@@ -11,7 +11,7 @@ const AppAnchor = ({
   anchorButtonStyle = { top: 350, left: 10, right: 'auto', bottom: 'auto' },
 }) => {
   const [anchorVisible, setAnchorVisible] = useState(true);
-  const [affix, setAffix] = useState(true)
+  const [affix, setAffix] = useState(true);
 
   const toggleVisibility = () => {
     setAnchorVisible(!anchorVisible);
@@ -19,14 +19,14 @@ const AppAnchor = ({
   };
 
   const updatePosition = useEffectEvent(() => {
-    setAffix(THEME.isLgScreen())
-  })
+    setAffix(THEME.isLgScreen());
+  });
 
   useEffect(() => {
-      updatePosition()
-      window.addEventListener('resize', updatePosition);
-      return () => window.removeEventListener('resize', updatePosition);
-  }, [])
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  }, []);
 
   return (
     <div className={`c-anchor mb-4`}>
@@ -37,7 +37,9 @@ const AppAnchor = ({
         buttonStyle={anchorButtonStyle}
       />
 
-      {anchorVisible && <Anchor affix={affix} offsetTop={offsetTop} items={items} />}
+      {anchorVisible && (
+        <Anchor affix={affix} offsetTop={offsetTop} items={items} />
+      )}
     </div>
   );
 };

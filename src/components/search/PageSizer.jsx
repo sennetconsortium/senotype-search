@@ -1,20 +1,17 @@
-import {useEffect} from 'react'
+import { useEffect } from 'react';
 import { Select } from 'antd';
 import log from 'xac-loglevel';
 import { useSearchUIContext } from 'search-ui/components/core/SearchUIContext';
 
 function PageSizer({ options, setTableData }) {
-  const {
-      pageSize,
-      setPageSize,
-    } = useSearchUIContext();
+  const { pageSize, setPageSize } = useSearchUIContext();
 
   useEffect(() => {
-    console.log('PAGE', pageSize)
-  }, [pageSize])
+    console.log('PAGE', pageSize);
+  }, [pageSize]);
 
   const onChange = (value) => {
-    setTableData([])
+    setTableData([]);
     setPageSize(Number(value));
   };
 
@@ -23,7 +20,7 @@ function PageSizer({ options, setTableData }) {
   };
 
   return (
-    <div className='c-searchResults__pageSizer'>
+    <div className="c-searchResults__pageSizer">
       <Select
         value={pageSize}
         showSearch={{ optionFilterProp: 'label', onSearch }}
