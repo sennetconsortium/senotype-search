@@ -5,10 +5,10 @@ import ENVS from '@/lib/envs';
 import AUTH from '@/lib/auth';
 
 export const assertionPredicates = [
-  { alias: 'source_type', name: 'Taxon', field: 'in_taxon', ui: { w: 100 } },
-  { alias: 'organ', field: 'located_in', ui: { w: 250 } },
-  { alias: 'cell_type', field: 'has_cell_type', ui: { w: 300 } },
-  { alias: 'dataset_type', field: 'has_assay', ui: { w: 200 } },
+  { field: 'in_taxon', ui: { w: 100 } },
+  { field: 'located_in', ui: { w: 250 } },
+  { field: 'has_cell_type', ui: { w: 300 } },
+  { field: 'has_assay', ui: { w: 200 } },
 ];
 
 const {
@@ -56,8 +56,8 @@ export const SEARCH_SENOTYPE = {
         isAggregationActive: true,
         isFacetVisible: false,
       },
-      source_type: {
-        label: 'Source Type',
+      in_taxon: {
+        label: 'Taxon',
         type: 'value',
         field: 'in_taxon.term.keyword',
         filterType: 'any',
@@ -66,9 +66,9 @@ export const SEARCH_SENOTYPE = {
         facetType: 'term',
         bucketsTransform: bucketsTransform,
         isAggregationActive: true,
-        isFacetVisible: doesAggregationHaveBuckets('source_type'),
+        isFacetVisible: doesAggregationHaveBuckets('in_taxon'),
       },
-      organ: {
+      located_in: {
         label: 'Organ',
         type: 'value',
         field: 'located_in.term.keyword',
@@ -87,9 +87,9 @@ export const SEARCH_SENOTYPE = {
           });
         },
         isAggregationActive: true,
-        isFacetVisible: doesAggregationHaveBuckets('organ'),
+        isFacetVisible: doesAggregationHaveBuckets('located_in'),
       },
-      cell_type: {
+      has_cell_type: {
         label: 'Cell Type',
         type: 'value',
         field: 'has_cell_type.term.keyword',
@@ -99,19 +99,19 @@ export const SEARCH_SENOTYPE = {
         facetType: 'term',
         bucketsTransform: bucketsTransform,
         isAggregationActive: true,
-        isFacetVisible: doesAggregationHaveBuckets('cell_type'),
+        isFacetVisible: doesAggregationHaveBuckets('has_cell_type'),
       },
-      dataset_type: {
+      has_assay: {
         label: 'Dataset Type',
         type: 'value',
-        field: 'assertions.objects.term.keyword',
+        field: 'has_assay.term.keyword',
         isExpanded: false,
         filterType: 'any',
         isFilterable: false,
         facetType: 'term',
         bucketsTransform: bucketsTransform,
         isAggregationActive: true,
-        isFacetVisible: doesAggregationHaveBuckets('dataset_type'),
+        isFacetVisible: doesAggregationHaveBuckets('has_assay'),
       },
       affiliation_group: {
         label: 'Affiliation',
@@ -145,7 +145,7 @@ export const SEARCH_SENOTYPE = {
     },
     source_fields: [
       ...assertionPredicates.map((a) => a.field),
-      'has_hallmark', 
+      'has_hallmark',
       'inconclusively_regulates',
       'definition',
       'sennet_id',

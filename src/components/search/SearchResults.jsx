@@ -5,7 +5,7 @@ import ClipboardCopy from '../ClipboardCopy';
 import ModalOverComponent from '../ModalOverComponent';
 import SearchResultsMeta from './SearchResultsMeta';
 import log from 'xac-loglevel';
-import { assertionPredicates } from '@/config/search/senotype';
+import { assertionPredicates, SEARCH_SENOTYPE } from '@/config/search/senotype';
 import { ontology } from '@/cache/ontology';
 import Icon from '@ant-design/icons';
 import URLS from '@/lib/urls';
@@ -151,7 +151,7 @@ function SearchResults() {
     };
     for (const p of allAssertions) {
       columns.push({
-        title: p.name || p.alias.replaceAll('_', ' ').titleCase(),
+        title: p.name || SEARCH_SENOTYPE.searchQuery.facets[p.field]?.label,
         dataIndex: `${p.field}`,
         key: `${p.field}`,
         sorter: (a, b) => {
