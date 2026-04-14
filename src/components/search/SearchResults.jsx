@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Button, Table } from 'antd';
+import { Button, Skeleton, Table } from 'antd';
 import { useSearchUIContext } from 'search-ui/components/core/SearchUIContext';
 import ClipboardCopy from '../ClipboardCopy';
 import ModalOverComponent from '../ModalOverComponent';
@@ -212,24 +212,27 @@ function SearchResults() {
             <SearchResultsMeta />
           </Col>
           <Col className="d-flex flex-row-reverse">
-            <ResultsExport columns={allColumns} data={tableData}/>
+            <ResultsExport columns={allColumns} data={tableData} />
           </Col>
         </Row>
       </div>
-      <Table
-        loading={isLoading}
-        columns={allColumns}
-        dataSource={tableData}
-        rowKey={'id'}
-        onChange={handleTableChange}
-        scroll={{ x: 1500, y: 1500 }}
-        pagination={{
-          total: totalRows,
-          pageSize: pageSize,
-          showSizeChanger: pageSizeOptions.length > 0,
-          pageSizeOptions,
-        }}
-      />
+      {!wasSearched && <Skeleton.Input block={true} />}
+      {wasSearched && (
+        <Table
+          loading={isLoading}
+          columns={allColumns}
+          dataSource={tableData}
+          rowKey={'id'}
+          onChange={handleTableChange}
+          scroll={{ x: 1500, y: 1500 }}
+          pagination={{
+            total: totalRows,
+            pageSize: pageSize,
+            showSizeChanger: pageSizeOptions.length > 0,
+            pageSizeOptions,
+          }}
+        />
+      )}
     </div>
   );
 }

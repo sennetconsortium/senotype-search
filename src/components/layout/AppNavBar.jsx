@@ -25,7 +25,7 @@ function AppNavBar() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-        {!auth.isAuthenticated && (
+        {auth.isAuthenticated === false && (
           <Nav>
             <Nav.Link href="/">Login</Nav.Link>
           </Nav>
