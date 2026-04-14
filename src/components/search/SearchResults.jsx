@@ -129,13 +129,6 @@ function SearchResults() {
     return <div>{list}</div>;
   };
   const getColumns = () => {
-    const allAssertions = Array.from(assertionPredicates);
-    // allAssertions.push({
-    //   name: 'Other Assertions',
-    //   alias: 'other',
-    //   field: ['has_hallmark', 'inconclusively_regulates'],
-    //   ui: { w: 300 },
-    // });
     const getTerms = (p, record) => {
       let filtered = []
       if (Array.isArray(p.field)) {
@@ -150,7 +143,7 @@ function SearchResults() {
       const content = terms.join(', ');
       return { filtered, terms, content };
     };
-    for (const p of allAssertions) {
+    for (const p of assertionPredicates) {
       columns.push({
         title: p.name || SEARCH_SENOTYPE.searchQuery.facets[p.field]?.label,
         dataIndex: `${p.field}`,
