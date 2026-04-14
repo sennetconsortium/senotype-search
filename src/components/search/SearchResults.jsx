@@ -83,7 +83,7 @@ function SearchResults() {
     for (const o of organs) {
       if (o) {
         list.push(
-          <a key={o} href={`${URLS.portal}organs/${o?.toDashedCase()}`}>
+          <a key={o} target='_blank' href={`${URLS.portal}organs/${o?.toDashedCase()}`}>
             <Button
             className='mb-2'
               icon={
@@ -117,6 +117,7 @@ function SearchResults() {
           <a
             href={`${URLS.obo}${c.code.replaceAll(':', '_')}`}
             className="text-black"
+            target="_blank"
           >
             {c.term} <i className="bi bi-link-45deg text-primary"></i>
           </a>
