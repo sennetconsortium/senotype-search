@@ -6,7 +6,7 @@ import AUTH from '@/lib/auth';
 
 export const assertionPredicates = [
   { alias: 'source_type', name: 'Taxon', field: 'in_taxon', ui: { w: 100 } },
-  { alias: 'organ', field: 'located_in', ui: { w: 150 } },
+  { alias: 'organ', field: 'located_in', ui: { w: 250 } },
   { alias: 'cell_type', field: 'has_cell_type', ui: { w: 300 } },
   { alias: 'dataset_type', field: 'has_assay', ui: { w: 200 } },
 ];
@@ -145,7 +145,8 @@ export const SEARCH_SENOTYPE = {
     },
     source_fields: [
       ...assertionPredicates.map((a) => a.field),
-      // 'has_hallmark', 'inconclusively_regulates',
+      'has_hallmark', 
+      'inconclusively_regulates',
       'definition',
       'sennet_id',
       'title',

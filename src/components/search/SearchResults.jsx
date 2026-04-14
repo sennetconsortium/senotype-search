@@ -85,6 +85,7 @@ function SearchResults() {
         list.push(
           <a key={o} href={`${URLS.portal}organs/${o?.toDashedCase()}`}>
             <Button
+            className='mb-2'
               icon={
                 <Icon
                   component={() => (
@@ -128,12 +129,12 @@ function SearchResults() {
   };
   const getColumns = () => {
     const allAssertions = Array.from(assertionPredicates);
-    // allAssertions.push({
-    //   name: 'Other Assertions',
-    //   alias: 'other',
-    //   field: ['has_hallmark', 'inconclusively_regulates'],
-    //   ui: { w: 300 },
-    // });
+    allAssertions.push({
+      name: 'Other Assertions',
+      alias: 'other',
+      field: ['has_hallmark', 'inconclusively_regulates'],
+      ui: { w: 300 },
+    });
     const getTerms = (p, record) => {
       let filtered = []
       if (Array.isArray(p.field)) {
