@@ -61,7 +61,7 @@ const buildSenotype = (senotype) => {
             <div key={`location_${index}`} className={'mb-1'}>
               {item.term}&nbsp;
               <img
-                src={URLS.organIcon(item.code)}
+                src={URLS.organIcon(item.term)}
                 className="w-fixed"
                 width={16}
                 height={16}
@@ -342,12 +342,12 @@ export default function ViewSenotype({ senotype }) {
         markerType
           ? {
               key: obj.code,
-              [dataIndex]: `${obj.name} (${obj.code})`,
+              [dataIndex]: `${obj.name ? obj.name : obj.term} (${obj.code})`,
               markerType,
             }
           : {
               key: obj.code,
-              [dataIndex]: `${obj.name} (${obj.code})`,
+              [dataIndex]: `${obj.name ? obj.name : obj.term} (${obj.code})`,
             },
       );
     } else {
@@ -549,7 +549,7 @@ export default function ViewSenotype({ senotype }) {
 
             {buildReferences(senotype).length > 0 && (
               <AppAccordion title={'References'} id={'references'}>
-                <Descriptions items={buildReferences(senotype)} />
+                <Descriptions items={buildReferences(senotype)} column={1}/>
               </AppAccordion>
             )}
 
