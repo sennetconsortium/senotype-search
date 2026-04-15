@@ -5,6 +5,7 @@ import BasicLayout from '@/components/layout/BasicLayout';
 import { useSenotype } from '@/hooks/useFetchSenotype';
 import ViewSenotype from '@/components/Senotype/ViewSenotype';
 import AppSpinner from '@/components/AppSpinner';
+import Unauthorized from '@/components/errors/Unauthorized';
 
 export default function Page() {
   const params = useParams();
@@ -24,6 +25,7 @@ export default function Page() {
             <AppSpinner />
           </>
         )}
+        {!loading && !data && <Unauthorized />}
         {data && (
           <>
             <ViewSenotype senotype={data} />

@@ -7,8 +7,8 @@ function SearchResultsMeta() {
   }
 
   const renderText = () => {
-    const info = rawResponse.info.senotypes;
-    if (!info.total_result_count) {
+    const info = rawResponse.info?.senotypes;
+    if (!info?.total_result_count) {
       return <></>;
     }
     let pageNumber = info.current_page;
