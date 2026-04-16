@@ -13,6 +13,7 @@ import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
 import AppContext from '@/context/AppContext';
+import HeaderBadges from './HeaderBadges';
 
 const buildSummary = (senotype) => {
   return [
@@ -542,6 +543,7 @@ export default function ViewSenotype({ senotype }) {
                 Edit
               </Button>
             )}
+            <HeaderBadges data={senotype} />
 
             <AppAccordion title={'Summary'} id={'summary'}>
               <Descriptions items={buildSummary(senotype)} column={2} />

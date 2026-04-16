@@ -1,4 +1,7 @@
 Object.assign(String.prototype, {
+  contains(t) {
+    return this.indexOf(t) !== -1
+  },
   toCamelCase() {
     return this.replace(/\s(.)/g, function (a) {
       return a.toUpperCase();
@@ -47,6 +50,18 @@ export const parseOntologyTerm = (val) => {
   }
   return val.titleCase();
 };
+
+export const organHierarchy = (term) => {
+  if (!window.ONTOLOGY_CACHE) return term;
+  if (term.contains('Mammary Gland')) return 'Mammary Gland';
+  if (term in window.ONTOLOGY_CACHE.organ_types.hierarchy) {
+    return window.ONTOLOGY_CACHE.organ_types.hierarchy[term];
+  }
+  const r = new RegExp(/.+?(?=\()/);
+  const res = term.match(r);
+
+  return res && res.length ? res[0].trim() : term;
+}
 
 export function autoBlobDownloader(data, type, filename) {
   const a = document.createElement('a');
