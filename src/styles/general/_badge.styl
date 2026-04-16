@@ -2,3 +2,5 @@ for $c in $predicateColors
   .badge--{$c.name}
     background $c.color
     color $c.text !important
+    border solid 1px 
+    border-color darken($c.color, 10)
