@@ -37,7 +37,7 @@ function AppNavBar() {
             id="basic-navbar-nav"
             className="justify-content-end"
           >
-            {auth.hasSenotypeWrite && (
+            {auth.hassenotypeEdit && (
               <Nav>
                 <Nav.Link href={`${URLS.senotypeEditor}edit`}>
                   Register Senotype

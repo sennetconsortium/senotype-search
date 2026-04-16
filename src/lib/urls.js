@@ -10,8 +10,8 @@ const URLS = {
       base: process.env.NEXT_PUBLIC_INGEST_API_BASE,
       privs: {
         admin: process.env.NEXT_PUBLIC_INGEST_API_BASE + 'privs/has-data-admin',
-        senotypeWrite:
-          process.env.NEXT_PUBLIC_INGEST_API_BASE + 'privs/has-senotype-write',
+        senotypeEdit:
+          process.env.NEXT_PUBLIC_INGEST_API_BASE + 'privs/has-senotype-edit',
         groups:
           process.env.NEXT_PUBLIC_INGEST_API_BASE + 'privs/user-write-groups',
       },
