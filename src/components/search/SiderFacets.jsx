@@ -25,7 +25,7 @@ function SiderFacets({}) {
           </>
         )}
         {wasSearched && <Facets transformFunction={transformFunction} />}
-        {wasSearched && rawResponse?.records?.senotypes.length <= 0 && (
+        {wasSearched && (rawResponse?.records === undefined || rawResponse?.records?.senotypes.length <= 0) && (
           <span>No facets to show.</span>
         )}
       </Sider>
