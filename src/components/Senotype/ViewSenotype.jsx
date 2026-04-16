@@ -30,7 +30,7 @@ const buildSummary = (senotype) => {
           <div>{senotype.created_by_user_displayname}</div>
           <div>
             <a href={`mailto:${senotype.created_by_user_email}`}>
-              {senotype.created_by_user_email}
+              {senotype.created_by_user_email} <i className="bi bi-envelope"></i>
             </a>
           </div>
         </span>

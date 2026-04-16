@@ -159,10 +159,10 @@ export const SEARCH_SENOTYPE = {
   initialState: {
     current: 1,
     resultsPerPage: 20,
-    sortList: [{
-        field: 'sennet_id.keyword',
-        direction: 'desc'
-    }]
+    // sortList: [{
+    //     field: 'sennet_id.keyword',
+    //     direction: 'desc'
+    // }]
   },
   urlPushDebounceLength: 100,
   trackUrlState: true,
