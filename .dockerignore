@@ -1,0 +1,15 @@
+.git
+.gitignore
+.next
+node_modules
+src/search-ui/node_modules
+pnpm-lock.yaml
+
+# Exclude all env files except .env.docker (used for build-time NEXT_PUBLIC_* vars)
+.env
+.env*
+!.env.docker
+
+Dockerfile
+.dockerignore
+*.md
