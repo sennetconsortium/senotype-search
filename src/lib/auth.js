@@ -1,5 +1,4 @@
-import { deleteCookie } from 'cookies-next';
-import { getCookie } from 'cookies-next';
+import {deleteCookie, getCookie} from 'cookies-next';
 import log from 'xac-loglevel';
 
 const AUTH = {
@@ -17,7 +16,7 @@ const AUTH = {
   },
   token: () => AUTH.info().groups_token,
   logout: () => {
-    deleteCookie('info', {path: '/', domain: getCookieDomain(), sameSite: "Lax"})
+    deleteCookie('info', {path: '/', domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN, sameSite: "Lax"})
     sessionStorage.clear();
   },
 };
