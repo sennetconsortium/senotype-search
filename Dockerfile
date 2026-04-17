@@ -23,7 +23,10 @@ FROM base AS builder
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=deps /usr/src/app/src/search-ui/node_modules ./src/search-ui/node_modules
 
-COPY . .
+COPY next.config.mjs jsconfig.json package.json pnpm-workspace.yaml ./
+COPY .env.docker .env.production
+COPY public ./public
+COPY src ./src
 
 # Compile stylus css
 RUN pnpm exec stylus --include-css --compress src/styles/main.styl -o src/app/main.css
