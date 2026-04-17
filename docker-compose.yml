@@ -1,0 +1,30 @@
+services:
+  senotype-library:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        HOST_UID: ${HOST_UID:-1002}
+        HOST_GID: ${HOST_GID:-1002}
+    container_name: senotype-library
+    hostname: senotype-library
+    image: senotype-library
+    restart: unless-stopped
+    platform: linux/amd64
+    init: true
+    healthcheck:
+      test: ['CMD', 'curl', '--fail', 'http://localhost:3002']
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - '3002:3002'
+    env_file:
+      - .env
+    networks:
+      - sennet_docker_network
+
+networks:
+  sennet_docker_network:
+    external: true
