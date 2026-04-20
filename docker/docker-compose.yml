@@ -1,8 +1,8 @@
 services:
   senotype-library:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
       args:
         HOST_UID: ${HOST_UID:-1002}
         HOST_GID: ${HOST_GID:-1002}
@@ -21,7 +21,7 @@ services:
     ports:
       - '3002:3002'
     env_file:
-      - .env
+      - ../.env
     networks:
       - sennet_docker_network
 
