@@ -93,7 +93,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install @aws-sdk/client-ec2
-        working-directory: ${{ github.workspace }}/scripts
+        working-directory: ${{ github.workspace }}/.github/scripts
 
       - name: Modify security group
         env:
@@ -104,8 +104,8 @@ jobs:
           PORT: 22
           RUNNER_IP: ${{ steps.runner_ip.outputs.ip }}
           MODE: authorize
-        run: node $GITHUB_WORKSPACE/.github/scripts/update-security-group.mjs
-        working-directory: ${{ github.workspace }}/scripts
+        run: node ./update-security-group.mjs
+        working-directory: ${{ github.workspace }}/.github/scripts
 
       - name: Deploy to Server via SSH
         uses: appleboy/ssh-action@v1
@@ -128,5 +128,5 @@ jobs:
           PORT: 22
           RUNNER_IP: ${{ steps.runner_ip.outputs.ip }}
           MODE: revoke
-        run: node $GITHUB_WORKSPACE/.github/scripts/update-security-group.mjs
-        working-directory: ${{ github.workspace }}/scripts
+        run: node ./update-security-group.mjs
+        working-directory: ${{ github.workspace }}/.github/scripts
