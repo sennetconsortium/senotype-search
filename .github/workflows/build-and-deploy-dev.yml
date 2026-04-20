@@ -92,7 +92,9 @@ jobs:
           echo "ip=$IP" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
-        run: npm install @aws-sdk/client-ec2
+        run: |
+          npm install -g pnpm
+          npm install @aws-sdk/client-ec2
 
       - name: Modify security group
         env:
