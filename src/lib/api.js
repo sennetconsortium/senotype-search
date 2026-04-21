@@ -62,18 +62,50 @@ const API = {
     log.info('API.fetchUBKG', `${URLS.api.ontology}${endpoint}`);
     return API.fetch({ url: `${URLS.api.ontology}${endpoint}`, method: 'GET' });
   },
-  fetchForForm: (predicate, query) => {
+  fetchForForm: async (predicate, query) => {
     const urls = {
-      has_citation:
-        `${URLS.nih.pubMed}&id=<query>`,
+      has_citation: `${URLS.nih.pubMed}&id=<query>`,
       has_origin: `${URLS.sciCrunch.base}<query>`,
       has_dataset: `${URLS.api.entity.base}entities/<query>`,
-      has_cell_type: `${URLS.api.ontology}ontology/celltypes/<query>`,
-      has_diagnosis: `${URLS.api.ontology}codes/<query>/terms`,
+      has_cell_type: `${URLS.api.ontology}celltypes/<query>`,
+      has_diagnosis: {
+        byCode: `${URLS.api.ontology}codes/<query>/terms`,
+        byTerm: `${URLS.api.ontology}terms/<query>/codes`,
+      },
     };
-    const url = urls[predicate].replace('<query>', query)
-    log.info('API.fetchForForm', url)
-    return API.fetch({ url, method: 'GET' });
+    try {
+      let url;
+      const byCode = query.includes(':') || Number(query) > 0;
+      const isDiagnosis = predicate === 'has_diagnosis';
+      if (isDiagnosis) {
+        url = byCode ? urls[predicate].byCode : urls[predicate].byTerm;
+      } else {
+        url = urls[predicate];
+      }
+
+      url = url.replace('<query>', query);
+      log.debug('API.fetchForForm.default', url);
+      const result = await API.fetch({ url, method: 'GET' });
+      if (isDiagnosis && !byCode) {
+        // Get the DOID from results 
+        const doids = result.filter((r) => r.code.includes('DOID:'));
+        // Use DOID list to return diagnosis list
+        const doidPromises = doids.map((r) =>
+          API.fetch({
+            url: urls[predicate].byCode.replace('<query>', r.code),
+            method: 'GET',
+          }),
+        );
+        log.debug('API.fetchForForm.isDiagnosis.!byCode', doids);
+        const promises = await Promise.all(doidPromises); 
+        // Flatten array of arrays
+        return promises.flat();
+      } else {
+        return result;
+      }
+    } catch (e) {
+      log.error('API.fetchForForm.catch', predicate, query, e);
+    }
   }
 };
 export default API;

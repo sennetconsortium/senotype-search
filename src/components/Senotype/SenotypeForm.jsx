@@ -9,6 +9,7 @@ import { Skeleton } from 'antd';
 import log from 'xac-loglevel';
 import FormInputGroup from '../form/FormInputGroup';
 import useSenotypeOntology from '@/reducers/useSenotypeOntology';
+import API from '@/lib/api';
 
 function SenotypeForm() {
   const [key, setKey] = useState('main');
@@ -94,18 +95,25 @@ function SenotypeForm() {
 
   const fetchForForm = async (predicate, query) => {
     const options = []
-    const result = await fetch(`/api/ontology/${predicate.field}`, {
-      method: 'POST',
-      body: JSON.stringify({
-        query
-      })
+    const result = await API.fetch({
+      url: `/api/ontology/${predicate.field}`,
+      token: null,
+      body: {
+        query,
+      },
     });
-    log.info('InputField.fetchForForm', predicate, query, result);
+    const list = (result?.result && Array.isArray(result?.result)) ? result?.result : [];
+    log.info('InputField.fetchForForm', predicate, query, result, list);
     if (isCellType(predicate.field)) {
-      setCellTypeOptions([])
+      for (const r of list) {
+        options.push({
+          label: r.cell_type.name,
+          value: formValue({ term: r.cell_type.name, code: r.cell_type.id }),
+        });
+      }
     }
     if (isDiagnosis(predicate.field)) {
-      for (const r of result.result) {
+      for (const r of list) {
         for (const t of r.terms) {
           options.push({
             label: t.term,
@@ -113,9 +121,14 @@ function SenotypeForm() {
           })
         }
       }
-      if (options.length) {
-        setDiagnosisOptions(options)
-      }
+    }
+
+    if (options.length) {
+      senotypeOntologyReducer.dispatch({
+        type: 'setOne',
+        field: predicate.field,
+        value: options,
+      });
     }
   }
 
