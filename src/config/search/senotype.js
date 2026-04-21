@@ -27,7 +27,7 @@ export const ubkgPredicates = [
         'Enter either a string that is in the name of the cell type or the Cell Ontology ID (e.g., CL:0020011; 0020011)',
     },
   },
-  { ontologyKey: 'dataset_types', field: 'has_assay', ui: { w: 200 } },
+  { field: 'has_assay', ui: { w: 200 } },
 ];
 
 const {

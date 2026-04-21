@@ -6,6 +6,9 @@ const URLS = {
   search: '/search',
   api: {
     local: (path) => `/api/${path}`,
+    entity: {
+      base: process.env.NEXT_PUBLIC_ENTITY_API_BASE,
+    },
     ingest: {
       base: process.env.NEXT_PUBLIC_INGEST_API_BASE,
       privs: {
@@ -18,6 +21,9 @@ const URLS = {
     },
     search: process.env.NEXT_PUBLIC_SEARCH_API_BASE,
     ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE,
+  },
+  nih: {
+    pubMed: process.env.NEXT_PUBLIC_NIH_PUBMED_API_URL,
   },
   senotypeEditor: process.env.NEXT_PUBLIC_EDITOR_URL,
   portal: process.env.NEXT_PUBLIC_PORTAL_URL,

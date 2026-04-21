@@ -1,27 +1,43 @@
 import EditContext from '@/context/EditContext';
-import React, { useState, useContext, useEffect, use } from 'react';
+import React, { useState, useContext, useEffect, useEffectEvent, use } from 'react';
 import { Button, Tab, Tabs } from 'react-bootstrap';
 import AppAccordion from '../AppAccordion';
 import InputField from '../form/InputField';
 import AppContext from '@/context/AppContext';
 import { ubkgPredicates, SEARCH_SENOTYPE } from '@/config/search/senotype';
 import { Skeleton } from 'antd';
+import log from 'xac-loglevel';
+import FormInputGroup from '../form/FormInputGroup';
+import useSenotypeOntology from '@/reducers/useSenotypeOntology';
 
 function SenotypeForm() {
   const [key, setKey] = useState('main');
-  const { senotype, senotypeOntologyPromise, senotypePredicates } =
+  const { senotype, senotypeOntologyPromise, senotypePredicates, formValue } =
     useContext(EditContext);
   const { ontology } = useContext(AppContext)
   const senotypeOntology = use(senotypeOntologyPromise);
+  const senotypeOntologyReducer = useSenotypeOntology(senotypeOntology || {});
 
-  const [cellTypeOptions, setCellTypeOptions] = useState([])
+  const updateSenotypeOntology = useEffectEvent(() => {
+    senotypeOntologyReducer.dispatch({ type: 'setAll', value: senotypeOntology }); 
+  });
+
+  useEffect(() => {
+    updateSenotypeOntology()
+  }, [senotypeOntology])
+
+  const isAssay = (p) => p === 'has_assay';
+  const isCellType = (p) => p === 'has_cell_type';
+  const isHallmark = (p) => p === 'has_hallmark';
+  const isDiagnosis = (p) => p === 'has_diagnosis';
 
   const getOptions = (predicate) => {
     const options = []
     if (predicate.ontologyKey) {
+      // TODO find source data for taxon
       for (const o in ontology[predicate.ontologyKey].terms) {
         options.push({
-          value: ontology[predicate.ontologyKey].terms[o],
+          value: formValue({ code: ontology[predicate.ontologyKey].terms[o], term: o}),
           label: o,
         });
       }
@@ -37,27 +53,23 @@ function SenotypeForm() {
         },
       ];
     } else {
-      for (const o in senotypeOntology) {
-        for (const b of senotypeOntology[o].aggregations.ontology?.buckets) {
-          options.push({
-            value: b.details?.hits?.hits[0]._source[o][0].code,
-            label: b.key,
-          });
-        }
-      }
+      return senotypeOntologyReducer?.state[predicate.field] || [];
     }
     return options
   }
 
-  const getPredicates = () => {
-    return [
-      ...ubkgPredicates,
-      {
-        field: 'gender',
-        label: 'Gender',
-        ui: {}
-      },
-      ...senotypePredicates,
+  const tab1Predicates = () => {
+    const results = Array.from(ubkgPredicates.filter((p) => !isAssay(p.field)));
+    for (const a of senotypePredicates) {
+      if (isHallmark(a.field) || isAssay(a.field)) {
+        results.push(a);
+      }
+    }
+    return results
+  }
+
+  const tab2Predicates = () => {
+    const results = [
       {
         field: 'has_diagnosis',
         label: 'Diagnosis',
@@ -67,21 +79,64 @@ function SenotypeForm() {
         },
       },
     ];
+    for (const a of senotypePredicates) {
+      if (!isHallmark(a.field) || !isAssay(a.field)) {
+        results.push(a);
+      }
+    }
+    results.push({
+      field: 'gender',
+      label: 'Gender',
+      ui: {},
+    });
+    return results;
+  };
+
+  const fetchForForm = async (predicate, query) => {
+    const options = []
+    const result = await fetch(`/api/ontology/${predicate.field}`, {
+      method: 'POST',
+      body: JSON.stringify({
+        query
+      })
+    });
+    log.info('InputField.fetchForForm', predicate, query, result);
+    if (isCellType(predicate.field)) {
+      setCellTypeOptions([])
+    }
+    if (isDiagnosis(predicate.field)) {
+      for (const r of result.result) {
+        for (const t of r.terms) {
+          options.push({
+            label: t.term,
+            value: formValue({term: t.term, code: r.code})
+          })
+        }
+      }
+      if (options.length) {
+        setDiagnosisOptions(options)
+      }
+    }
   }
+
 
   const getSearchBehavior = (predicate) => {
     // TODO: resolve search behavior for cell types
     // resolve for Diagnosis
-    if (predicate.field === 'has_cell_type') {
+    if (isCellType(predicate.field) || isDiagnosis(predicate.field)) {
       return {
         showSearch: {
           filterOption: false,
-          onSearch: (v) => log.info('InputField.Select', v),
+          onSearch: (v) => {
+            fetchForForm(predicate, v);
+          },
         },
       };
     } 
     return {}
   }
+
+  const loadingPredicates = !senotypeOntology || !senotypeOntologyReducer.state
 
   return (
     <>
@@ -101,7 +156,7 @@ function SenotypeForm() {
         className="mb-3"
       >
         <Tab eventKey="main" title="Submission">
-          <AppAccordion title={'Basic'}>
+          <AppAccordion title={'Overview'}>
             <InputField
               label={'Name'}
               controlProps={{
@@ -118,11 +173,11 @@ function SenotypeForm() {
               }}
             />
           </AppAccordion>
-          <AppAccordion title={'Assertions'}>
-            {!senotypeOntology && <Skeleton />}
-            {senotypeOntology && (
+          <AppAccordion title={'Senotype'}>
+            {loadingPredicates && <Skeleton />}
+            {!loadingPredicates && (
               <>
-                {getPredicates().map((p, index) => (
+                {tab1Predicates().map((p, index) => (
                   <InputField
                     key={p.field}
                     labelTooltip={p.ui.tooltip}
@@ -146,7 +201,96 @@ function SenotypeForm() {
           </AppAccordion>
         </Tab>
         <Tab eventKey="metadata" title="Metadata">
-          Tab content for Metadata
+          <AppAccordion title={'Diagnosis & Demographics'}>
+            {loadingPredicates && <Skeleton />}
+            {!loadingPredicates && (
+              <>
+                {tab2Predicates().map((p, index) => (
+                  <InputField
+                    key={p.field}
+                    labelTooltip={p.ui.tooltip}
+                    label={p.label}
+                    id={p.field}
+                    selectData={getOptions(p)}
+                    controlProps={{
+                      ...getSearchBehavior(p),
+                      defaultValue: senotype[p.field]
+                        ? senotype[p.field][0]?.term
+                        : undefined,
+                      required: p.ui.required,
+                    }}
+                  />
+                ))}
+              </>
+            )}
+            <FormInputGroup
+              label={'Age'}
+              inputs={[
+                {
+                  label: 'Value',
+                  controlProps: {
+                    type: 'number',
+                    min: 0
+                  },
+                },
+                {
+                  label: 'Lower',
+                  controlProps: {
+                    type: 'number',
+                    min: 0
+                  },
+                },
+                {
+                  label: 'Upper',
+                  controlProps: {
+                    type: 'number',
+                    min: 0
+                  },
+                },
+                {
+                  label: 'Unit',
+                  controlProps: {
+                    value: 'year',
+                    disabled: true,
+                  },
+                },
+              ]}
+            />
+
+            <FormInputGroup
+              label={'BMI'}
+              inputs={[
+                {
+                  label: 'Value',
+                  controlProps: {
+                    type: 'number',
+                    min: 0
+                  },
+                },
+                {
+                  label: 'Lower',
+                  controlProps: {
+                    type: 'number',
+                    min: 0
+                  },
+                },
+                {
+                  label: 'Upper',
+                  controlProps: {
+                    type: 'number',
+                    min: 0
+                  },
+                },
+                {
+                  label: 'Unit',
+                  controlProps: {
+                    value: 'kg/m2',
+                    disabled: true,
+                  },
+                },
+              ]}
+            />
+          </AppAccordion>
         </Tab>
         <Tab eventKey="markers" title="Markers">
           Tab content for Markers

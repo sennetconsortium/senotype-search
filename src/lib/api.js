@@ -59,8 +59,21 @@ const API = {
     }
   },
   fetchUBKG: (endpoint) => {
-    console.log(`${URLS.api.ontology}${endpoint}`);
+    log.info('API.fetchUBKG', `${URLS.api.ontology}${endpoint}`);
     return API.fetch({ url: `${URLS.api.ontology}${endpoint}`, method: 'GET' });
   },
+  fetchForForm: (predicate, query) => {
+    const urls = {
+      has_citation:
+        `${URLS.nih.pubMed}&id=<query>`,
+      has_origin: `${URLS.sciCrunch.base}<query>`,
+      has_dataset: `${URLS.api.entity.base}entities/<query>`,
+      has_cell_type: `${URLS.api.ontology}ontology/celltypes/<query>`,
+      has_diagnosis: `${URLS.api.ontology}codes/<query>/terms`,
+    };
+    const url = urls[predicate].replace('<query>', query)
+    log.info('API.fetchForForm', url)
+    return API.fetch({ url, method: 'GET' });
+  }
 };
 export default API;

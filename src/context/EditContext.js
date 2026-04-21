@@ -7,7 +7,14 @@ const EditContext = createContext({});
 
 export const EditProvider = ({ children, data }) => {
 
+  const formValue = ({code, term}) => JSON.stringify({code, term})
+
   const senotypePredicates = [
+    {
+      field: 'has_assay',
+      label: 'Assay',
+      ui: {},
+    },
     {
       field: 'has_hallmark',
       label: 'Hallmark',
@@ -26,7 +33,8 @@ export const EditProvider = ({ children, data }) => {
   ];
 
   const senotypeOntologyPromise = useMemo(async () => {
-    const result = {};
+    const results = {};
+    const options = {};
     let query;
     for (const p of senotypePredicates) {
       query = {
@@ -50,10 +58,23 @@ export const EditProvider = ({ children, data }) => {
           },
         },
       };
-      result[p.field] = await API.search(query, ENVS.index.senotype);
+      results[p.field] = await API.search(query, ENVS.index.senotype);
+      options[p.field] = []
     }
-    log.debug('EditProvider.useMemo.senotypeLibOntology', result);
-    return result;
+    log.debug('EditProvider.useMemo.senotypeLibOntology', results);
+    
+    for (const r in results) {
+      for (const b of results[r].aggregations.ontology?.buckets) {
+        options[r].push({
+          value: formValue({
+            code: b.details?.hits?.hits[0]._source[r][0].code,
+            term: b.key
+          }),
+          label: b.key,
+        });
+      }
+    }
+    return options;
   }, []);
 
   
@@ -71,6 +92,7 @@ export const EditProvider = ({ children, data }) => {
         senotype,
         senotypeOntologyPromise,
         senotypePredicates,
+        formValue,
       }}
     >
       {children}
