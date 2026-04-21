@@ -1,0 +1,134 @@
+name: Build and Deploy Docker Image on Dev
+
+on:
+  push:
+    branches:
+      - dev-integrate
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: 'true'
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Create $SENOTYPE_LIBRARY_VERSION
+        run: |
+          export SENOTYPE_LIBRARY_VERSION=$(tr -d "\n\r" < ../VERSION | xargs)
+          echo "SENOTYPE_LIBRARY_VERSION=$SENOTYPE_LIBRARY_VERSION" >> $GITHUB_ENV
+        working-directory: ./docker
+
+      - name: Make build script executable
+        run: chmod +x ./docker.sh
+        working-directory: ./docker
+
+      - name: Create .env file
+        run: |
+          set -e
+          : > .env
+
+          cat <<'EOF' >> .env
+          NEXT_PUBLIC_APP_NAME='Senotype Library'
+          NEXT_PUBLIC_INGEST_API_BASE=https://ingest-api.dev.sennetconsortium.org/
+          NEXT_PUBLIC_LOGIN_URL="${NEXT_PUBLIC_INGEST_API_BASE}senotype-search-login"
+          NEXT_PUBLIC_SEARCH_API_BASE=https://search-api.dev.sennetconsortium.org/
+          NEXT_PUBLIC_ONTOLOGY_API_BASE=https://ontology-api.dev.hubmapconsortium.org/
+          NEXT_PUBLIC_PORTAL_URL=https://data.sennetconsortium.org/
+          NEXT_PUBLIC_EDITOR_URL=https://senlib.dev.sennetconsortium.org/
+          NEXT_PUBLIC_LOG_LEVEL='debug'
+          NEXT_PUBLIC_INDEX_SENOTYPE='senotypes'
+          NEXT_PUBLIC_ONTOLOGY_CODES='{"specimen_categories":"C020076","organ_types": {"path": "organs?application_context=SENNET"}, "entities": "C000012", "source_types":"C050020", "dataset_types": {"path": "dataset-types?application_context=SENNET"}}'
+          NEXT_PUBLIC_ONTOLOGY_VALUESET_PATH='valueset?parent_sab=SENNET&parent_code={code}&child_sabs=SENNET'
+          NEXT_PUBLIC_OBO_BASE_URL='https://purl.obolibrary.org/obo/'
+          NEXT_PUBLIC_CL_HOME_URL='https://www.ebi.ac.uk/ols4/ontologies/cl?tab=classes'
+          NEXT_PUBLIC_DOID_HOME_URL='https://disease-ontology.org'
+          NEXT_PUBLIC_HGNC_BASE_URL='https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/'
+          NEXT_PUBLIC_HGNC_HOME_URL='https://www.genenames.org/'
+          NEXT_PUBLIC_UNIPROTKB_BASE_URL='https://www.uniprot.org/uniprotkb/'
+          NEXT_PUBLIC_PUBMED_BASE_URL='https://pubmed.ncbi.nlm.nih.gov/'
+          NEXT_PUBLIC_SCICRUNCH_BASE_URL='https://scicrunch.org/resolver/'
+          NEXT_PUBLIC_SCICRUNCH_EXPLORE_URL='https://rrid.site/'
+          NEXT_PUBLIC_SCICRUNCH_HIGHER_URL='https://scicrunch.org/scicrunch/resolver/'
+          NEXT_PUBLIC_OTHER_ORGAN_ICON_URL = 'https://cdn.jsdelivr.net/gh/cns-iu/md-icons@main/other-icons/organs/ico-organs-united.svg'
+          EOF
+        shell: bash
+        working-directory: .
+
+      - name: Run the Docker build shell script
+        run: ./docker.sh build
+        working-directory: ./docker
+
+      - name: Tag the Docker Image
+        run: docker image tag sennet/senotype-library:$SENOTYPE_LIBRARY_VERSION sennet/senotype-library-dev:$SENOTYPE_LIBRARY_VERSION
+        working-directory: ./docker
+
+      - name: Push the Docker image
+        run: |
+          docker push sennet/senotype-library-dev:$SENOTYPE_LIBRARY_VERSION
+          docker image tag sennet/senotype-library-dev:$SENOTYPE_LIBRARY_VERSION sennet/senotype-library-dev:latest
+          docker push sennet/senotype-library-dev:latest
+        working-directory: ./docker
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Get GitHub runner public IP
+        id: runner_ip
+        run: |
+          IP=$(curl -s https://api.ipify.org)
+          echo "Runner IP: $IP"
+          echo "ip=$IP" >> $GITHUB_OUTPUT
+
+      - name: Install dependencies
+        run: |
+          echo '{"name":"scripts","private":true,"type":"module"}' > package.json
+          npm install @aws-sdk/client-ec2
+        working-directory: ${{ github.workspace }}/.github/scripts
+
+      - name: Modify security group
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+          SECURITY_GROUP_ID: sg-0ddfcbe0a83a5266c
+          PORT: 22
+          RUNNER_IP: ${{ steps.runner_ip.outputs.ip }}
+          MODE: authorize
+        run: node ./update-security-group.mjs
+        working-directory: ${{ github.workspace }}/.github/scripts
+
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: '${{ secrets.REMOTE_HOST }}'
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          use_insecure_cipher: true
+          script: |
+            # Change to codcc user on server
+            sudo su - codcc -c "cd /opt/sennet/senotype-library/docker/; git pull; docker pull sennet/senotype-library-dev:$SENOTYPE_LIBRARY_VERSION; ./docker.sh stop; ./docker.sh start;"
+
+      - name: Remove runner IP from security group
+        if: always()
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+          SECURITY_GROUP_ID: sg-0ddfcbe0a83a5266c
+          PORT: 22
+          RUNNER_IP: ${{ steps.runner_ip.outputs.ip }}
+          MODE: revoke
+        run: node ./update-security-group.mjs
+        working-directory: ${{ github.workspace }}/.github/scripts

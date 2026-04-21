@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Always change to the root repo directory to run script from anywhere
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+cd "$REPO_ROOT"
+
+VERSION="$(cat VERSION)"
+export VERSION
 COMMAND=${1:-}
 
 usage() {
@@ -17,13 +25,14 @@ case "$COMMAND" in
     echo "Extracting NEXT_PUBLIC_* variables from .env to .env.docker..."
     grep '^NEXT_PUBLIC_' .env > .env.docker
     echo "Done. Running docker compose build..."
-    docker compose build
+    docker compose -f docker/docker-compose.yml build
+    echo "Built image version $VERSION"
     ;;
   start)
-    docker compose up -d
+    docker compose -f docker/docker-compose.yml up -d
     ;;
   stop)
-    docker compose down
+    docker compose -f docker/docker-compose.yml down --remove-orphans
     ;;
   *)
     usage
