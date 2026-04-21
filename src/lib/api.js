@@ -63,6 +63,7 @@ const API = {
     return API.fetch({ url: `${URLS.api.ontology}${endpoint}`, method: 'GET' });
   },
   fetchForForm: async (predicate, query) => {
+    
     const urls = {
       has_citation: `${URLS.nih.pubMed}&id=<query>`,
       has_origin: `${URLS.sciCrunch.base}<query>`,
@@ -74,25 +75,40 @@ const API = {
       },
     };
     try {
+      const formatUrl = (url, q) => url.replace('<query>', q);
+      let _query = query;
       let url;
-      const byCode = query.includes(':') || Number(query) > 0;
+      const hasCode = query.includes(':');
+      const isNum = Number(query) > 0;
+      const byCode = hasCode || isNum;
       const isDiagnosis = predicate === 'has_diagnosis';
+
+      // Handle api param requirements per predicate
+
+      if (predicate === 'has_cell_type' && hasCode) {
+        // Remove the preceeding CL: from query
+        _query = query.split(':')[1]
+      }
+
       if (isDiagnosis) {
+        // ADD required DOID: to query
+        _query = isNum && !hasCode ? `DOID:${query}` : query;
         url = byCode ? urls[predicate].byCode : urls[predicate].byTerm;
       } else {
         url = urls[predicate];
       }
 
-      url = url.replace('<query>', query);
-      log.debug('API.fetchForForm.default', url);
+      url = formatUrl(url, _query);
+      log.debug('API.fetchForForm', url);
       const result = await API.fetch({ url, method: 'GET' });
+
       if (isDiagnosis && !byCode) {
         // Get the DOID from results 
         const doids = result.filter((r) => r.code.includes('DOID:'));
-        // Use DOID list to return diagnosis list
+        // Use DOID list to return diagnosis list and terms
         const doidPromises = doids.map((r) =>
           API.fetch({
-            url: urls[predicate].byCode.replace('<query>', r.code),
+            url: formatUrl(urls[predicate].byCode, r.code),
             method: 'GET',
           }),
         );

@@ -81,7 +81,7 @@ function SenotypeForm() {
       },
     ];
     for (const a of senotypePredicates) {
-      if (!isHallmark(a.field) || !isAssay(a.field)) {
+      if (!isHallmark(a.field) && !isAssay(a.field)) {
         results.push(a);
       }
     }
