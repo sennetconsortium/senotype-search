@@ -98,7 +98,7 @@ const API = {
 
       // Handle api param requirements per predicate
 
-      if (isCellType(predicate) && hasCode) {
+      if ((isCellType(predicate) || isCitation(predicate)) && hasCode) {
         // Remove the preceeding CL: from query
         _query = query.split(':')[1];
       }

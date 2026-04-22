@@ -12,6 +12,7 @@ import useAppReducer from '@/reducers/useAppReducer';
 import API from '@/lib/api';
 import PREDICATE from '@/lib/predicate'
 import SelectField from '../form/SelectField';
+import MarkerFormInputs from '../form/MarkerFormInputs';
 
 function SenotypeForm() {
   const [key, setKey] = useState('main');
@@ -213,7 +214,6 @@ function SenotypeForm() {
     });
   }
 
-
   const getSearchBehavior = (predicate) => {
 
     if (isExternalSource(predicate.field)) {
@@ -266,6 +266,7 @@ function SenotypeForm() {
             <InputField
               label={'Description'}
               controlProps={{
+                required: true,
                 defaultValue: senotype?.definition,
                 as: 'textarea',
                 rows: 3,
@@ -278,6 +279,7 @@ function SenotypeForm() {
               <>
                 {tab1Predicates().map((p, index) => (
                   <SelectField
+                    key={index}
                     p={p}
                     getOptions={getOptions}
                     getSearchBehavior={getSearchBehavior}
@@ -295,6 +297,7 @@ function SenotypeForm() {
               <>
                 {tab2Predicates().map((p, index) => (
                   <SelectField
+                    key={index}
                     p={p}
                     getOptions={getOptions}
                     getSearchBehavior={getSearchBehavior}
@@ -310,6 +313,7 @@ function SenotypeForm() {
               <>
                 {tab2bPredicates().map((p, index) => (
                   <SelectField
+                    key={index}
                     p={p}
                     getOptions={getOptions}
                     getSearchBehavior={getSearchBehavior}
@@ -388,7 +392,48 @@ function SenotypeForm() {
           </AppAccordion>
         </Tab>
         <Tab eventKey="markers" title="Markers">
-          Tab content for Markers
+          <AppAccordion title={'Specified Marker'}>
+            {loadingPredicates && <Skeleton />}
+            {!loadingPredicates && (
+              <MarkerFormInputs
+                predicate={{
+                  field: 'has_characterizing_marker_set',
+                  label: 'Gene/Protein ID or Symbol',
+                  ui: {
+                    tooltip:
+                      'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
+                  },
+                }}
+                getOptions={getOptions}
+                getSearchBehavior={getSearchBehavior}
+                senotype={senotype}
+              />
+            )}
+          </AppAccordion>
+
+          <AppAccordion title={'Regulating Marker'}>
+            {loadingPredicates && <Skeleton />}
+            {!loadingPredicates && (
+              <MarkerFormInputs
+                predicate={{
+                  field: 'up_regulates',
+                  label: 'Gene/Protein ID or Symbol',
+                  fields: [
+                    'up_regulates',
+                    'down_regulates',
+                    'inconclusively_regulates',
+                  ],
+                  ui: {
+                    tooltip:
+                      'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
+                  },
+                }}
+                getOptions={getOptions}
+                getSearchBehavior={getSearchBehavior}
+                senotype={senotype}
+              />
+            )}
+          </AppAccordion>
         </Tab>
       </Tabs>
       <div className="c-senotypeForm__fotter mt-4 text-end">
