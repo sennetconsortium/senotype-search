@@ -177,7 +177,12 @@ function SenotypeForm() {
       for (const r in _result) {
         if (_result[r]?.title) {
           options.push({
-            label: `${_result[r].title}. ${_result[r].lastauthor}`,
+            label: (
+              <span>
+                <i>{_result[r].title}</i>&nbsp;
+                {_result[r].lastauthor}
+              </span>
+            ),
             value: formValue({ term: _result[r].title, code: r }),
           });
         }
@@ -192,6 +197,25 @@ function SenotypeForm() {
           value: formValue({
             term: r._source.item.name,
             code: r._source.item.curie,
+          }),
+        });
+      }
+    }
+
+    if (isDataset(predicate.field)) {
+      const _result = result?.result || [];
+      for (const r of _result.hits.hits) {
+        options.push({
+          label: (
+            <span>
+              <strong>{r._source.sennet_id}</strong>&nbsp;
+              <i>{r._source.title}</i>
+              {` (${r._source.dataset_type})`}
+            </span>
+          ),
+          value: formValue({
+            term: r._source.title,
+            code: r._source.sennet_id,
           }),
         });
       }

@@ -71,7 +71,7 @@ const API = {
         byTerm: `${URLS.nih.pubMed}&term=<query>`,
       },
       has_origin: `${URLS.sciCrunch.base}<query>`,
-      has_dataset: `${URLS.api.entity.base}entities/<query>`,
+      has_dataset: `${URLS.api.entity.base}entities/search`, //TODO: point to search-api
       has_cell_type: `${URLS.api.ontology}celltypes/<query>`,
       has_diagnosis: {
         byCode: `${URLS.api.ontology}codes/<query>/terms`,
@@ -96,6 +96,22 @@ const API = {
           isExternalSource,
         } = PREDICATE;
 
+      if (isDataset(predicate)) {
+        url = urls[predicate];
+        const body = {
+          query: {
+            multi_match: {
+              query: `${query}*`,
+              fields: ['title', 'description', 'sennet_id', 'dataset_type'],
+            },
+          },
+          _source: ['title', 'description', 'sennet_id', 'dataset_type', 'uuid'],
+        };
+        log.debug('API.fetchForForm.isDataset', url);
+        const result = await API.fetch({ url, body });
+        return result
+      }
+
       // Handle api param requirements per predicate
 
       if ((isCellType(predicate) || isCitation(predicate)) && hasCode) {
@@ -103,9 +119,10 @@ const API = {
         _query = query.split(':')[1];
       }
 
+      
       if (isDiagnosis(predicate) || isCitation(predicate)) {
         url = byCode ? urls[predicate].byCode : urls[predicate].byTerm;
-        if (isDiagnosis()) {
+        if (isDiagnosis(predicate)) {
           // ADD required DOID: to query
           _query = isNum && !hasCode ? `DOID:${query}` : query;
         }
