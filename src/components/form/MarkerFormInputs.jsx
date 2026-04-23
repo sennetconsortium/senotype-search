@@ -1,10 +1,11 @@
-import {useState} from 'react';
+import {useRef} from 'react';
 import { Flex, Radio, message, Upload } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 const { Dragger } = Upload;
 import { Form } from 'react-bootstrap';
 import log from 'xac-loglevel'
 import SelectField from './SelectField';
+import PREDICATE from '@/lib/predicate';
 
 function MarkerFormInputs({
   predicate,
@@ -13,6 +14,7 @@ function MarkerFormInputs({
   senotype,
   onChange,
 }) {
+
   const onChangeDataFile = (file) => {
     if (file) {
       const reader = new FileReader();
@@ -42,6 +44,11 @@ function MarkerFormInputs({
     },
   };
 
+  const handleMarkerType = (data) => {
+    log.debug('MarkerFormInputs.handleMarkerType', data)
+    onChange({field: data.target.name, e: data})
+  }
+
   return (
     <div className="c-markerForm">
       <Flex vertical gap={0}>
@@ -49,13 +56,16 @@ function MarkerFormInputs({
           <strong>Marker type</strong>
         </Form.Label>
         <Radio.Group
-          defaultValue="gene"
+          onChange={handleMarkerType}
+          defaultValue={PREDICATE.prefixIds.genes}
           buttonStyle="solid"
           id="marker-type"
-          name="marker_type"
+          name={`marker_type${predicate.fields ? '_regulating' : ''}`}
         >
-          <Radio.Button value="gene">Gene</Radio.Button>
-          <Radio.Button value="protein">Protein</Radio.Button>
+          <Radio.Button value={PREDICATE.prefixIds.genes}>Gene</Radio.Button>
+          <Radio.Button value={PREDICATE.prefixIds.proteins}>
+            Protein
+          </Radio.Button>
         </Radio.Group>
         {predicate.fields && (
           <div className="mt-4">

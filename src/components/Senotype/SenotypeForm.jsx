@@ -13,6 +13,7 @@ import API from '@/lib/api';
 import PREDICATE from '@/lib/predicate'
 import SelectField from '../form/SelectField';
 import MarkerFormInputs from '../form/MarkerFormInputs';
+import URLS from '@/lib/urls';
 
 function SenotypeForm() {
   const [key, setKey] = useState('main');
@@ -58,6 +59,8 @@ function SenotypeForm() {
     isOrigin,
     isDataset,
     isExternalSource,
+    isMarker,
+    isRegulatingMarker,
   } = PREDICATE;
 
   const getOptions = (predicate) => {
@@ -155,16 +158,25 @@ function SenotypeForm() {
   };
 
   const fetchForForm = async (predicate, query) => {
-    const options = []
-    const result = await API.fetch({
-      url: `/api/ontology/${predicate.field}`,
+    let _query = query
+    // Prefix for marker with selected radio or default
+    if (isMarker(predicate.field) || isRegulatingMarker(predicate.field)) {
+      const prefix = isRegulatingMarker(predicate.field)
+        ? 'marker_type_regulating'
+        : 'marker_type';
+      _query = `${form.current[prefix] || PREDICATE.prefixIds.genes}${query}`;
+    }
+    const options = [];
+    const data = await API.fetch({
+      url: URLS.api.local(`ontology/${predicate.field}`),
       token: null,
       body: {
-        query,
+        query: _query,
       },
     });
-    const list = (result?.result && Array.isArray(result?.result)) ? result?.result : [];
-    log.info('InputField.fetchForForm', predicate, query, result, list);
+    const list =
+      data?.result && Array.isArray(data?.result) ? data?.result : [];
+    log.info('InputField.fetchForForm', predicate, query, data, list);
     if (isCellType(predicate.field)) {
       for (const r of list) {
         options.push({
@@ -178,14 +190,14 @@ function SenotypeForm() {
         for (const t of r.terms) {
           options.push({
             label: t.term,
-            value: formValue({term: t.term, code: r.code})
-          })
+            value: formValue({ term: t.term, code: r.code }),
+          });
         }
       }
     }
 
     if (isCitation(predicate.field)) {
-      const _result = result.result?.result || {};
+      const _result = data.result?.result || {};
       for (const r in _result) {
         if (_result[r]?.title) {
           options.push({
@@ -202,7 +214,7 @@ function SenotypeForm() {
     }
 
     if (isOrigin(predicate.field)) {
-      const _result = result.result?.hits?.hits || [];
+      const _result = data.result?.hits?.hits || [];
       for (const r of _result) {
         options.push({
           label: `${r._source.item.name}`,
@@ -215,7 +227,7 @@ function SenotypeForm() {
     }
 
     if (isDataset(predicate.field)) {
-      const _result = result?.result || [];
+      const _result = data?.result || [];
       for (const r of _result.hits.hits) {
         options.push({
           label: (
@@ -233,6 +245,30 @@ function SenotypeForm() {
       }
     }
 
+    if (isMarker(predicate.field) || isRegulatingMarker(predicate.field)) {
+      const _result = Array.isArray(data.result) ? data.result : [];
+      for (const r of _result) {
+        if (_query.includes(PREDICATE.prefixIds.genes)) {
+          options.push({
+            label: r.approved_name,
+            value: formValue({
+              name: r.approved_name,
+              term: r.approved_symbol,
+              code: `${_query.split(':')[0]}:${r.hgnc_id}`,
+            }),
+          });
+        } else {
+          options.push({
+            label: r.recommended_name[0],
+            value: formValue({
+              term: r.recommended_name[0],
+              code: `${_query.split(':')[0]}:${r.uniprotkb_id}`,
+            }),
+          });
+        }
+      }
+    }
+
     if (options.length) {
       senotypeOntologyReducer.dispatch({
         type: 'setOne',
@@ -240,7 +276,7 @@ function SenotypeForm() {
         value: options,
       });
     }
-  }
+  };
 
   const toggleOpen = (field, value) => {
     selectAutocompleteReducer.dispatch({
@@ -272,15 +308,18 @@ function SenotypeForm() {
   }
 
   const onChange = (data) => {
-    log.info('SenotypeForm.onChange', data.field, data.e.target.value)
-    form.current = { ...form.current, [data.field]: data.e.target.value };
+    let value = data.e.target?.value;
+    log.info('SenotypeForm.onChange', data.field, value);
+    if (value) {
+
+    }
+    form.current = { ...form.current, [data.field]: value };
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     e.stopPropagation()
     log.info('SenotypeForm.handleSubmit', form)
-
   }
 
   const loadingPredicates = !senotypeOntology || !senotypeOntologyReducer.state
@@ -476,7 +515,7 @@ function SenotypeForm() {
             {!loadingPredicates && (
               <MarkerFormInputs
                 predicate={{
-                  field: 'up_regulates',
+                  field: 'has_characterizing_regulating_marker_set',
                   label: 'Gene/Protein ID or Symbol',
                   fields: [
                     'up_regulates',

@@ -77,6 +77,10 @@ const API = {
         byCode: `${URLS.api.ontology}codes/<query>/terms`,
         byTerm: `${URLS.api.ontology}terms/<query>/codes`,
       },
+      has_characterizing_marker_set: {
+        genes: `${URLS.api.ontology}genes/<query>`,
+        proteins: `${URLS.api.ontology}proteins/<query>`,
+      },
     };
     try {
       const formatUrl = (url, q) => url.replace('<query>', q);
@@ -86,9 +90,9 @@ const API = {
       const isNum = Number(query) > 0;
       const byCode = hasCode || isNum;
       const {
-          isAssay,
           isCellType,
-          isHallmark,
+          isMarker,
+          isRegulatingMarker,
           isDiagnosis,
           isCitation,
           isOrigin,
@@ -114,23 +118,33 @@ const API = {
 
       // Handle api param requirements per predicate
 
-      if ((isCellType(predicate) || isCitation(predicate)) && hasCode) {
+      if (
+        isCellType(predicate) ||
+        isCitation(predicate) ||
+        isMarker(predicate) ||
+        (isRegulatingMarker(predicate) && hasCode)
+      ) {
         // Remove the preceeding CL: from query
         _query = query.split(':')[1];
       }
-
       
       if (isDiagnosis(predicate) || isCitation(predicate)) {
         url = byCode ? urls[predicate].byCode : urls[predicate].byTerm;
         if (isDiagnosis(predicate)) {
           // ADD required DOID: to query
-          _query = isNum && !hasCode ? `DOID:${query}` : query;
+          _query = isNum && !hasCode ? `${PREDICATE.prefixIds.diagnosis}${query}` : query;
         }
-      }  else {
-         if (isOrigin(predicate)) {
-           // API needs .json extension
-           _query = `${query}.json`;
-         }
+      } else if (isMarker(predicate) || isRegulatingMarker(predicate)) {
+        if (query.toUpperCase().includes(PREDICATE.prefixIds.proteins)) {
+          url = urls[predicate].proteins;
+        } else {
+          url = urls[predicate].genes;
+        }
+      } else {
+        if (isOrigin(predicate)) {
+          // API needs .json extension
+          _query = `${query}.json`;
+        }
         url = urls[predicate];
       }
 
@@ -140,7 +154,9 @@ const API = {
 
       if (isDiagnosis(predicate) && !byCode) {
         // Get the DOID from results
-        const doids = result.filter((r) => r.code.includes('DOID:'));
+        const doids = result.filter((r) =>
+          r.code.includes(PREDICATE.prefixIds.diagnosis),
+        );
         // Use DOID list to return diagnosis list and terms
         const doidPromises = doids.map((r) =>
           API.fetch({
