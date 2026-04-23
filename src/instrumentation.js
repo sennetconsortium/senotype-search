@@ -1,5 +1,5 @@
 import log from 'xac-loglevel';
-import ENVS from '@/lib/envs';
+import ENVS from './lib/envs';
 
 export async function register() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {

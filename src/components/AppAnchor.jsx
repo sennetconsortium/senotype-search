@@ -29,7 +29,9 @@ const AppAnchor = ({
   }, []);
 
   return (
-    <div className={`c-anchor ${anchorVisible ? 'mb-4' : ''}`}>
+    <div
+      className={`c-anchor d-none d-lg-block ${anchorVisible ? 'mb-4' : ''}`}
+    >
       <AppFloatingButton
         show={anchorVisible}
         onClick={toggleVisibility}

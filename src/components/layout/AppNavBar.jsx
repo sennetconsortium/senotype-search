@@ -48,7 +48,7 @@ function AppNavBar() {
               {/* <Nav.Link href="#home">Home</Nav.Link> */}
               <NavDropdown title={auth.name} id="basic-nav-dropdown">
                 <NavDropdown.Item href="#">
-                  <ClipboardCopy tag="span" text={auth.groups_token}>
+                  <ClipboardCopy tag="span" text={auth.groups_token} title="Copy Globus Token">
                     Copy Globus Token
                   </ClipboardCopy>
                 </NavDropdown.Item>

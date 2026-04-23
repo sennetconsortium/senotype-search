@@ -329,8 +329,6 @@ const buildReferences = (senotype) => {
 };
 
 export default function ViewSenotype({ senotype }) {
-  const { auth } = useContext(AppContext);
-
   const [span, setSpan] = useState(10);
   const [sortedInfo, setSortedInfo] = useState({});
   const searchInput = useRef(null);
@@ -539,11 +537,6 @@ export default function ViewSenotype({ senotype }) {
               />
             </h2>
 
-            {auth.isAuthenticated && auth.hassenotypeEdit && (
-              <Button className={'mb-2'} href={`${URLS.senotypeEditor}edit/${senotype.sennet_id}`}>
-                Edit
-              </Button>
-            )}
             <HeaderBadges data={senotype} />
 
             <AppAccordion title={'Summary'} id={'summary'}>
