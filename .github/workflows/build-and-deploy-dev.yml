@@ -118,7 +118,7 @@ jobs:
           use_insecure_cipher: true
           script: |
             # Change to codcc user on server
-            sudo su - codcc -c "cd /opt/sennet/senotype-library/docker/; git pull; docker pull sennet/senotype-library-dev:$SENOTYPE_LIBRARY_VERSION; ./docker.sh stop; ./docker.sh start;"
+            sudo su - codcc -c "cd /opt/sennet/senotype-library/docker/; git pull; docker pull sennet/senotype-library-dev:$SENOTYPE_LIBRARY_VERSION; ./docker.sh stop; ./docker.sh start dev;"
 
       - name: Remove runner IP from security group
         if: always()

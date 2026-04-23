@@ -1,0 +1,4 @@
+services:
+  senotype-library:
+    # Use the published image and tag from DockerHub
+    image: sennet/senotype-library-dev:${VERSION}
