@@ -3,15 +3,6 @@ import log from 'xac-loglevel';
 import { ontology } from '@/cache/ontology';
 
 const SEARCH = {
-  submitterTransform: (value, facet) => {
-    let name = value;
-    try {
-      name = facet?.data?.meta?.hits?.hits[0]?._source.created_by_user_displayname;
-    } catch (e) {
-      log.error('SEARCH.submitterTransform', value, facet);
-    }
-    return <span title={value}>{`${name}`}</span>;
-  },
   organBucketsTransform: (ops) => {
     const { aggregations, field, component } = ops;
     const buckets = SEARCH.bucketsTransform(ops);

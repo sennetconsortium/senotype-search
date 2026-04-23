@@ -14,6 +14,7 @@ import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
 import AppContext from '@/context/AppContext';
 import HeaderBadges from './HeaderBadges';
+import InfoTooltip from "@/components/form/InfoTooltip";
 
 const buildSummary = (senotype) => {
   return [
@@ -79,7 +80,7 @@ const buildSenotype = (senotype) => {
               <a
                 aria-label={`Outgoing link to ontology for ${item.code}`}
                 target={'_blank'}
-                href={URLS.getOboDetailsUrl(item.code.replace(':', '_'))}
+                href={`${URLS.portal}organs/${item.term?.toDashedCase()}`}
               >
                 <LinkOutlined />
               </a>
@@ -549,7 +550,7 @@ export default function ViewSenotype({ senotype }) {
               <Descriptions items={buildSummary(senotype)} column={2} />
             </AppAccordion>
 
-            <AppAccordion title={'Senotype'} id={'senotype'}>
+            <AppAccordion title={'Senotype'} id={'senotype'} tooltipTitle={'Senotype title'}>
               <Descriptions items={buildSenotype(senotype)} />
             </AppAccordion>
 

@@ -14,29 +14,12 @@ export const assertionPredicates = [
 const {
   doesAggregationHaveBuckets,
   bucketsTransform,
-  submitterTransform,
   organBucketsTransform,
 } = SEARCH;
 const connector = new SearchAPIConnector({
   indexName: ENVS.index.senotype,
   indexUrl: URLS.api.search,
-  accessToken: AUTH.token(),
-  beforeSearchCall: (queryOptions, next) => {
-    const aggs = queryOptions.aggs || {};
-
-    aggs.created_by_user_email.aggs = {
-      meta: {
-        top_hits: {
-          size: 1,
-          _source: ['created_by_user_displayname'],
-        },
-      },
-    };
-
-    queryOptions.aggs = aggs;
-
-    return next(queryOptions);
-  },
+  accessToken: AUTH.token()
 });
 
 export const SEARCH_SENOTYPE = {
@@ -121,17 +104,16 @@ export const SEARCH_SENOTYPE = {
           return visibleChildren.length > 0;
         },
         facets: {
-          created_by_user_email: {
+          created_by_user_displayname: {
             label: 'Registered By',
             type: 'value',
-            field: 'created_by_user_email.keyword',
+            field: 'created_by_user_displayname.keyword',
             isExpanded: false,
             filterType: 'any',
             isFilterable: false,
             facetType: 'term',
             isAggregationActive: true,
-            transformFunction: submitterTransform,
-            isFacetVisible: doesAggregationHaveBuckets('created_by_user_email'),
+            isFacetVisible: doesAggregationHaveBuckets('created_by_user_displayname'),
           },
         },
       },
@@ -150,7 +132,7 @@ export const SEARCH_SENOTYPE = {
       'definition',
       'sennet_id',
       'title',
-      'created_by_user_email',
+      'created_by_user_displayname',
       'uuid'
     ],
     // Moving this configuration into `searchQuery` so the config inside search-tools can read this
