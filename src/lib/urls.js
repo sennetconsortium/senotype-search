@@ -1,4 +1,4 @@
-import log from 'xac-loglevel'
+import log from 'xac-loglevel';
 
 const URLS = {
   login: process.env.NEXT_PUBLIC_LOGIN_URL,
@@ -6,37 +6,43 @@ const URLS = {
   search: '/search',
   api: {
     local: (path) => `/api/${path}`,
+    entity: {
+      base: process.env.NEXT_PUBLIC_ENTITY_API_BASE_URL,
+    },
     ingest: {
-      base: process.env.NEXT_PUBLIC_INGEST_API_BASE,
+      base: process.env.NEXT_PUBLIC_INGEST_API_BASE_URL,
       privs: {
-        admin: process.env.NEXT_PUBLIC_INGEST_API_BASE + 'privs/has-data-admin',
+        admin: process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'privs/has-data-admin',
         senotypeEdit:
-          process.env.NEXT_PUBLIC_INGEST_API_BASE + 'privs/has-senotype-edit',
+          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'privs/has-senotype-edit',
         groups:
-          process.env.NEXT_PUBLIC_INGEST_API_BASE + 'privs/user-write-groups',
+          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'privs/user-write-groups',
       },
     },
-    search: process.env.NEXT_PUBLIC_SEARCH_API_BASE,
-    ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE,
+    search: process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL,
+    ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE_URL,
   },
-  senotypeEditor: process.env.NEXT_PUBLIC_EDITOR_URL,
-  portal: process.env.NEXT_PUBLIC_PORTAL_URL,
+  senotypeEditor: process.env.NEXT_PUBLIC_EDITOR_BASE_URL,
+  portal: process.env.NEXT_PUBLIC_PORTAL_BASE_URL,
   ontologyClasses: {
-    home: process.env.NEXT_PUBLIC_CL_HOME_URL,
+    home: `${process.env.NEXT_PUBLIC_CL_BASE_URL}ols4/ontologies/cl?tab=classes`,
   },
   doid: {
-    home: process.env.NEXT_PUBLIC_DOID_HOME_URL,
+    base: process.env.NEXT_PUBLIC_DOID_BASE_URL,
   },
   uniprotkb: process.env.NEXT_PUBLIC_UNIPROTKB_BASE_URL,
   obo: process.env.NEXT_PUBLIC_OBO_BASE_URL,
   hgnc: {
     base: process.env.NEXT_PUBLIC_HGNC_BASE_URL,
-    home: process.env.NEXT_PUBLIC_HGNC_HOME_URL,
+    symbolReport: `${process.env.NEXT_PUBLIC_HGNC_BASE_URL}data/gene-symbol-report/#!/hgnc_id/`,
+  },
+  rrid: {
+    base: process.env.NEXT_PUBLIC_RRID_BASE_URL,
   },
   sciCrunch: {
     base: process.env.NEXT_PUBLIC_SCICRUNCH_BASE_URL,
-    explore: process.env.NEXT_PUBLIC_SCICRUNCH_EXPLORE_URL,
-    higher: process.env.NEXT_PUBLIC_SCICRUNCH_HIGHER_URL,
+    resolver: `${process.env.NEXT_PUBLIC_SCICRUNCH_BASE_URL}resolver/`,
+    higher: `${process.env.NEXT_PUBLIC_SCICRUNCH_BASE_URL}scicrunch/resolver/`,
   },
   /**
    * Takes the organ hierarchy term and returns a src img url.
@@ -98,7 +104,7 @@ const URLS = {
       let lowerParam = searchTerm.split('-')[0];
       searchTerm = `${lowerParam}?i=rrid%3A${searchTerm}`;
     } else {
-      baseUrl = URLS.sciCrunch.base;
+      baseUrl = URLS.sciCrunch.resolver;
     }
     return `${baseUrl}${searchTerm}`;
   },
@@ -117,9 +123,9 @@ const URLS = {
       baseURL = URLS.obo;
     } else if (sab.toUpperCase() === 'HGNC') {
       if (id === '') {
-        baseURL = URLS.hgnc.home;
-      } else {
         baseURL = URLS.hgnc.base;
+      } else {
+        baseURL = URLS.hgnc.symbolReport;
       }
     } else if (sab.toUpperCase() === 'UNIPROTKB') {
       // Strip the SAB from the code.
