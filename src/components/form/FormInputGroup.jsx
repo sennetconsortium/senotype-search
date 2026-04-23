@@ -6,11 +6,17 @@ function FormInputGroup({
   id,
   label,
   labelTooltip,
+  onChange,
   className = '',
   required = false,
   inputs = [],
 }) {
   const _id = id || label.toCamelCase();
+
+  const handleChange = (data) => {
+    onChange({...data, field: _id, inputs})
+  }
+
   return (
     <Form.Group key={_id} className={`c-formInputGroup ${className} mt-4`}>
       <Form.Label htmlFor={_id}>
@@ -35,6 +41,7 @@ function FormInputGroup({
               {io.label}
             </InputGroup.Text>
             <Form.Control
+              onChange={(e) => handleChange({e, io, index})}
               key={io.label + index + 'fc'}
               aria-label="Small"
               aria-describedby={io.id || io.label.toCamelCase()}

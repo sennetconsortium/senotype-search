@@ -17,7 +17,7 @@ const PREDICATE = {
     PREDICATE.isCitation(p) ||
     PREDICATE.isOrigin(p) ||
     PREDICATE.isDataset(p),
-  isPredicate: (p) => 
+  isPredicate: (p) =>
     PREDICATE.isTaxon(p) ||
     PREDICATE.isOrgan(p) ||
     PREDICATE.isAssay(p) ||

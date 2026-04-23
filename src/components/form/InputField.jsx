@@ -12,10 +12,18 @@ function InputField({
   selectData,
   labelTooltip,
   dropIcon,
+  onChange,
   controlProps = {},
 }) {
   const _id = id || label.toCamelCase();
   const helpBlockId = `${_id}HelpBlock`;
+
+  const handleChange = (e) => {
+    if (onChange) {
+      onChange({ e, field: _id });
+    }
+  };
+
   return (
     <Form.Group className={`c-inputField ${className} mt-4`}>
       <Form.Label htmlFor={_id}>
@@ -33,20 +41,11 @@ function InputField({
 
       {!selectData && (
         <Form.Control
+          onChange={(e) => handleChange(e)}
           aria-describedby={helpText ? helpBlockId : undefined}
           {...controlProps}
         />
       )}
-
-      {/* {selectData && (
-        <Form.Select {...controlProps}>
-          {selectData.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Form.Select>
-      )} */}
 
       {selectData && (
         <Select
@@ -55,6 +54,7 @@ function InputField({
             optionFilterProp: 'label',
             onSearch: (v) => log.info('InputField.Select', v),
           }}
+          onChange={(e) => handleChange(e)}
           style={{ width: '100%' }}
           {...controlProps}
           options={selectData}

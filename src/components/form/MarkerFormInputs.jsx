@@ -11,6 +11,7 @@ function MarkerFormInputs({
   getOptions,
   getSearchBehavior,
   senotype,
+  onChange,
 }) {
   const onChangeDataFile = (file) => {
     if (file) {
@@ -47,7 +48,12 @@ function MarkerFormInputs({
         <Form.Label htmlFor={'marker-type'}>
           <strong>Marker type</strong>
         </Form.Label>
-        <Radio.Group defaultValue="gene" buttonStyle="solid" id="marker-type">
+        <Radio.Group
+          defaultValue="gene"
+          buttonStyle="solid"
+          id="marker-type"
+          name="marker_type"
+        >
           <Radio.Button value="gene">Gene</Radio.Button>
           <Radio.Button value="protein">Protein</Radio.Button>
         </Radio.Group>
@@ -63,7 +69,9 @@ function MarkerFormInputs({
                 id="action"
               >
                 {predicate.fields.map((p, index) => (
-                  <Radio.Button key={`radio-${index}`} value={p}>{p}</Radio.Button>
+                  <Radio.Button key={`radio-${index}`} value={p}>
+                    {p}
+                  </Radio.Button>
                 ))}
               </Radio.Group>
             </div>
@@ -74,6 +82,8 @@ function MarkerFormInputs({
           getOptions={getOptions}
           getSearchBehavior={getSearchBehavior}
           senotype={senotype}
+          useSearchIcon={true}
+          onChange={onChange}
         />
       </Flex>
 

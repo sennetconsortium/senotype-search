@@ -1,5 +1,5 @@
 import EditContext from '@/context/EditContext';
-import React, { useState, useContext, useEffect, useEffectEvent, use } from 'react';
+import React, { useState, useContext, useEffect, useEffectEvent, useRef } from 'react';
 import { Button, Tab, Tabs } from 'react-bootstrap';
 import AppAccordion from '../AppAccordion';
 import InputField from '../form/InputField';
@@ -18,6 +18,7 @@ function SenotypeForm() {
   const [key, setKey] = useState('main');
   const { senotype, senotypeOntology, formValue } = useContext(EditContext);
   const { ontology } = useContext(AppContext)
+  const form = useRef(senotype)
 
   const senotypeOntologyReducer = useAppReducer(senotypeOntology || {});
   const getOpenStates = () => {
@@ -43,6 +44,10 @@ function SenotypeForm() {
   useEffect(() => {
     updateSenotypeOntology()
   }, [senotypeOntology])
+
+  useEffect(() => {
+    form.current = senotype
+  }, [senotype]);
 
   const {
     isAssay,
@@ -266,6 +271,18 @@ function SenotypeForm() {
     return {}
   }
 
+  const onChange = (data) => {
+    log.info('SenotypeForm.onChange', data.field, data.e.target.value)
+    form.current = { ...form.current, [data.field]: data.e.target.value };
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    log.info('SenotypeForm.handleSubmit', form)
+
+  }
+
   const loadingPredicates = !senotypeOntology || !senotypeOntologyReducer.state
 
   return (
@@ -289,6 +306,8 @@ function SenotypeForm() {
           <AppAccordion title={'Overview'}>
             <InputField
               label={'Name'}
+              id={'name'}
+              onChange={onChange}
               controlProps={{
                 defaultValue: senotype?.title,
                 required: true,
@@ -296,6 +315,8 @@ function SenotypeForm() {
             />
             <InputField
               label={'Description'}
+              id={'definition'}
+              onChange={onChange}
               controlProps={{
                 required: true,
                 defaultValue: senotype?.definition,
@@ -315,6 +336,7 @@ function SenotypeForm() {
                     getOptions={getOptions}
                     getSearchBehavior={getSearchBehavior}
                     senotype={senotype}
+                    onChange={onChange}
                   />
                 ))}
               </>
@@ -333,6 +355,7 @@ function SenotypeForm() {
                     getOptions={getOptions}
                     getSearchBehavior={getSearchBehavior}
                     senotype={senotype}
+                    onChange={onChange}
                   />
                 ))}
               </>
@@ -349,12 +372,15 @@ function SenotypeForm() {
                     getOptions={getOptions}
                     getSearchBehavior={getSearchBehavior}
                     senotype={senotype}
+                    onChange={onChange}
                   />
                 ))}
               </>
             )}
             <FormInputGroup
               label={'Age'}
+              field={'age'}
+              onChange={onChange}
               inputs={[
                 {
                   label: 'Value',
@@ -389,6 +415,8 @@ function SenotypeForm() {
 
             <FormInputGroup
               label={'BMI'}
+              field={'bmi'}
+              onChange={onChange}
               inputs={[
                 {
                   label: 'Value',
@@ -438,6 +466,7 @@ function SenotypeForm() {
                 getOptions={getOptions}
                 getSearchBehavior={getSearchBehavior}
                 senotype={senotype}
+                onChange={onChange}
               />
             )}
           </AppAccordion>
@@ -462,13 +491,14 @@ function SenotypeForm() {
                 getOptions={getOptions}
                 getSearchBehavior={getSearchBehavior}
                 senotype={senotype}
+                onChange={onChange}
               />
             )}
           </AppAccordion>
         </Tab>
       </Tabs>
       <div className="c-senotypeForm__fotter mt-4 text-end">
-        <Button>Submit</Button>
+        <Button onClick={(e) => handleSubmit(e)}>Submit</Button>
       </div>
     </>
   );

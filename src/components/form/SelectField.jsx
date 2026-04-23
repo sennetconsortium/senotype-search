@@ -2,12 +2,19 @@ import { SEARCH_SENOTYPE } from '@/config/search/senotype';
 import InputField from './InputField';
 import PREDICATE from '@/lib/predicate';
 
-function SelectField({ p, getOptions, getSearchBehavior, senotype }) {
+function SelectField({
+  p,
+  getOptions,
+  getSearchBehavior,
+  senotype,
+  useSearchIcon,
+  onChange,
+}) {
   return (
     <>
       <InputField
         dropIcon={
-          PREDICATE.isExternalSource(p.field) ? (
+          PREDICATE.isExternalSource(p.field) || useSearchIcon ? (
             <i className="bi bi-search"></i>
           ) : undefined
         }
@@ -16,8 +23,10 @@ function SelectField({ p, getOptions, getSearchBehavior, senotype }) {
         label={p.label || SEARCH_SENOTYPE.searchQuery.facets[p.field]?.label}
         id={p.field}
         selectData={getOptions(p)}
+        onChange={onChange}
         controlProps={{
           ...getSearchBehavior(p),
+          mode: 'multiple',
           notFoundContent: (
             <span className="text-black">
               {p.ui.tooltip && (
