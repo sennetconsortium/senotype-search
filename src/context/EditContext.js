@@ -7,7 +7,15 @@ const EditContext = createContext({});
 
 export const EditProvider = ({ children, data }) => {
 
-  const formValue = (data) => JSON.stringify(data)
+  const formatValue = (data) => JSON.stringify(data);
+
+  const formatErrorRow = ({row, error}) => {
+    return {
+      row,
+      error,
+      _id: crypto.randomUUID()
+    }
+  }
 
   const senotypeOntology = useMemo(() => {
 
@@ -20,7 +28,7 @@ export const EditProvider = ({ children, data }) => {
         }
         for (const r of ontology[o].raw) {
           options[o].push({
-            value: formValue({
+            value: formatValue({
               code: r.valueset_code,
               term: r.valueset_term,
             }),
@@ -46,7 +54,8 @@ export const EditProvider = ({ children, data }) => {
       value={{
         senotype,
         senotypeOntology,
-        formValue,
+        formatValue,
+        formatErrorRow,
       }}
     >
       {children}

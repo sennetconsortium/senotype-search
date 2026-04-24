@@ -135,7 +135,7 @@ const API = {
           _query = isNum && !hasCode ? `${PREDICATE.prefixIds.diagnosis}${query}` : query;
         }
       } else if (isMarker(predicate) || isRegulatingMarker(predicate)) {
-        if (query.toUpperCase().includes(PREDICATE.prefixIds.proteins)) {
+        if (query.toUpperCase().includes(PREDICATE.prefixIds.protein)) {
           url = urls.has_characterizing_marker_set.proteins;
         } else {
           url = urls.has_characterizing_marker_set.genes;

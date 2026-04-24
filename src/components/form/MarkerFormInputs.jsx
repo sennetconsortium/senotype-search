@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { Flex, Radio, message, Upload, Table, Skeleton } from 'antd';
+import { useState, useRef, useContext } from 'react';
+import { Flex, Radio, message, Upload, Table } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 const { Dragger } = Upload;
 import { Form } from 'react-bootstrap';
@@ -11,6 +11,7 @@ import { flipObj } from '@/lib/general';
 import API from '@/lib/api';
 import URLS from '@/lib/urls';
 import AppSpinner from '../AppSpinner';
+import EditContext from '@/context/EditContext';
 
 function MarkerFormInputs({
   predicate,
@@ -25,6 +26,8 @@ function MarkerFormInputs({
   const isValidFile = useRef(null);
   const uploadRows = useRef([]);
   const [tableBusy, setTableBusy] = useState(false);
+  const tableErrors = useRef([])
+  const { formatErrorRow } = useContext(EditContext);
 
   /**
    * Removes a row from table
@@ -84,7 +87,7 @@ function MarkerFormInputs({
    * @param {string} props.regulatingAction
    * @returns {*}
    */
-  const fetchForForm = async ({ predicate, _query, regulatingAction }) => {
+  const fetchVocabulary = async ({ predicate, _query, regulatingAction, row, query }) => {
     const data = await API.fetch({
       url: URLS.api.local(`ontology/${predicate.field}`),
       token: null,
@@ -92,14 +95,29 @@ function MarkerFormInputs({
         query: _query,
       },
     });
-
-    handleMarkers({
-      options: uploadRows.current,
-      predicate,
-      _query,
-      data,
-      regulatingAction,
-    });
+   
+    if (Array.isArray(data.result)) {
+       handleMarkers({
+         options: uploadRows.current,
+         predicate,
+         _query,
+         data,
+         regulatingAction,
+       });
+    } else {
+      tableErrors.current.push(
+        formatErrorRow({
+          error: (
+            <span>
+              {data.result?.error || JSON.stringify(data.result)} on search of
+              column <code>id</code> with value <code>query</code>
+            </span>
+          ),
+          row,
+        }),
+      );
+    }
+     
   };
 
   /**
@@ -109,15 +127,35 @@ function MarkerFormInputs({
    */
   const validateRows = async (uploadData) => {
     setTableBusy(true);
-    let _query, regulatingAction;
+    let _query, regulatingAction, prefix, error;
     const promises = [];
     const regulatingActions = flipObj(PREDICATE.regulatingActions);
+    let row = 1;
     for (const d of uploadData) {
-      _query = d.type.eq('gene')
-        ? PREDICATE.prefixIds.genes + d.id
-        : PREDICATE.prefixIds.proteins + d.id;
+      prefix = PREDICATE.prefixIds[d.type.toLowerCase()];
+      _query = d.id.includes(':') ? d.id : prefix + d.id;
       regulatingAction = regulatingActions[d.action];
-      promises.push(fetchForForm({ predicate, _query, regulatingAction }));
+      if (prefix && regulatingAction) {
+        promises.push(fetchVocabulary({ predicate, _query, regulatingAction, row, query: d.id }));
+      } else {
+        error = !prefix ? (
+          <span>
+            Invalid type {d.type}. Available <code>gene</code> and{' '}
+            <code>protein</code>
+          </span>
+        ) : (
+          <span>
+            Invalid action {d.action}. Available <code>1, -1 and 0</code>.
+          </span>
+        );
+        tableErrors.current.push(
+          formatErrorRow({
+            error,
+            row,
+          }),
+        );
+      }
+      row++
     }
 
     await Promise.all(promises);
@@ -140,6 +178,7 @@ function MarkerFormInputs({
         const fileContents = e.target.result;
         const json = fileContents.csvToJson();
         log.debug('MarkerFormInputs.onChangeDataFile', json);
+        tableErrors.current = [];
         validateRows(json);
       };
       reader.onerror = (e) => {
@@ -204,6 +243,19 @@ function MarkerFormInputs({
     addToTable([data.e]);
   };
 
+  const getErrorColumns = () => {
+    const names = ['row', 'error']
+    const columns = []
+    for (const n of names) {
+      columns.push({
+        title: n,
+        dataIndex: n,
+        key: n,
+      });
+    }
+    return columns
+  }
+
   /**
    * The antd Select is always called on selection of an item.
    *
@@ -228,13 +280,13 @@ function MarkerFormInputs({
         </Form.Label>
         <Radio.Group
           onChange={handleRadioChange}
-          defaultValue={PREDICATE.prefixIds.genes}
+          defaultValue={PREDICATE.prefixIds.gene}
           buttonStyle="solid"
           id="marker-type"
           name={`marker_type${predicate.fields ? '_regulating' : ''}`}
         >
-          <Radio.Button value={PREDICATE.prefixIds.genes}>Gene</Radio.Button>
-          <Radio.Button value={PREDICATE.prefixIds.proteins}>
+          <Radio.Button value={PREDICATE.prefixIds.gene}>Gene</Radio.Button>
+          <Radio.Button value={PREDICATE.prefixIds.protein}>
             Protein
           </Radio.Button>
         </Radio.Group>
@@ -263,6 +315,7 @@ function MarkerFormInputs({
         {tableData.length > 0 && (
           <div className="mt-3">
             <Table
+              className="alert alert-success"
               columns={getTableColumns()}
               dataSource={tableData}
               rowKey={'_id'}
@@ -270,6 +323,20 @@ function MarkerFormInputs({
           </div>
         )}
         {tableBusy && <AppSpinner fullscreen={false} />}
+        {tableErrors.current.length > 0 && (
+          <div>
+            <h2 className="p3 text-danger">
+              <i className="bi bi-exclamation-triangle"></i>There were errors in
+              your upload
+            </h2>
+            <Table
+              className="alert alert-danger"
+              columns={getErrorColumns()}
+              dataSource={tableErrors.current}
+              rowKey={'_id'}
+            />
+          </div>
+        )}
         <SelectField
           p={predicate}
           getOptions={getOptions}

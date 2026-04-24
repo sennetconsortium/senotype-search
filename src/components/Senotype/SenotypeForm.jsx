@@ -17,7 +17,7 @@ import URLS from '@/lib/urls';
 
 function SenotypeForm() {
   const [key, setKey] = useState('main');
-  const { senotype, senotypeOntology, formValue } = useContext(EditContext);
+  const { senotype, senotypeOntology, formatValue } = useContext(EditContext);
   const { ontology } = useContext(AppContext)
   const form = useRef(senotype)
 
@@ -37,13 +37,11 @@ function SenotypeForm() {
   const selectBusyReducer = useAppReducer(getOpenStates());
 
   const updateSenotypeOntology = useEffectEvent(() => {
-    senotypeOntologyReducer.dispatch({ type: 'setAll', value: senotypeOntology }); 
+    senotypeOntologyReducer.dispatch({ value: senotypeOntology }); 
     selectAutocompleteReducer.dispatch({
-      type: 'setAll',
       value: getOpenStates(),
     }); 
     selectBusyReducer.dispatch({
-      type: 'setAll',
       value: getOpenStates(),
     }); 
   });
@@ -74,7 +72,7 @@ function SenotypeForm() {
     if (predicate.ontologyKey) {
       for (const o in ontology[predicate.ontologyKey].terms) {
         options.push({
-          value: formValue({ code: ontology[predicate.ontologyKey].terms[o], term: o}),
+          value: formatValue({ code: ontology[predicate.ontologyKey].terms[o], term: o}),
           label: o,
         });
       }
@@ -171,10 +169,10 @@ function SenotypeForm() {
         regulating_action = form.current.regulating_action || PREDICATE.regulatingActions.up_regulates;
       }
       for (const r of _result) {
-        if (_query.includes(PREDICATE.prefixIds.genes)) {
+        if (_query.includes(PREDICATE.prefixIds.gene)) {
           options.push({
             label: r.approved_name,
-            value: formValue({
+            value: formatValue({
               regulating_action,
               name: r.approved_name,
               term: r.approved_symbol,
@@ -184,7 +182,7 @@ function SenotypeForm() {
         } else {
           options.push({
             label: r.recommended_name[0],
-            value: formValue({
+            value: formatValue({
               regulating_action,
               term: r.recommended_name[0],
               code: `${_query.split(':')[0]}:${r.uniprotkb_id}`,
@@ -197,7 +195,7 @@ function SenotypeForm() {
     return options
   }
 
-  const fetchForForm = async (predicate, query) => {
+  const fetchVocabulary = async (predicate, query) => {
     toggleBusy(predicate.field, true);
     let _query = query
     // Prefix for marker with selected radio or default
@@ -205,7 +203,7 @@ function SenotypeForm() {
       const prefix = isRegulatingMarker(predicate.field)
         ? 'marker_type_regulating'
         : 'marker_type';
-      _query = `${form.current[prefix] || PREDICATE.prefixIds.genes}${query}`;
+      _query = `${form.current[prefix] || PREDICATE.prefixIds.gene}${query}`;
     }
     const options = [];
     const data = await API.fetch({
@@ -217,12 +215,12 @@ function SenotypeForm() {
     });
     const list =
       data?.result && Array.isArray(data?.result) ? data?.result : [];
-    log.info('InputField.fetchForForm', predicate, query, data, list);
+    log.info('InputField.fetchVocabulary', predicate, query, data, list);
     if (isCellType(predicate.field)) {
       for (const r of list) {
         options.push({
           label: r.cell_type.name,
-          value: formValue({ term: r.cell_type.name, code: r.cell_type.id }),
+          value: formatValue({ term: r.cell_type.name, code: r.cell_type.id }),
         });
       }
     }
@@ -231,7 +229,7 @@ function SenotypeForm() {
         for (const t of r.terms) {
           options.push({
             label: t.term,
-            value: formValue({ term: t.term, code: r.code }),
+            value: formatValue({ term: t.term, code: r.code }),
           });
         }
       }
@@ -248,7 +246,7 @@ function SenotypeForm() {
                 {_result[r].lastauthor}
               </span>
             ),
-            value: formValue({ term: _result[r].title, code: r }),
+            value: formatValue({ term: _result[r].title, code: r }),
           });
         }
       }
@@ -259,7 +257,7 @@ function SenotypeForm() {
       for (const r of _result) {
         options.push({
           label: `${r._source.item.name}`,
-          value: formValue({
+          value: formatValue({
             term: r._source.item.name,
             code: r._source.item.curie,
           }),
@@ -278,7 +276,7 @@ function SenotypeForm() {
               {` (${r._source.dataset_type})`}
             </span>
           ),
-          value: formValue({
+          value: formatValue({
             term: r._source.title,
             code: r._source.sennet_id,
           }),
@@ -300,7 +298,6 @@ function SenotypeForm() {
 
   const toggleOpen = (field, value) => {
     selectAutocompleteReducer.dispatch({
-      type: 'setOne',
       field,
       value
     });
@@ -308,7 +305,6 @@ function SenotypeForm() {
 
   const toggleBusy = (field, value) => {
     selectBusyReducer.dispatch({
-      type: 'setOne',
       field,
       value,
     });
@@ -325,7 +321,7 @@ function SenotypeForm() {
         },
         onInputKeyDown: (e) => {
           if (e.key === 'Enter') {
-            fetchForForm(predicate, e.currentTarget.value);
+            fetchVocabulary(predicate, e.currentTarget.value);
             toggleOpen(predicate.field, true);
           }
         },

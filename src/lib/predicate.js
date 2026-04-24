@@ -18,8 +18,8 @@ const PREDICATE = {
   },
   prefixIds: {
     diagnosis: 'DOID:',
-    genes: 'HGNC:',
-    proteins: 'UNIPROTKB:',
+    gene: 'HGNC:',
+    protein: 'UNIPROTKB:',
   },
   isRegulatingMarker: (p) => p === 'has_characterizing_regulating_marker_set',
   isMarker: (p) => p === 'has_characterizing_marker_set',
