@@ -23,10 +23,17 @@ function MarkerFormInputs({
   const isValidFile = useRef(null);
   const uploadRows = useRef([])
 
+  
+  /**
+   * Removes a row from table
+   *
+   * @param {object} row 
+   */
   const removeItem = (row) => {
-    const _tableData = tableData.filter((r) => row.code !== r.code);
+    const _tableData = tableData.filter((r) => row._id !== r._id);
     setTableData(_tableData);
   };
+
   const getTableColumns = () => {
     const names = [
       'name',
@@ -34,7 +41,9 @@ function MarkerFormInputs({
       'code',
       ...(predicate.fields ? ['regulating_action'] : []),
     ];
+
     const columns = [];
+
     for (const n of names) {
       columns.push({
         title: n,
@@ -63,8 +72,18 @@ function MarkerFormInputs({
     return columns;
   };
 
+  
+  /**
+   * Fetches a single code.
+   *
+   * @async
+   * @param {{ predicate: any; _query: any; regulatingAction: any; }} props 
+   * @param {object} props.predicate 
+   * @param {string} props._query 
+   * @param {string} props.regulatingAction 
+   * @returns {*} 
+   */
   const fetchForForm = async ({ predicate, _query, regulatingAction }) => {
-    
     const data = await API.fetch({
       url: URLS.api.local(`ontology/${predicate.field}`),
       token: null,
@@ -82,6 +101,11 @@ function MarkerFormInputs({
     });
   };
 
+  /**
+   * Validate the rows from the uploaded CSV.
+   * 
+   * @param {object} uploadData 
+   */
   const validateRows = async (uploadData) => {
     let _query, regulatingAction;
     const promises = [];
@@ -100,6 +124,12 @@ function MarkerFormInputs({
     addToTable(results)
   }
 
+  
+  /**
+   * Handles a file upload.
+   *
+   * @param {File} file 
+   */
   const onChangeDataFile = (file) => {
     if (file && isValidFile.current) {
       const reader = new FileReader();
@@ -112,16 +142,14 @@ function MarkerFormInputs({
           json,
         );
         validateRows(json)
-        
       };
-
       reader.onerror = (e) => {
         log.error('MarkerForm.onChangeDataFile', e);
       };
-
       reader.readAsText(file);
     }
   };
+  
   const uploadProps = {
     name: 'file',
     showUploadList: false,
@@ -139,6 +167,12 @@ function MarkerFormInputs({
     },
   };
 
+  
+  /**
+   * Handles a user change from 
+   *
+   * @param {*} data 
+   */
   const handleRadioChange = (data) => {
     log.debug('MarkerFormInputs.handleRadioChange', data);
     onChange({ field: data.target.name, e: data });
@@ -153,7 +187,7 @@ function MarkerFormInputs({
       key = `${newItem.code}-${newItem.regulating_action}`;
       if (!added.has(key)) {
         added.add(key);
-        _tableData.push(newItem);
+        _tableData.push({ _id: `${crypto.randomUUID()}-${key}`, ...newItem });
       }
     }
     setTableData(_tableData);
@@ -220,7 +254,7 @@ function MarkerFormInputs({
             <Table
               columns={getTableColumns()}
               dataSource={tableData}
-              rowKey={'code'}
+              rowKey={'_id'}
             />
           </div>
         )}
