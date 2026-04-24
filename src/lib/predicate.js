@@ -11,14 +11,18 @@ const PREDICATE = {
   isCitation: (p) => p === 'has_citation',
   isOrigin: (p) => p === 'has_origin',
   isDataset: (p) => p === 'has_dataset',
+  regulatingActions: {
+    up_regulates: '1',
+    down_regulates: '-1',
+    inconclusively_regulates: '0',
+  },
   prefixIds: {
     diagnosis: 'DOID:',
     genes: 'HGNC:',
     proteins: 'UNIPROTKB:',
   },
   isRegulatingMarker: (p) => p === 'has_characterizing_regulating_marker_set',
-  isMarker: (p) =>
-    p === 'has_characterizing_marker_set',
+  isMarker: (p) => p === 'has_characterizing_marker_set',
   isExternalSource: (p) =>
     PREDICATE.isCellType(p) ||
     PREDICATE.isDiagnosis(p) ||

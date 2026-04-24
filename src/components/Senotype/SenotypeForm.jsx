@@ -157,6 +157,40 @@ function SenotypeForm() {
     return results;
   };
 
+  const handleMarkers = ({predicate, _query, data, regulatingAction, options}) => {
+    if (isMarker(predicate.field) || isRegulatingMarker(predicate.field)) {
+      const _result = Array.isArray(data.result) ? data.result : [];
+      let regulating_action = regulatingAction || undefined;
+      if (isRegulatingMarker(predicate.field) && !regulating_action) {
+        regulating_action = form.current.regulating_action || PREDICATE.regulatingActions.up_regulates;
+      }
+      for (const r of _result) {
+        if (_query.includes(PREDICATE.prefixIds.genes)) {
+          options.push({
+            label: r.approved_name,
+            value: formValue({
+              regulating_action,
+              name: r.approved_name,
+              term: r.approved_symbol,
+              code: `${_query.split(':')[0]}:${r.hgnc_id}`,
+            }),
+          });
+        } else {
+          options.push({
+            label: r.recommended_name[0],
+            value: formValue({
+              regulating_action,
+              term: r.recommended_name[0],
+              code: `${_query.split(':')[0]}:${r.uniprotkb_id}`,
+            }),
+          });
+        }
+      }
+    }
+
+    return options
+  }
+
   const fetchForForm = async (predicate, query) => {
     let _query = query
     // Prefix for marker with selected radio or default
@@ -245,35 +279,7 @@ function SenotypeForm() {
       }
     }
 
-    if (isMarker(predicate.field) || isRegulatingMarker(predicate.field)) {
-      const _result = Array.isArray(data.result) ? data.result : [];
-      let regulating_action = undefined;
-      if (isRegulatingMarker(predicate.field)) {
-        regulating_action = form.current.regulating_action || 'up_regulates';
-      }
-      for (const r of _result) {
-        if (_query.includes(PREDICATE.prefixIds.genes)) {
-          options.push({
-            label: r.approved_name,
-            value: formValue({
-              regulating_action,
-              name: r.approved_name,
-              term: r.approved_symbol,
-              code: `${_query.split(':')[0]}:${r.hgnc_id}`,
-            }),
-          });
-        } else {
-          options.push({
-            label: r.recommended_name[0],
-            value: formValue({
-              regulating_action,
-              term: r.recommended_name[0],
-              code: `${_query.split(':')[0]}:${r.uniprotkb_id}`,
-            }),
-          });
-        }
-      }
-    }
+    handleMarkers({predicate, options, data, _query, query});
 
     if (options.length) {
       senotypeOntologyReducer.dispatch({
@@ -507,6 +513,7 @@ function SenotypeForm() {
                       'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
                   },
                 }}
+                handleMarkers={handleMarkers}
                 getOptions={getOptions}
                 getSearchBehavior={getSearchBehavior}
                 senotype={senotype}
@@ -522,16 +529,13 @@ function SenotypeForm() {
                 predicate={{
                   field: 'has_characterizing_regulating_marker_set',
                   label: 'Gene/Protein ID or Symbol',
-                  fields: [
-                    'up_regulates',
-                    'down_regulates',
-                    'inconclusively_regulates',
-                  ],
+                  fields: Object.keys(PREDICATE.regulatingActions),
                   ui: {
                     tooltip:
                       'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
                   },
                 }}
+                handleMarkers={handleMarkers}
                 getOptions={getOptions}
                 getSearchBehavior={getSearchBehavior}
                 senotype={senotype}

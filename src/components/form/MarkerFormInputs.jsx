@@ -7,6 +7,9 @@ import log from 'xac-loglevel'
 import SelectField from './SelectField';
 import PREDICATE from '@/lib/predicate';
 import { Tooltip } from 'antd';
+import { flipObj } from '@/lib/general';
+import API from '@/lib/api';
+import URLS from '@/lib/urls';
 
 function MarkerFormInputs({
   predicate,
@@ -14,18 +17,24 @@ function MarkerFormInputs({
   getSearchBehavior,
   senotype,
   onChange,
+  handleMarkers,
 }) {
-
-  const [tableData, setTableData] = useState([])
-  const isValidFile = useRef(null)
+  const [tableData, setTableData] = useState([]);
+  const isValidFile = useRef(null);
+  const uploadRows = useRef([])
 
   const removeItem = (row) => {
-    const _tableData = tableData.filter((r) => row.code !== r.code)
-    setTableData(_tableData)
-  }
+    const _tableData = tableData.filter((r) => row.code !== r.code);
+    setTableData(_tableData);
+  };
   const getTableColumns = () => {
-    const names = ['name', 'term', 'code', ...(predicate.fields ? ['regulating_action'] : [])]
-    const columns = []
+    const names = [
+      'name',
+      'term',
+      'code',
+      ...(predicate.fields ? ['regulating_action'] : []),
+    ];
+    const columns = [];
     for (const n of names) {
       columns.push({
         title: n,
@@ -39,12 +48,56 @@ function MarkerFormInputs({
       dataIndex: '',
       key: 'delete',
       render: (row) => (
-        <div className='text-danger mx-3'>
-          <i onClick={() => removeItem(row)} role='button' aria-label={`Trash ${row.code}`} className="bi bi-trash">&nbsp;</i>
+        <div className="text-danger mx-3">
+          <i
+            onClick={() => removeItem(row)}
+            role="button"
+            aria-label={`Trash ${row.code}`}
+            className="bi bi-trash"
+          >
+            &nbsp;
+          </i>
         </div>
       ),
     });
     return columns;
+  };
+
+  const fetchForForm = async ({ predicate, _query, regulatingAction }) => {
+    
+    const data = await API.fetch({
+      url: URLS.api.local(`ontology/${predicate.field}`),
+      token: null,
+      body: {
+        query: _query,
+      },
+    });
+
+    handleMarkers({
+      options: uploadRows.current,
+      predicate,
+      _query,
+      data,
+      regulatingAction,
+    });
+  };
+
+  const validateRows = async (uploadData) => {
+    let _query, regulatingAction;
+    const promises = [];
+    const regulatingActions = flipObj(PREDICATE.regulatingActions);
+    for (const d of uploadData) {
+      _query = d.type.eq('gene')
+        ? PREDICATE.prefixIds.genes + d.id
+        : PREDICATE.prefixIds.proteins + d.id;
+      regulatingAction = regulatingActions[d.action];
+      promises.push(fetchForForm({ predicate, _query, regulatingAction }));
+    }
+
+    await Promise.all(promises);
+    log.debug('MarkerFormInputs.validateRows', uploadRows.current);
+    const results = uploadRows.current.map((i) => i.value)
+    addToTable(results)
   }
 
   const onChangeDataFile = (file) => {
@@ -53,7 +106,13 @@ function MarkerFormInputs({
 
       reader.onload = (e) => {
         const fileContents = e.target.result;
-        log.debug('MarkerFormInputs.onChangeDataFile', fileContents.csvToJson());
+        const json = fileContents.csvToJson()
+        log.debug(
+          'MarkerFormInputs.onChangeDataFile',
+          json,
+        );
+        validateRows(json)
+        
       };
 
       reader.onerror = (e) => {
@@ -65,8 +124,9 @@ function MarkerFormInputs({
   };
   const uploadProps = {
     name: 'file',
+    showUploadList: false,
     beforeUpload: (file) => {
-      const isLt4 = file.size / 1024 / 1024 < 4; ;
+      const isLt4 = file.size / 1024 / 1024 < 4;
       const extension = file.name.split('.').pop();
       isValidFile.current = isLt4 && extension.eq('csv');
       return false;
@@ -81,30 +141,39 @@ function MarkerFormInputs({
 
   const handleRadioChange = (data) => {
     log.debug('MarkerFormInputs.handleRadioChange', data);
-    onChange({field: data.target.name, e: data})
+    onChange({ field: data.target.name, e: data });
+  };
+
+  const addToTable = (list) => {
+    const _tableData = [...tableData];
+    const added = new Set(_tableData.map((t) => `${t.code}-${t.regulating_action}`));
+    let newItem, key
+    for (const item of list) {
+      newItem = JSON.parse(item);
+      key = `${newItem.code}-${newItem.regulating_action}`;
+      if (!added.has(key)) {
+        added.add(key);
+        _tableData.push(newItem);
+      }
+    }
+    setTableData(_tableData);
+    onChange({ field: predicate.field, value: JSON.stringify(_tableData) });
+    log.debug('MarkerFormInputs.handleOnChange', _tableData);
   }
 
   const handleOnChange = (data) => {
-    const _tableData = [...tableData]
-    const added = new Set(_tableData.map((t) => t.code))
-    const newItem = JSON.parse(data.e)
-    if (!added.has(newItem.code)) {
-      _tableData.push(newItem);
-    }
-    setTableData(_tableData)
-    onChange({...data, value: JSON.stringify(_tableData)})
-    log.debug('MarkerFormInputs.handleOnChange', data, _tableData);
-  }
+    addToTable([data.e])
+  };
 
   const _getSearchBehavior = (predicate) => {
-    const res = getSearchBehavior(predicate)
+    const res = getSearchBehavior(predicate);
     const onSelect = res.onSelect;
     res.onSelect = (v) => {
-      handleOnChange({e: v})
-      onSelect()
-    }
-    return res
-  }
+      handleOnChange({ e: v });
+      onSelect();
+    };
+    return res;
+  };
 
   return (
     <div className="c-markerForm">
@@ -194,20 +263,22 @@ function MarkerFormInputs({
                     A <code>protein</code> id must correspond to a UniProtKB ID.
                     Example: <code>Q13201</code>
                   </li>
-                  {predicate.fields && <li className="list-group-item">
-                    The <code>action</code> must be one of the following:
-                    <ul>
-                      <li>
-                        <code>1</code> for upregulation
-                      </li>
-                      <li>
-                        <code>-1</code> for downregulation
-                      </li>
-                      <li>
-                        <code>0</code> for inconclusive regulation
-                      </li>
-                    </ul>
-                  </li>}
+                  {predicate.fields && (
+                    <li className="list-group-item">
+                      The <code>action</code> must be one of the following:
+                      <ul>
+                        <li>
+                          <code>1</code> for upregulation
+                        </li>
+                        <li>
+                          <code>-1</code> for downregulation
+                        </li>
+                        <li>
+                          <code>0</code> for inconclusive regulation
+                        </li>
+                      </ul>
+                    </li>
+                  )}
                 </ul>
               }
             >
