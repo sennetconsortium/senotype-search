@@ -247,11 +247,16 @@ function SenotypeForm() {
 
     if (isMarker(predicate.field) || isRegulatingMarker(predicate.field)) {
       const _result = Array.isArray(data.result) ? data.result : [];
+      let regulating_action = undefined;
+      if (isRegulatingMarker(predicate.field)) {
+        regulating_action = form.current.regulating_action || 'up_regulates';
+      }
       for (const r of _result) {
         if (_query.includes(PREDICATE.prefixIds.genes)) {
           options.push({
             label: r.approved_name,
             value: formValue({
+              regulating_action,
               name: r.approved_name,
               term: r.approved_symbol,
               code: `${_query.split(':')[0]}:${r.hgnc_id}`,
@@ -261,6 +266,7 @@ function SenotypeForm() {
           options.push({
             label: r.recommended_name[0],
             value: formValue({
+              regulating_action,
               term: r.recommended_name[0],
               code: `${_query.split(':')[0]}:${r.uniprotkb_id}`,
             }),
@@ -292,7 +298,9 @@ function SenotypeForm() {
       return {
         open: selectAutocompleteReducer?.state[predicate.field],
         onBlur: () => toggleOpen(predicate.field, undefined),
-        onSelect: () => toggleOpen(predicate.field, undefined),
+        onSelect: () => {
+          toggleOpen(predicate.field, undefined);
+        },
         onInputKeyDown: (e) => {
           if (e.key === 'Enter') {
             fetchForForm(predicate, e.currentTarget.value);
@@ -308,11 +316,8 @@ function SenotypeForm() {
   }
 
   const onChange = (data) => {
-    let value = data.e.target?.value;
+    let value = data.value || data.e.target?.value;
     log.info('SenotypeForm.onChange', data.field, value);
-    if (value) {
-
-    }
     form.current = { ...form.current, [data.field]: value };
   }
 

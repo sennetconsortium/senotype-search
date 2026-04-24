@@ -9,6 +9,7 @@ function SelectField({
   senotype,
   useSearchIcon,
   onChange,
+  mode = 'multiple',
 }) {
   return (
     <>
@@ -26,7 +27,7 @@ function SelectField({
         onChange={onChange}
         controlProps={{
           ...getSearchBehavior(p),
-          mode: 'multiple',
+          mode,
           notFoundContent: (
             <span className="text-black">
               {p.ui.tooltip && (

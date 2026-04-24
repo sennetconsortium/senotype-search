@@ -39,6 +39,18 @@ Object.assign(String.prototype, {
     }
     return res;
   },
+  csvToJson(delimiter = ",")  {
+  const [headers, ...rows] = this.split("\n");
+  const headerArray = headers.split(delimiter);
+  
+  return rows.map(row => {
+    const values = row.split(delimiter);
+    return headerArray.reduce((obj, header, index) => {
+      obj[header.trim()] = values[index]?.trim();
+      return obj;
+    }, {});
+  });
+}
 });
 
 export const flipObj = (obj) => {

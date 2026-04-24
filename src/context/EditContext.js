@@ -7,7 +7,7 @@ const EditContext = createContext({});
 
 export const EditProvider = ({ children, data }) => {
 
-  const formValue = ({code, term}) => JSON.stringify({code, term})
+  const formValue = (data) => JSON.stringify(data)
 
   const senotypeOntology = useMemo(() => {
 

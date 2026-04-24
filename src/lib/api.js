@@ -136,9 +136,9 @@ const API = {
         }
       } else if (isMarker(predicate) || isRegulatingMarker(predicate)) {
         if (query.toUpperCase().includes(PREDICATE.prefixIds.proteins)) {
-          url = urls[predicate].proteins;
+          url = urls.has_characterizing_marker_set.proteins;
         } else {
-          url = urls[predicate].genes;
+          url = urls.has_characterizing_marker_set.genes;
         }
       } else {
         if (isOrigin(predicate)) {
