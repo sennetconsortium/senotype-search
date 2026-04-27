@@ -32,18 +32,18 @@ const API = {
       log.error('API.fetch', error);
     }
   },
-  search: async (body, index = 'entities') => {
-    return await API.fetch({ url: `${URLS.api.search}${index}/search`, body });
+  search: async (body, index = 'entities', token) => {
+    return await API.fetch({ url: `${URLS.api.search}${index}/search`, body, token });
   },
-  fetchSenotype: async (senotypeUuid) => {
+  fetchSenotype: async (senotypeUuid, token) => {
     let data = {};
 
     const body = simple_query_builder('uuid', senotypeUuid);
 
-    let jsonData = await API.search(body, ENVS.index.senotype);
+    let jsonData = await API.search(body, ENVS.index.senotype, token);
     if (jsonData.hasOwnProperty('error')) {
       log.error(jsonData.error);
-      return data;
+      return jsonData;
     } else {
       let total = jsonData['hits']['total']['value'];
       if (total !== 0) {

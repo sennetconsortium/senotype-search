@@ -1,6 +1,6 @@
 import EditContext from '@/context/EditContext';
 import React, { useState, useContext, useEffect, useEffectEvent, useRef } from 'react';
-import { Button, Tab, Tabs } from 'react-bootstrap';
+import { Tab, Tabs, Form, Button } from 'react-bootstrap';
 import AppAccordion from '../AppAccordion';
 import InputField from '../form/InputField';
 import AppContext from '@/context/AppContext';
@@ -19,7 +19,8 @@ function SenotypeForm() {
   const [key, setKey] = useState('main');
   const { senotype, senotypeOntology, formatValue } = useContext(EditContext);
   const { ontology } = useContext(AppContext)
-  const form = useRef(senotype)
+  const formValues = useRef(senotype || {});
+  const [validated, setValidated] = useState(false);
 
   const senotypeOntologyReducer = useAppReducer(senotypeOntology || {});
   const getOpenStates = () => {
@@ -51,7 +52,7 @@ function SenotypeForm() {
   }, [senotypeOntology])
 
   useEffect(() => {
-    form.current = senotype
+    formValues.current = senotype
   }, [senotype]);
 
   const {
@@ -154,7 +155,7 @@ function SenotypeForm() {
       {
         field: 'has_sex',
         label: 'Sex',
-        ui: {},
+        ui: { required: true},
       },
     ];
 
@@ -166,7 +167,7 @@ function SenotypeForm() {
       const _result = Array.isArray(data.result) ? data.result : [];
       let regulating_action = regulatingAction || undefined;
       if (isRegulatingMarker(predicate.field) && !regulating_action) {
-        regulating_action = form.current.regulating_action || PREDICATE.regulatingActions.up_regulates;
+        regulating_action = formValues.current.regulating_action || PREDICATE.regulatingActions.up_regulates;
       }
       for (const r of _result) {
         if (_query.includes(PREDICATE.prefixIds.gene)) {
@@ -203,7 +204,7 @@ function SenotypeForm() {
       const prefix = isRegulatingMarker(predicate.field)
         ? 'marker_type_regulating'
         : 'marker_type';
-      _query = `${form.current[prefix] || PREDICATE.prefixIds.gene}${query}`;
+      _query = `${formValues.current[prefix] || PREDICATE.prefixIds.gene}${query}`;
     }
     const options = [];
     const data = await API.fetch({
@@ -336,232 +337,262 @@ function SenotypeForm() {
   const onChange = (data) => {
     let value = data.value || data.e.target?.value;
     log.info('SenotypeForm.onChange', data.field, value);
-    form.current = { ...form.current, [data.field]: value };
+    formValues.current = { ...formValues.current, [data.field]: value };
   }
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    log.info('SenotypeForm.handleSubmit', form)
+  
+    log.info('SenotypeForm.handleSubmit', formValues)
+    try {
+      const form = e.currentTarget;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      console.log(formValues.current);
+
+      const required = tab1Predicates()
+        .concat(tab2Predicates())
+        .concat(tab2bPredicates())
+        .filter((f) => f.ui?.required === true && formValues.current[f.field] === undefined);
+
+      
+      
+      if (form.checkValidity() === false) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      setValidated(true);
+      
+    } catch (errorInfo) {
+      console.log('Manual validation failed:', errorInfo);
+    }
   }
 
   const loadingPredicates = !senotypeOntology || !senotypeOntologyReducer.state || !selectBusyReducer.state
 
   return (
     <>
-      <h1 className="h2 mb-5">
-        {senotype ? (
-          <span>
-            Edit <span className="text-muted">{senotype.sennet_id}</span>
-          </span>
-        ) : (
-          'New'
-        )}
-      </h1>
-      <Tabs
-        id="senotypeForm--Tab"
-        activeKey={key}
-        onSelect={(k) => setKey(k)}
-        className="mb-3"
+      <Form
+        noValidate
+        validated={validated}
+        onSubmit={handleSubmit}
+        layout="vertical"
       >
-        <Tab eventKey="main" title="Submission">
-          <AppAccordion title={'Overview'}>
-            <InputField
-              label={'Name'}
-              id={'name'}
-              onChange={onChange}
-              controlProps={{
-                defaultValue: senotype?.title,
-                required: true,
-              }}
-            />
-            <InputField
-              label={'Description'}
-              id={'definition'}
-              onChange={onChange}
-              controlProps={{
-                required: true,
-                defaultValue: senotype?.definition,
-                as: 'textarea',
-                rows: 3,
-              }}
-            />
-          </AppAccordion>
-          <AppAccordion title={'Senotype'}>
-            {loadingPredicates && <Skeleton />}
-            {!loadingPredicates && (
-              <>
-                {tab1Predicates().map((p, index) => (
-                  <SelectField
-                    key={index}
-                    p={p}
-                    getOptions={getOptions}
-                    getSearchBehavior={getSearchBehavior}
-                    senotype={senotype}
-                    onChange={onChange}
-                  />
-                ))}
-              </>
-            )}
-          </AppAccordion>
-        </Tab>
-        <Tab eventKey="citationDemographics" title="Citation & Demographics">
-          <AppAccordion title={'Citation & Origin'}>
-            {loadingPredicates && <Skeleton />}
-            {!loadingPredicates && (
-              <>
-                {tab2Predicates().map((p, index) => (
-                  <SelectField
-                    key={index}
-                    p={p}
-                    getOptions={getOptions}
-                    getSearchBehavior={getSearchBehavior}
-                    senotype={senotype}
-                    onChange={onChange}
-                  />
-                ))}
-              </>
-            )}
-          </AppAccordion>
-          <AppAccordion title={'Demographics'}>
-            {loadingPredicates && <Skeleton />}
-            {!loadingPredicates && (
-              <>
-                {tab2bPredicates().map((p, index) => (
-                  <SelectField
-                    key={index}
-                    p={p}
-                    getOptions={getOptions}
-                    getSearchBehavior={getSearchBehavior}
-                    senotype={senotype}
-                    onChange={onChange}
-                  />
-                ))}
-              </>
-            )}
-            <FormInputGroup
-              label={'Age'}
-              field={'age'}
-              onChange={onChange}
-              inputs={[
-                {
-                  label: 'Value',
-                  controlProps: {
-                    type: 'number',
-                    min: 0,
-                  },
-                },
-                {
-                  label: 'Lower',
-                  controlProps: {
-                    type: 'number',
-                    min: 0,
-                  },
-                },
-                {
-                  label: 'Upper',
-                  controlProps: {
-                    type: 'number',
-                    min: 0,
-                  },
-                },
-                {
-                  label: 'Unit',
-                  controlProps: {
-                    value: 'year',
-                    disabled: true,
-                  },
-                },
-              ]}
-            />
-
-            <FormInputGroup
-              label={'BMI'}
-              field={'bmi'}
-              onChange={onChange}
-              inputs={[
-                {
-                  label: 'Value',
-                  controlProps: {
-                    type: 'number',
-                    min: 0,
-                  },
-                },
-                {
-                  label: 'Lower',
-                  controlProps: {
-                    type: 'number',
-                    min: 0,
-                  },
-                },
-                {
-                  label: 'Upper',
-                  controlProps: {
-                    type: 'number',
-                    min: 0,
-                  },
-                },
-                {
-                  label: 'Unit',
-                  controlProps: {
-                    value: 'kg/m2',
-                    disabled: true,
-                  },
-                },
-              ]}
-            />
-          </AppAccordion>
-        </Tab>
-        <Tab eventKey="markers" title="Markers">
-          <AppAccordion title={'Specified Marker'}>
-            {loadingPredicates && <Skeleton />}
-            {!loadingPredicates && (
-              <MarkerFormInputs
-                predicate={{
-                  field: 'has_characterizing_marker_set',
-                  label: 'Gene/Protein ID or Symbol',
-                  ui: {
-                    tooltip:
-                      'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
-                  },
-                }}
-                busy={{ toggleBusy, selectBusyReducer }}
-                handleMarkers={handleMarkers}
-                getOptions={getOptions}
-                getSearchBehavior={getSearchBehavior}
-                senotype={senotype}
+        <h1 className="h2 mb-5">
+          {senotype ? (
+            <span>
+              Edit <span className="text-muted">{senotype.sennet_id}</span>
+            </span>
+          ) : (
+            'New'
+          )}
+        </h1>
+        <Tabs
+          id="senotypeForm--Tab"
+          activeKey={key}
+          onSelect={(k) => setKey(k)}
+          className="mb-3"
+        >
+          <Tab eventKey="main" title="Submission">
+            <AppAccordion title={'Overview'}>
+              <InputField
+                label={'Name'}
+                id={'name'}
                 onChange={onChange}
-              />
-            )}
-          </AppAccordion>
-
-          <AppAccordion title={'Regulating Marker'}>
-            {loadingPredicates && <Skeleton />}
-            {!loadingPredicates && (
-              <MarkerFormInputs
-                predicate={{
-                  field: 'has_characterizing_regulating_marker_set',
-                  label: 'Gene/Protein ID or Symbol',
-                  fields: Object.keys(PREDICATE.regulatingActions),
-                  ui: {
-                    tooltip:
-                      'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
-                  },
+                controlProps={{
+                  defaultValue: senotype?.title,
+                  required: true,
                 }}
-                busy={{ toggleBusy, selectBusyReducer }}
-                handleMarkers={handleMarkers}
-                getOptions={getOptions}
-                getSearchBehavior={getSearchBehavior}
-                senotype={senotype}
-                onChange={onChange}
               />
-            )}
-          </AppAccordion>
-        </Tab>
-      </Tabs>
-      <div className="c-senotypeForm__fotter mt-4 text-end">
-        <Button onClick={(e) => handleSubmit(e)}>Submit</Button>
-      </div>
+              <InputField
+                label={'Description'}
+                id={'definition'}
+                onChange={onChange}
+                controlProps={{
+                  required: true,
+                  defaultValue: senotype?.definition,
+                  as: 'textarea',
+                  rows: 3,
+                }}
+              />
+            </AppAccordion>
+            <AppAccordion title={'Senotype'}>
+              {loadingPredicates && <Skeleton />}
+              {!loadingPredicates && (
+                <>
+                  {tab1Predicates().map((p, index) => (
+                    <SelectField
+                      key={index}
+                      p={p}
+                      getOptions={getOptions}
+                      getSearchBehavior={getSearchBehavior}
+                      senotype={senotype}
+                      onChange={onChange}
+                    />
+                  ))}
+                </>
+              )}
+            </AppAccordion>
+          </Tab>
+          <Tab eventKey="citationDemographics" title="Citation & Demographics">
+            <AppAccordion title={'Citation & Origin'}>
+              {loadingPredicates && <Skeleton />}
+              {!loadingPredicates && (
+                <>
+                  {tab2Predicates().map((p, index) => (
+                    <SelectField
+                      key={index}
+                      p={p}
+                      getOptions={getOptions}
+                      getSearchBehavior={getSearchBehavior}
+                      senotype={senotype}
+                      onChange={onChange}
+                    />
+                  ))}
+                </>
+              )}
+            </AppAccordion>
+            <AppAccordion title={'Demographics'}>
+              {loadingPredicates && <Skeleton />}
+              {!loadingPredicates && (
+                <>
+                  {tab2bPredicates().map((p, index) => (
+                    <SelectField
+                      key={index}
+                      p={p}
+                      getOptions={getOptions}
+                      getSearchBehavior={getSearchBehavior}
+                      senotype={senotype}
+                      onChange={onChange}
+                    />
+                  ))}
+                </>
+              )}
+              <FormInputGroup
+                label={'Age'}
+                field={'age'}
+                onChange={onChange}
+                inputs={[
+                  {
+                    label: 'Value',
+                    controlProps: {
+                      type: 'number',
+                      min: 0,
+                    },
+                  },
+                  {
+                    label: 'Lower',
+                    controlProps: {
+                      type: 'number',
+                      min: 0,
+                    },
+                  },
+                  {
+                    label: 'Upper',
+                    controlProps: {
+                      type: 'number',
+                      min: 0,
+                    },
+                  },
+                  {
+                    label: 'Unit',
+                    controlProps: {
+                      value: 'year',
+                      disabled: true,
+                    },
+                  },
+                ]}
+              />
+
+              <FormInputGroup
+                label={'BMI'}
+                field={'bmi'}
+                onChange={onChange}
+                inputs={[
+                  {
+                    label: 'Value',
+                    controlProps: {
+                      type: 'number',
+                      min: 0,
+                    },
+                  },
+                  {
+                    label: 'Lower',
+                    controlProps: {
+                      type: 'number',
+                      min: 0,
+                    },
+                  },
+                  {
+                    label: 'Upper',
+                    controlProps: {
+                      type: 'number',
+                      min: 0,
+                    },
+                  },
+                  {
+                    label: 'Unit',
+                    controlProps: {
+                      value: 'kg/m2',
+                      disabled: true,
+                    },
+                  },
+                ]}
+              />
+            </AppAccordion>
+          </Tab>
+          <Tab eventKey="markers" title="Markers">
+            <AppAccordion title={'Specified Marker'}>
+              {loadingPredicates && <Skeleton />}
+              {!loadingPredicates && (
+                <MarkerFormInputs
+                  predicate={{
+                    field: 'has_characterizing_marker_set',
+                    label: 'Gene/Protein ID or Symbol',
+                    ui: {
+                      tooltip:
+                        'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
+                    },
+                  }}
+                  busy={{ toggleBusy, selectBusyReducer }}
+                  handleMarkers={handleMarkers}
+                  getOptions={getOptions}
+                  getSearchBehavior={getSearchBehavior}
+                  senotype={senotype}
+                  onChange={onChange}
+                />
+              )}
+            </AppAccordion>
+
+            <AppAccordion title={'Regulating Marker'}>
+              {loadingPredicates && <Skeleton />}
+              {!loadingPredicates && (
+                <MarkerFormInputs
+                  predicate={{
+                    field: 'has_characterizing_regulating_marker_set',
+                    label: 'Gene/Protein ID or Symbol',
+                    fields: Object.keys(PREDICATE.regulatingActions),
+                    ui: {
+                      tooltip:
+                        'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
+                    },
+                  }}
+                  busy={{ toggleBusy, selectBusyReducer }}
+                  handleMarkers={handleMarkers}
+                  getOptions={getOptions}
+                  getSearchBehavior={getSearchBehavior}
+                  senotype={senotype}
+                  onChange={onChange}
+                />
+              )}
+            </AppAccordion>
+          </Tab>
+        </Tabs>
+        <div className="c-senotypeForm__fotter mt-4 text-end">
+          <Button type="submit">Submit</Button>
+        </div>
+      </Form>
     </>
   );
 }

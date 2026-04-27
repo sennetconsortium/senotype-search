@@ -14,6 +14,7 @@ import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
 import AppContext from '@/context/AppContext';
 import HeaderBadges from './HeaderBadges';
+import InfoTooltip from "@/components/form/InfoTooltip";
 
 const buildSummary = (senotype) => {
   return [
@@ -79,7 +80,7 @@ const buildSenotype = (senotype) => {
               <a
                 aria-label={`Outgoing link to ontology for ${item.code}`}
                 target={'_blank'}
-                href={URLS.getOboDetailsUrl(item.code.replace(':', '_'))}
+                href={`${URLS.portal}organs/${item.term?.toDashedCase()}`}
               >
                 <LinkOutlined />
               </a>
@@ -328,8 +329,6 @@ const buildReferences = (senotype) => {
 };
 
 export default function ViewSenotype({ senotype }) {
-  const { auth } = useContext(AppContext);
-
   const [span, setSpan] = useState(10);
   const [sortedInfo, setSortedInfo] = useState({});
   const searchInput = useRef(null);
@@ -538,18 +537,13 @@ export default function ViewSenotype({ senotype }) {
               />
             </h2>
 
-            {auth.isAuthenticated && auth.hassenotypeEdit && (
-              <Button className={'mb-2'} href={`${URLS.senotypeEditor}edit/${senotype.sennet_id}`}>
-                Edit
-              </Button>
-            )}
             <HeaderBadges data={senotype} />
 
             <AppAccordion title={'Summary'} id={'summary'}>
               <Descriptions items={buildSummary(senotype)} column={2} />
             </AppAccordion>
 
-            <AppAccordion title={'Senotype'} id={'senotype'}>
+            <AppAccordion title={'Senotype'} id={'senotype'} tooltipTitle={'Senotype title'}>
               <Descriptions items={buildSenotype(senotype)} />
             </AppAccordion>
 

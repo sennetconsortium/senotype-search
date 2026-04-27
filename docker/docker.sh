@@ -10,6 +10,7 @@ cd "$REPO_ROOT"
 VERSION="$(cat VERSION)"
 export VERSION
 COMMAND=${1:-}
+ENV=${2:-}
 
 usage() {
   echo "Usage: $0 <command>"
@@ -29,7 +30,17 @@ case "$COMMAND" in
     echo "Built image version $VERSION"
     ;;
   start)
-    docker compose -f docker/docker-compose.yml up -d
+    if [[ "$ENV" != "dev" && "$ENV" != "prod" ]]; then
+      echo "Unknown deployment environment '$ENV', specify one of the following: dev|prod"
+    fi
+    case "$ENV" in
+      prod)
+        docker compose -f docker/docker-compose.yml up -d
+        ;;
+      dev)
+        docker compose -f docker/docker-compose.yml -f docker/docker-compose.development.yml up -d
+        ;;
+    esac
     ;;
   stop)
     docker compose -f docker/docker-compose.yml down --remove-orphans

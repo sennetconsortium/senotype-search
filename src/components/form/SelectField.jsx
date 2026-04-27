@@ -29,6 +29,7 @@ function SelectField({
         onChange={onChange}
         controlProps={{
           ...getSearchBehavior(p),
+          required: p.ui.required,
           mode,
           notFoundContent: (
             <>
@@ -47,7 +48,7 @@ function SelectField({
               {isBusy && <AppSpinner size={'small'} fullscreen={false} />}
             </>
           ),
-          defaultValue: senotype[p.field]
+          defaultValue: senotype && senotype[p.field]
             ? senotype[p.field][0]?.term
             : undefined,
           required: p.ui.required,

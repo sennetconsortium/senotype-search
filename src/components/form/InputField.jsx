@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, InputGroup } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { Select } from 'antd';
 import log from 'xac-loglevel'
 import { Tooltip } from 'antd';
@@ -49,6 +49,7 @@ function InputField({
 
       {selectData && (
         <Select
+          id={_id}
           suffixIcon={dropIcon || <i className="bi bi-chevron-down"></i>}
           showSearch={{
             optionFilterProp: 'label',

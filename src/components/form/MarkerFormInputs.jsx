@@ -315,7 +315,6 @@ function MarkerFormInputs({
         {tableData.length > 0 && (
           <div className="mt-3">
             <Table
-              className="alert alert-success"
               columns={getTableColumns()}
               dataSource={tableData}
               rowKey={'_id'}
