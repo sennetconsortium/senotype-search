@@ -362,8 +362,6 @@ function SenotypeForm() {
 
       const validationFailed = form.checkValidity() === false || required.length > 0;
       if (validationFailed) {
-        e.preventDefault();
-        e.stopPropagation();
         required.map((p) => {
           document
             .querySelectorAll(`#c-inputField--${p.field} .ant-select`)
@@ -372,6 +370,8 @@ function SenotypeForm() {
             });
             
         })
+      } else {
+        // TODO: send form to backend
       }
       setValidated(true);
       
