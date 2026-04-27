@@ -27,7 +27,7 @@ function ModalOverComponent({
 }) {
   const [modal, setModal] = useState({ cancelCSS: 'none', okText: 'OK' });
   const CustomTag = tag;
-  if (maxLength && modalContent.length <= maxLength) {
+  if (maxLength && modalContent?.length <= maxLength) {
     return <CustomTag>{modalContent}</CustomTag>;
   }
 

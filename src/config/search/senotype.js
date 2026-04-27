@@ -6,19 +6,19 @@ import AUTH from '@/lib/auth';
 
 export const ubkgPredicates = [
   {
-    field: 'in_taxon',
+    field: 'taxon',
     ui: { w: 100, required: true },
   },
   {
     ontologyKey: 'organ_types',
-    field: 'located_in',
+    field: 'organ',
     ui: {
       w: 250,
       required: true,
     },
   },
   {
-    field: 'has_cell_type',
+    field: 'cell_type',
     ui: {
       w: 300,
       required: true,
@@ -26,7 +26,7 @@ export const ubkgPredicates = [
         'Enter either a string that is in the name of the cell type or the Cell Ontology ID (e.g., CL:0020011; 0020011)',
     },
   },
-  { field: 'has_assay', ui: { w: 200 } },
+  { field: 'assay', ui: { w: 200 } },
 ];
 
 const {
@@ -57,28 +57,28 @@ export const SEARCH_SENOTYPE = {
         isAggregationActive: true,
         isFacetVisible: false,
       },
-      in_taxon: {
+      taxon: {
         label: 'Taxon',
         type: 'value',
-        field: 'in_taxon.term.keyword',
+        field: 'taxon.term.keyword',
         filterType: 'any',
         isExpanded: false,
         isFilterable: false,
         facetType: 'term',
         bucketsTransform: bucketsTransform,
         isAggregationActive: true,
-        isFacetVisible: doesAggregationHaveBuckets('in_taxon'),
+        isFacetVisible: doesAggregationHaveBuckets('taxon'),
       },
-      located_in: {
+      organ: {
         label: 'Organ',
         type: 'value',
-        field: 'located_in.term.keyword',
+        field: 'organ.term.keyword',
         isExpanded: false,
         filterType: 'any',
         isFilterable: false,
         facetType: 'hierarchy',
         bucketsTransform: organBucketsTransform,
-        groupByField: 'located_in.term.keyword',
+        groupByField: 'organ.term.keyword',
         isHierarchyOption: (option) => {
           return ONTOLOGY_CACHE.organ_types.laterals.includes(option);
         },
@@ -88,31 +88,31 @@ export const SEARCH_SENOTYPE = {
           });
         },
         isAggregationActive: true,
-        isFacetVisible: doesAggregationHaveBuckets('located_in'),
+        isFacetVisible: doesAggregationHaveBuckets('organ'),
       },
-      has_cell_type: {
+      cell_type: {
         label: 'Cell Type',
         type: 'value',
-        field: 'has_cell_type.term.keyword',
+        field: 'cell_type.term.keyword',
         isExpanded: false,
         filterType: 'any',
         isFilterable: false,
         facetType: 'term',
         bucketsTransform: bucketsTransform,
         isAggregationActive: true,
-        isFacetVisible: doesAggregationHaveBuckets('has_cell_type'),
+        isFacetVisible: doesAggregationHaveBuckets('cell_type'),
       },
-      has_assay: {
+      assay: {
         label: 'Dataset Type',
         type: 'value',
-        field: 'has_assay.term.keyword',
+        field: 'assay.term.keyword',
         isExpanded: false,
         filterType: 'any',
         isFilterable: false,
         facetType: 'term',
         bucketsTransform: bucketsTransform,
         isAggregationActive: true,
-        isFacetVisible: doesAggregationHaveBuckets('has_assay'),
+        isFacetVisible: doesAggregationHaveBuckets('assay'),
       },
       affiliation_group: {
         label: 'Affiliation',
@@ -145,9 +145,9 @@ export const SEARCH_SENOTYPE = {
     },
     source_fields: [
       ...ubkgPredicates.map((a) => a.field),
-      'has_hallmark',
+      'hallmark',
       'inconclusively_regulates',
-      'definition',
+      'description',
       'sennet_id',
       'title',
       'created_by_user_displayname',

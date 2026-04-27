@@ -66,18 +66,18 @@ const API = {
   fetchForForm: async (predicate, query) => {
     
     const urls = {
-      has_citation: {
+      citation: {
         byCode: `${URLS.nih.pubMed}&id=<query>`,
         byTerm: `${URLS.nih.pubMed}&term=<query>`,
       },
-      has_origin: `${URLS.sciCrunch.resolver}<query>`,
-      has_dataset: `${URLS.api.search}entities/search`,
-      has_cell_type: `${URLS.api.ontology}celltypes/<query>`,
-      has_diagnosis: {
+      origin: `${URLS.sciCrunch.resolver}<query>`,
+      dataset: `${URLS.api.search}entities/search`,
+      cell_type: `${URLS.api.ontology}celltypes/<query>`,
+      diagnosis: {
         byCode: `${URLS.api.ontology}codes/<query>/terms`,
         byTerm: `${URLS.api.ontology}terms/<query>/codes`,
       },
-      has_characterizing_marker_set: {
+      characterizing_marker_set: {
         genes: `${URLS.api.ontology}genes/<query>`,
         proteins: `${URLS.api.ontology}proteins/<query>`,
       },
@@ -136,9 +136,9 @@ const API = {
         }
       } else if (isMarker(predicate) || isRegulatingMarker(predicate)) {
         if (query.toUpperCase().includes(PREDICATE.prefixIds.protein)) {
-          url = urls.has_characterizing_marker_set.proteins;
+          url = urls.characterizing_marker_set.proteins;
         } else {
-          url = urls.has_characterizing_marker_set.genes;
+          url = urls.characterizing_marker_set.genes;
         }
       } else {
         if (isOrigin(predicate)) {

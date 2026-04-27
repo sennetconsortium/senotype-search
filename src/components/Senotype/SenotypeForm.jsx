@@ -89,22 +89,22 @@ function SenotypeForm() {
     const results = [
       ...ubkgPredicates.filter((p) => !isAssay(p.field)),
       {
-        field: 'has_assay',
+        field: 'assay',
         label: 'Assay',
         ui: {},
       },
       {
-        field: 'has_hallmark',
+        field: 'hallmark',
         label: 'Hallmark',
         ui: { required: true },
       },
       {
-        field: 'has_inducer',
+        field: 'inducer',
         label: 'Inducer',
         ui: {},
       },
       {
-        field: 'has_microenvironment',
+        field: 'microenvironment',
         label: 'Microenvironment',
         ui: {},
       },
@@ -123,7 +123,7 @@ function SenotypeForm() {
   const tab2Predicates = () => {
     const results = [
       {
-        field: 'has_citation',
+        field: 'citation',
         label: 'Citation',
         ui: {
           tooltip:
@@ -131,7 +131,7 @@ function SenotypeForm() {
         },
       },
       {
-        field: 'has_origin',
+        field: 'origin',
         label: 'Origin',
         ui: {
           tooltip:
@@ -139,7 +139,7 @@ function SenotypeForm() {
         },
       },
       {
-        field: 'has_dataset',
+        field: 'dataset',
         label: 'Dataset',
         ui: {
           tooltip:
@@ -155,7 +155,7 @@ function SenotypeForm() {
   const tab2bPredicates = () => {
     const results = [
       {
-        field: 'has_sex',
+        field: 'sex',
         label: 'Sex',
         ui: { required: true},
       },
@@ -372,11 +372,15 @@ function SenotypeForm() {
         })
       } else {
         // TODO: send form to backend
+        log.debug('SenotypeForm.handleSubmit > formValues', formValues);
       }
       setValidated(true);
       
     } catch (errorInfo) {
-      console.log('Manual validation failed:', errorInfo);
+      log.error(
+        'SenotypeForm.handleSubmit > Manual validation failed:',
+        errorInfo,
+      );
     }
   }
 
@@ -419,11 +423,11 @@ function SenotypeForm() {
               />
               <InputField
                 label={'Description'}
-                id={'definition'}
+                id={'description'}
                 onChange={onChange}
                 controlProps={{
                   required: true,
-                  defaultValue: senotype?.definition,
+                  defaultValue: senotype?.description,
                   as: 'textarea',
                   rows: 3,
                 }}
@@ -560,7 +564,7 @@ function SenotypeForm() {
               {!loadingPredicates && (
                 <MarkerFormInputs
                   predicate={{
-                    field: 'has_characterizing_marker_set',
+                    field: 'characterizing_marker_set',
                     label: 'Gene/Protein ID or Symbol',
                     ui: {
                       tooltip:
@@ -582,7 +586,7 @@ function SenotypeForm() {
               {!loadingPredicates && (
                 <MarkerFormInputs
                   predicate={{
-                    field: 'has_characterizing_regulating_marker_set',
+                    field: 'characterizing_regulating_marker_set',
                     label: 'Gene/Protein ID or Symbol',
                     fields: Object.keys(PREDICATE.regulatingActions),
                     ui: {

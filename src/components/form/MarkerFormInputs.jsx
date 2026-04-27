@@ -110,7 +110,7 @@ function MarkerFormInputs({
           error: (
             <span>
               {data.result?.error || JSON.stringify(data.result)} on search of
-              column <code>id</code> with value <code>query</code>
+              column <code>id</code> with value <code>{query}</code>
             </span>
           ),
           row,

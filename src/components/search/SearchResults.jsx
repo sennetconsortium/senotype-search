@@ -59,11 +59,11 @@ function SearchResults() {
             {record.title}
             <br />
             <ModalOverComponent
-              modalContent={record.definition}
+              modalContent={record.description}
               tag="small"
               maxLength={100}
             >
-              <small>{record.definition.substr(0, 100)}</small>
+              <small>{record.description?.substr(0, 100)}</small>
             </ModalOverComponent>
           </div>
         );
