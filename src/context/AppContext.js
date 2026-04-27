@@ -49,7 +49,7 @@ export const AppProvider = ({ children }) => {
       ...info,
       isAuthenticated,
       isAuthorized: isAuthenticated,
-      hassenotypeEdit: senotypeEdit?.has_senotype_edit,
+      hasSenotypeEdit: senotypeEdit?.has_senotype_edit,
       isAdmin: admin?.has_data_admin_privs,
       userGroups: groups?.user_write_groups,
     });
