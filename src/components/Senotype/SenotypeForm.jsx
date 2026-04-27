@@ -52,7 +52,9 @@ function SenotypeForm() {
   }, [senotypeOntology])
 
   useEffect(() => {
-    formValues.current = senotype
+    if (senotype) {
+      formValues.current = senotype
+    }
   }, [senotype]);
 
   const {
@@ -349,18 +351,27 @@ function SenotypeForm() {
       e.preventDefault();
       e.stopPropagation();
 
-      console.log(formValues.current);
+      // document
+      //   .querySelectorAll('ant-select')
+      //   .forEach((el) => el.removeAttribute('is-invalid'));
 
       const required = tab1Predicates()
         .concat(tab2Predicates())
         .concat(tab2bPredicates())
         .filter((f) => f.ui?.required === true && formValues.current[f.field] === undefined);
 
-      
-      
-      if (form.checkValidity() === false) {
+      const validationFailed = form.checkValidity() === false || required.length > 0;
+      if (validationFailed) {
         e.preventDefault();
         e.stopPropagation();
+        required.map((p) => {
+          document
+            .querySelectorAll(`#c-inputField--${p.field} .ant-select`)
+            .forEach((el) => {
+              el.classList.add('is-invalid');
+            });
+            
+        })
       }
       setValidated(true);
       
@@ -374,6 +385,7 @@ function SenotypeForm() {
   return (
     <>
       <Form
+        className='c-senotypeForm'
         noValidate
         validated={validated}
         onSubmit={handleSubmit}

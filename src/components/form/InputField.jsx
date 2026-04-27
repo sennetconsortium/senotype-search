@@ -25,7 +25,7 @@ function InputField({
   };
 
   return (
-    <Form.Group className={`c-inputField ${className} mt-4`}>
+    <Form.Group className={`c-inputField ${className} mt-4`} id={`c-inputField--${_id}`}>
       <Form.Label htmlFor={_id}>
         <strong>{label}</strong>
         {controlProps.required && (
