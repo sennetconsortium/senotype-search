@@ -49,6 +49,7 @@ function InputField({
 
       {selectData && (
         <Select
+          key={selectData}
           id={_id}
           suffixIcon={dropIcon || <i className="bi bi-chevron-down"></i>}
           showSearch={{

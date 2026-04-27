@@ -48,9 +48,10 @@ function SelectField({
               {isBusy && <AppSpinner size={'small'} fullscreen={false} />}
             </>
           ),
-          defaultValue: senotype && senotype[p.field]
-            ? senotype[p.field][0]?.term
-            : undefined,
+          value:
+            senotype && senotype[p.field]
+              ? senotype[p.field][0]?.term
+              : undefined,
           required: p.ui.required,
         }}
       />
