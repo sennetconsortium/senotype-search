@@ -39,7 +39,7 @@ function AppNavBar() {
           >
             {auth.hassenotypeEdit && (
               <Nav>
-                <Nav.Link href={`${URLS.senotypeEditor}create`}>
+                <Nav.Link href={`/senotype/create`}>
                   Register Senotype
                 </Nav.Link>
               </Nav>
