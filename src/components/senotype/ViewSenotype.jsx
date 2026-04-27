@@ -1,20 +1,12 @@
 import AppAccordion from '@/components/AppAccordion';
-import React, {
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Button, Descriptions, Input, Space, Table } from 'antd';
 import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
-import AppContext from '@/context/AppContext';
 import HeaderBadges from './HeaderBadges';
-import InfoTooltip from "@/components/form/InfoTooltip";
 
 const buildSummary = (senotype) => {
   return [
@@ -31,7 +23,8 @@ const buildSummary = (senotype) => {
           <div>{senotype.created_by_user_displayname}</div>
           <div>
             <a href={`mailto:${senotype.created_by_user_email}`}>
-              {senotype.created_by_user_email} <i className="bi bi-envelope"></i>
+              {senotype.created_by_user_email}{' '}
+              <i className="bi bi-envelope"></i>
             </a>
           </div>
         </span>
@@ -543,7 +536,11 @@ export default function ViewSenotype({ senotype }) {
               <Descriptions items={buildSummary(senotype)} column={2} />
             </AppAccordion>
 
-            <AppAccordion title={'Senotype'} id={'senotype'} tooltipTitle={'Senotype title'}>
+            <AppAccordion
+              title={'Senotype'}
+              id={'senotype'}
+              tooltipTitle={'Senotype title'}
+            >
               <Descriptions items={buildSenotype(senotype)} />
             </AppAccordion>
 
