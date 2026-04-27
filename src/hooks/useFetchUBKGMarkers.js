@@ -23,7 +23,7 @@ export function useFetchUBKGMarkers() {
     const ubkgInFlight = ubkgInFlightRef.current;
 
     if (ubkgCache.has(code)) {
-      log.debug('Cache found code: ', code);
+      log.debug('useFetchUBKGMarkers.fetchUBKGMarker > Cache found code: ', code);
       const cached = ubkgCache.get(code);
       setData(cached);
       return Promise.resolve(cached);
@@ -43,7 +43,10 @@ export function useFetchUBKGMarkers() {
         if (!result) {
           ubkgInFlight.delete(code);
           setError('Failed to fetch UBKG marker for ' + code);
-          console.error('Failed to fetch UBKG marker for ' + code);
+          log.error(
+            'useFetchUBKGMarkers.fetchUBKGMarker > Failed to fetch UBKG marker for ' +
+              code,
+          );
           return defaultValue;
         }
         let name = '';

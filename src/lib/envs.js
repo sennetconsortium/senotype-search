@@ -6,6 +6,7 @@ const ENVS = {
   ontology: {
     codes: process.env.NEXT_PUBLIC_ONTOLOGY_CODES,
     valueset: process.env.NEXT_PUBLIC_ONTOLOGY_VALUESET_PATH,
+    senotypeValueset: process.env.NEXT_PUBLIC_SENOTYPE_VALUESET_PATH,
   },
   index: {
     senotype: process.env.NEXT_PUBLIC_INDEX_SENOTYPE,

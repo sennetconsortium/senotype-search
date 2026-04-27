@@ -1,5 +1,5 @@
 import { Button, Skeleton, Space, Tooltip } from 'antd';
-import { assertionPredicates } from '@/config/search/senotype';
+import { ubkgPredicates } from '@/config/search/senotype';
 import URLS from '@/lib/urls';
 import { organHierarchy } from '@/lib/general';
 import React, { useContext } from 'react';
@@ -34,7 +34,7 @@ function HeaderBadges({ data }) {
     let isOrgan = false;
     let term;
 
-    for (const p of assertionPredicates) {
+    for (const p of ubkgPredicates) {
       // skip cell types since the terms can be long, which won't output neat badges
       if (p.field !== 'has_cell_type') {
         for (const v of data[p.field] || []) {
@@ -56,9 +56,9 @@ function HeaderBadges({ data }) {
     return <Skeleton.Node />;
   }
   return (
-    <Row>
+    <Row className="c-headerBadges">
       <Col md={8} sm={12} className={'mb-2'}>
-        <div className="c-headerBadges">{getBadges()}</div>
+        <div className='c-headerBadges__main'>{getBadges()}</div>
       </Col>
       <Col md={4} sm={12}>
         <Space align="center" className="float-md-end">

@@ -5,7 +5,7 @@ import ClipboardCopy from '../ClipboardCopy';
 import ModalOverComponent from '../ModalOverComponent';
 import SearchResultsMeta from './SearchResultsMeta';
 import log from 'xac-loglevel';
-import { assertionPredicates, SEARCH_SENOTYPE } from '@/config/search/senotype';
+import { ubkgPredicates, SEARCH_SENOTYPE } from '@/config/search/senotype';
 import { ontology } from '@/cache/ontology';
 import Icon from '@ant-design/icons';
 import URLS from '@/lib/urls';
@@ -143,7 +143,7 @@ function SearchResults() {
       const content = terms.join(', ');
       return { filtered, terms, content };
     };
-    for (const p of assertionPredicates) {
+    for (const p of ubkgPredicates) {
       columns.push({
         title: p.name || SEARCH_SENOTYPE.searchQuery.facets[p.field]?.label,
         dataIndex: `${p.field}`,

@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import BasicLayout from '@/components/layout/BasicLayout';
 import { useSenotype } from '@/hooks/useFetchSenotype';
-import ViewSenotype from '@/components/Senotype/ViewSenotype';
+import ViewSenotype from '@/components/senotype/ViewSenotype';
 import AppSpinner from '@/components/AppSpinner';
 import Unauthorized from '@/components/errors/Unauthorized';
 

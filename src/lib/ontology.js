@@ -11,11 +11,20 @@ const filePath = ONTOLOGY_CACHE_PATH + '/ontology.js';
 
 const ONTOLOGY = {
   fetch: async (codes, code) => {
-    const path =
-      codes[code].path ||
-      ENVS.ontology.valueset.replaceAll('{code}', codes[code]);
-    log.debug('ONTOLOGY.fetch', path);
-    const url = URLS.api.ontology + path;
+    let isSenotypeValueset = false;
+    let path = codes[code]?.path;
+    if (!path) {
+      isSenotypeValueset = codes[code].eq('SENOTYPE_VS');
+      path = isSenotypeValueset
+        ? ENVS.ontology.senotypeValueset.replaceAll('{predicate}', code)
+        : ENVS.ontology.valueset.replaceAll('{code}', codes[code]);
+    }
+    
+    const url = isSenotypeValueset
+      ? `${URLS.senotypeLibrary}${path}` // TODO update base for isSenotypeValueset when obtained
+      : `${URLS.api.ontology}${path}`; 
+
+    log.debug('ONTOLOGY.fetch', url);
     const response = await fetch(url);
     if (response.ok) {
       return {
@@ -26,47 +35,61 @@ const ONTOLOGY = {
   },
   fetchAll: async () => {
     try {
-      log.info('Ontology.fetchAll', '...');
+      log.info('ONTOLOGY.fetchAll', '...');
       const codes = JSON.parse(ENVS.ontology.codes);
       const results = await Promise.all(
         Object.keys(codes).map((code) => ONTOLOGY.fetch(codes, code)),
       );
       return results;
     } catch (e) {
-      log.error('Error.Ontology.fetch', e);
+      log.error('ONTOLOGY.fetch.catch', e);
     }
   },
   structureData: (key, data) => {
-    const terms = {};
-    let termsFlipped = {};
-    const hierarchy = {};
-    const laterals = new Set();
-    let valueKey = 'term';
-    let keyKey = 'term';
-    const isOrgans = 'organ_types' === key;
-    if (isOrgans) {
-      valueKey = 'organ_uberon';
-    }
-    if ('dataset_types' === key) {
-      keyKey = valueKey = 'dataset_type';
-    }
-    for (const d of data) {
-      terms[d[keyKey]] = d[valueKey];
-      if (isOrgans) {
-        hierarchy[d[keyKey]] = d.category?.term || d[keyKey];
-        if (d.category?.term) {
-          laterals.add(d.category?.term);
+    try {
+      const terms = {};
+      let termsFlipped = {};
+      const hierarchy = {};
+      const laterals = new Set();
+      let valueKey = 'term';
+      let keyKey = 'term';
+      const codes = JSON.parse(ENVS.ontology.codes);
+      const isSenotypeValueset = (typeof codes[key]).eq('string') ? codes[key].eq('SENOTYPE_VS') : false;
+
+      log.debug('Is organs', key);
+      const isOrgans = 'organ_types' === key;
+      if (isSenotypeValueset) {
+        valueKey = 'valueset_code';
+        keyKey = 'valueset_term';
+      } else {
+        if (isOrgans) {
+          valueKey = 'organ_uberon';
+        }
+        if ('dataset_types' === key) {
+          keyKey = valueKey = 'dataset_type';
         }
       }
+      for (const d of data) {
+        terms[d[keyKey]] = d[valueKey];
+        if (isOrgans) {
+          
+          hierarchy[d[keyKey]] = d.category?.term || d[keyKey];
+          if (d.category?.term) {
+            laterals.add(d.category?.term);
+          }
+        }
+      }
+      if (isOrgans) {
+        termsFlipped = flipObj(terms);
+      }
+      return { terms, termsFlipped, hierarchy, laterals: Array.from(laterals) };
+    } catch(e) {
+      log.error('ONTOLOGY.structureData.catch', e);
     }
-    if (isOrgans) {
-      termsFlipped = flipObj(terms);
-    }
-    return { terms, termsFlipped, hierarchy, laterals: Array.from(laterals) };
   },
   createImport: async () => {
     try {
-      log.info('Ontology.createImport', 'Creating ...', filePath);
+      log.info('ONTOLOGY.createImport', 'Creating ...', filePath);
       const results = await ONTOLOGY.fetchAll();
       let ontologyResults = {};
       let structuredData = {};
@@ -88,22 +111,22 @@ const ONTOLOGY = {
       let ontology = await fs.readFile(filePath, 'utf8');
       return JSON.parse(ontology.replace(exportString, ''));
     } catch (e) {
-      log.error('Error.Ontology.createImport.catch', e);
+      log.error('ONTOLOGY.createImport.catch', e);
     }
   },
   getImport: async () => {
     try {
-      log.info('Ontology.getImport', '...');
+      log.info('ONTOLOGY.getImport', '...');
       let ontology = await fs.readFile(filePath, 'utf8');
       ontology = JSON.parse(ontology.replace(exportString, ''));
-      log.info('Ontology.getImport', '...', ontology);
+      log.info('ONTOLOGY.getImport', '...', ontology);
 
       if (!ontology || !Object.values(ontology).length) {
         return await ONTOLOGY.createImport();
       }
       return ontology;
     } catch (e) {
-      log.error('Error.Ontology.getImport', e);
+      log.error('ONTOLOGY.getImport.catch', e);
       return await ONTOLOGY.createImport();
     }
   },
