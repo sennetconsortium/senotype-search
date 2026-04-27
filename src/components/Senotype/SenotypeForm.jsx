@@ -114,7 +114,7 @@ function SenotypeForm() {
       },
     ];
     results.push({
-      field: 'has_diagnosis',
+      field: 'diagnosis',
       label: 'Diagnosis',
       ui: {
         tooltip:
