@@ -22,24 +22,29 @@ function SenotypeForm() {
   const formValues = useRef(senotype || {});
   const [validated, setValidated] = useState(false);
 
-  const senotypeOntologyReducer = useAppReducer(senotypeOntology || {});
+  const senotypeOntologyReducer = useAppReducer(senotypeOntology);
   const getOpenStates = () => {
     return Object.fromEntries(
-      Object.entries(senotypeOntology || {}).map(([key, value]) => [
+      Object.entries(senotypeOntology).map(([key, value]) => [
         key,
         false,
       ]),
     );
   }
-  const selectAutocompleteReducer = useAppReducer(
+  const selectVisibleDropdownReducer = useAppReducer(
     getOpenStates()
   );
 
   const selectBusyReducer = useAppReducer(getOpenStates());
 
   const updateSenotypeOntology = useEffectEvent(() => {
-    senotypeOntologyReducer.dispatch({ value: senotypeOntology }); 
-    selectAutocompleteReducer.dispatch({
+    const _ontology = {...senotypeOntology}
+    for (const o of tabPredicates()) {
+      _ontology[o.field] = _ontology[o.field] || []
+    }
+    senotypeOntologyReducer.dispatch({ value: _ontology }); 
+
+    selectVisibleDropdownReducer.dispatch({
       value: getOpenStates(),
     }); 
     selectBusyReducer.dispatch({
@@ -60,7 +65,6 @@ function SenotypeForm() {
   const {
     isAssay,
     isCellType,
-    isHallmark,
     isDiagnosis,
     isCitation,
     isOrigin,
@@ -291,7 +295,6 @@ function SenotypeForm() {
 
     if (options.length) {
       senotypeOntologyReducer.dispatch({
-        type: 'setOne',
         field: predicate.field,
         value: options,
       });
@@ -300,7 +303,7 @@ function SenotypeForm() {
   };
 
   const toggleOpen = (field, value) => {
-    selectAutocompleteReducer.dispatch({
+    selectVisibleDropdownReducer.dispatch({
       field,
       value
     });
@@ -317,7 +320,7 @@ function SenotypeForm() {
 
     if (isExternalSource(predicate.field)) {
       return {
-        open: selectAutocompleteReducer?.state[predicate.field],
+        open: selectVisibleDropdownReducer?.state[predicate.field],
         onBlur: () => toggleOpen(predicate.field, undefined),
         onSelect: () => {
           toggleOpen(predicate.field, undefined);
@@ -342,6 +345,9 @@ function SenotypeForm() {
     formValues.current = { ...formValues.current, [data.field]: value };
   }
 
+  const tabPredicates = () =>
+    tab1Predicates().concat(tab2Predicates()).concat(tab2bPredicates());
+
   const handleSubmit = (e) => {
     try {
       const form = e.currentTarget;
@@ -349,9 +355,7 @@ function SenotypeForm() {
       e.preventDefault();
       e.stopPropagation();
 
-      const required = tab1Predicates()
-        .concat(tab2Predicates())
-        .concat(tab2bPredicates())
+      const required = tabPredicates()
         .filter((f) => f.ui?.required === true && formValues.current[f.field] === undefined);
 
       const validationFailed = form.checkValidity() === false || required.length > 0;
@@ -428,7 +432,7 @@ function SenotypeForm() {
               />
             </AppAccordion>
             <AppAccordion title={'Senotype'}>
-              {loadingPredicates && <Skeleton />}
+              {loadingPredicates && <Skeleton.Input block={true} />}
               {!loadingPredicates && (
                 <>
                   {tab1Predicates().map((p, index) => (
@@ -439,6 +443,7 @@ function SenotypeForm() {
                       getSearchBehavior={getSearchBehavior}
                       senotype={senotype}
                       onChange={onChange}
+                      isBusy={selectBusyReducer.state[p.field]}
                     />
                   ))}
                 </>
@@ -447,7 +452,7 @@ function SenotypeForm() {
           </Tab>
           <Tab eventKey="citationDemographics" title="Citation & Demographics">
             <AppAccordion title={'Citation & Origin'}>
-              {loadingPredicates && <Skeleton />}
+              {loadingPredicates && <Skeleton.Input block={true} />}
               {!loadingPredicates && (
                 <>
                   {tab2Predicates().map((p, index) => (
@@ -458,13 +463,14 @@ function SenotypeForm() {
                       getSearchBehavior={getSearchBehavior}
                       senotype={senotype}
                       onChange={onChange}
+                      isBusy={selectBusyReducer.state[p.field]}
                     />
                   ))}
                 </>
               )}
             </AppAccordion>
             <AppAccordion title={'Demographics'}>
-              {loadingPredicates && <Skeleton />}
+              {loadingPredicates && <Skeleton.Input block={true} />}
               {!loadingPredicates && (
                 <>
                   {tab2bPredicates().map((p, index) => (
