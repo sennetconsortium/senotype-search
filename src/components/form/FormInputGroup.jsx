@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Tooltip } from 'antd';
 import { InputGroup, Form } from 'react-bootstrap';
+import log from 'xac-loglevel'
 
 function FormInputGroup({
   id,
@@ -11,14 +12,28 @@ function FormInputGroup({
   required = false,
   inputs = [],
 }) {
-  const _id = id || label.toCamelCase();
+  const getId = ({ id, label }) => id || label.toCamelCase();
+  const _id = getId({id, label})
 
-  const handleChange = (data) => {
-    onChange({...data, field: _id, inputs})
+  const handleChange = () => {
+    const value = {}
+    let _v
+    inputs.map((io) => {
+      _v = document.querySelector(
+        `#c-formInputGroup--${_id} [name="${getId(io)}"]`,
+      ).value;
+      value[getId(io)] = io.formatter ? io.formatter(_v) : _v
+    })
+    log.debug('FormInputGroup.handleChange', value);
+    onChange({value, field: _id, inputs})
   }
 
   return (
-    <Form.Group key={_id} className={`c-formInputGroup ${className} mt-4`}>
+    <Form.Group
+      key={_id}
+      id={`c-formInputGroup--${_id}`}
+      className={`c-formInputGroup ${className} mt-4`}
+    >
       <Form.Label htmlFor={_id}>
         <strong>{label}</strong>
         {required && (
@@ -33,18 +48,13 @@ function FormInputGroup({
       </Form.Label>
       <InputGroup size="sm" className="mb-3">
         {inputs.map((io, index) => (
-          <Fragment key={io.label}>
-            <InputGroup.Text
-              key={io.label + index + 'ic'}
-              id={io.id || io.label.toCamelCase()}
-            >
-              {io.label}
-            </InputGroup.Text>
+          <Fragment key={getId(io)}>
+            <InputGroup.Text id={getId(io)}>{io.label}</InputGroup.Text>
             <Form.Control
-              onChange={(e) => handleChange({e, io, index})}
-              key={io.label + index + 'fc'}
+              name={getId(io)}
+              onChange={handleChange}
               aria-label="Small"
-              aria-describedby={io.id || io.label.toCamelCase()}
+              aria-describedby={getId(io)}
               {...io.controlProps}
             />
           </Fragment>

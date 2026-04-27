@@ -343,17 +343,11 @@ function SenotypeForm() {
   }
 
   const handleSubmit = (e) => {
-  
-    log.info('SenotypeForm.handleSubmit', formValues)
     try {
       const form = e.currentTarget;
 
       e.preventDefault();
       e.stopPropagation();
-
-      // document
-      //   .querySelectorAll('ant-select')
-      //   .forEach((el) => el.removeAttribute('is-invalid'));
 
       const required = tab1Predicates()
         .concat(tab2Predicates())
@@ -389,7 +383,7 @@ function SenotypeForm() {
   return (
     <>
       <Form
-        className='c-senotypeForm'
+        className="c-senotypeForm"
         noValidate
         validated={validated}
         onSubmit={handleSubmit}
@@ -487,11 +481,13 @@ function SenotypeForm() {
               )}
               <FormInputGroup
                 label={'Age'}
-                field={'age'}
+                id={'age'}
                 onChange={onChange}
                 inputs={[
                   {
                     label: 'Value',
+                    id: 'value',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -499,6 +495,8 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Lower',
+                    id: 'lowerbound',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -506,6 +504,8 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Upper',
+                    id: 'upperbound',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -513,6 +513,7 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Unit',
+                    id: 'unit',
                     controlProps: {
                       value: 'year',
                       disabled: true,
@@ -523,11 +524,13 @@ function SenotypeForm() {
 
               <FormInputGroup
                 label={'BMI'}
-                field={'bmi'}
+                id={'bmi'}
                 onChange={onChange}
                 inputs={[
                   {
                     label: 'Value',
+                    id: 'value',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -535,6 +538,8 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Lower',
+                    id: 'lowerbound',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -542,6 +547,8 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Upper',
+                    id: 'upperbound',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -549,6 +556,7 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Unit',
+                    id: 'unit',
                     controlProps: {
                       value: 'kg/m2',
                       disabled: true,
