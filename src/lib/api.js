@@ -64,7 +64,7 @@ const API = {
     return API.fetch({ url: `${URLS.api.ontology}${endpoint}`, method: 'GET' });
   },
   fetchForForm: async (predicate, query) => {
-    
+    log.debug('API.fetchForForm', predicate, query);
     const urls = {
       citation: {
         byCode: `${URLS.nih.pubMed}&id=<query>`,
@@ -119,10 +119,10 @@ const API = {
       // Handle api param requirements per predicate
 
       if (
-        isCellType(predicate) ||
+        (isCellType(predicate) ||
         isCitation(predicate) ||
         isMarker(predicate) ||
-        (isRegulatingMarker(predicate) && hasCode)
+        isRegulatingMarker(predicate)) && hasCode
       ) {
         // Remove the preceeding CL: from query
         _query = query.split(':')[1];

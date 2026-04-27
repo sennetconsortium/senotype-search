@@ -24,8 +24,8 @@ const URLS = {
     ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE_URL,
   },
   nih: {
-    base: process.NEXT_PUBLIC_NIH_EUTILS_BASE_URL,
-    pubMed: `${process.NEXT_PUBLIC_NIH_EUTILS_BASE_URL}entrez/eutils/esummary.fcgi?db=pubmed&retmode=json`,
+    base: process.env.NEXT_PUBLIC_NIH_EUTILS_BASE_URL,
+    pubMed: `${process.env.NEXT_PUBLIC_NIH_EUTILS_BASE_URL}entrez/eutils/esummary.fcgi?db=pubmed&retmode=json`,
   },
   senotypeEditor: process.env.NEXT_PUBLIC_EDITOR_BASE_URL,
   portal: process.env.NEXT_PUBLIC_PORTAL_BASE_URL,
