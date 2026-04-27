@@ -56,9 +56,9 @@ function HeaderBadges({ data }) {
     return <Skeleton.Node />;
   }
   return (
-    <Row>
+    <Row className="c-headerBadges">
       <Col md={8} sm={12} className={'mb-2'}>
-        <div className="c-headerBadges">{getBadges()}</div>
+        <div className='c-headerBadges__main'>{getBadges()}</div>
       </Col>
       <Col md={4} sm={12}>
         <Space align="center" className="float-md-end">
