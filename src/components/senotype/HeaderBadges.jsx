@@ -62,7 +62,7 @@ function HeaderBadges({ data }) {
       </Col>
       <Col md={4} sm={12}>
         <Space align="center" className="float-md-end">
-          {auth.isAuthenticated && auth.hassenotypeEdit && (
+          {auth.isAuthenticated && auth.hasSenotypeEdit && (
             <Button href={`${URLS.senotypeEditor}edit/${data.sennet_id}`}>
               Edit
             </Button>
