@@ -1,6 +1,6 @@
 Object.assign(String.prototype, {
   contains(t) {
-    return this.indexOf(t) !== -1
+    return this.indexOf(t) !== -1;
   },
   toCamelCase() {
     return this.replace(/\s(.)/g, function (a) {
@@ -32,6 +32,25 @@ Object.assign(String.prototype, {
       return typeof args[number] != 'undefined' ? args[number] : match;
     });
   },
+  eq(s2, insensitive = true) {
+    let res = this === s2;
+    if (insensitive && this !== undefined && s2 !== undefined) {
+      res = this?.toLowerCase() === s2?.toLowerCase();
+    }
+    return res;
+  },
+  csvToJson(delimiter = ",")  {
+  const [headers, ...rows] = this.split("\n");
+  const headerArray = headers.split(delimiter);
+  
+  return rows.map(row => {
+    const values = row.split(delimiter);
+    return headerArray.reduce((obj, header, index) => {
+      obj[header.trim()] = values[index]?.trim();
+      return obj;
+    }, {});
+  });
+}
 });
 
 export const flipObj = (obj) => {
@@ -52,10 +71,11 @@ export const parseOntologyTerm = (val) => {
 };
 
 export const organHierarchy = (term) => {
-  if (!window.ONTOLOGY_CACHE) return term;
+  if (!window.ONTOLOGY_CACHE || !Object.values(window.ONTOLOGY_CACHE).length)
+    return term;
   if (term.contains('Mammary Gland')) return 'Mammary Gland';
-  if (term in window.ONTOLOGY_CACHE.organ_types.hierarchy) {
-    return window.ONTOLOGY_CACHE.organ_types.hierarchy[term];
+  if (term in window.ONTOLOGY_CACHE?.organ_types?.hierarchy) {
+    return window.ONTOLOGY_CACHE?.organ_types?.hierarchy[term];
   }
   const r = new RegExp(/.+?(?=\()/);
   const res = term.match(r);

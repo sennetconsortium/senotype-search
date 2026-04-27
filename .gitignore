@@ -53,3 +53,4 @@ src/pnpm-lock.yaml
 pnpm-lock.yaml
 
 /.secrets
+public/sample-fixtures

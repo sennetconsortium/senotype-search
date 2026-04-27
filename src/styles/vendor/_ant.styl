@@ -1,0 +1,22 @@
+.ant 
+  &-select 
+    color var(--bs-body-color)
+    appearance none
+    background-color var(--bs-body-bg)
+    background-clip padding-box
+    font-size 1rem
+    font-weight 400
+    line-height 1.5
+    border var(--bs-border-width) solid var(--bs-border-color)
+    border-radius var(--bs-border-radius)
+    padding 0.375rem 0.75rem
+    transition border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out
+    &.is-invalid
+      formInvalid()
+      outline 0
+    &-focused
+      border-color #86b7fe !important
+      outline 0
+      box-shadow 0 0 0 .25rem #0d6efd40 !important
+    
+    

@@ -1,17 +1,61 @@
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useMemo } from 'react';
+import log from 'xac-loglevel';
+import { ontology } from '@/cache/ontology';
+import PREDICATE from '@/lib/predicate';
 
 const EditContext = createContext({});
 
-export const EditProvider = ({ children }) => {
-  const [senotype, setSenotype] = useState(null);
+export const EditProvider = ({ children, data }) => {
 
-  useEffect(() => {}, []);
+  const formatValue = (data) => JSON.stringify(data);
+
+  const formatErrorRow = ({row, error}) => {
+    return {
+      row,
+      error,
+      _id: crypto.randomUUID()
+    }
+  }
+
+  const senotypeOntology = useMemo(() => {
+
+    const options = {};
+    
+    for (const o in ontology) {
+      if (PREDICATE.isPredicate(o)) {
+        if (options[o] == undefined) {
+          options[o] = []
+        }
+        for (const r of ontology[o].raw) {
+          options[o].push({
+            value: formatValue({
+              code: r.valueset_code,
+              term: r.valueset_term,
+            }),
+            label: r.valueset_term,
+          });
+        }
+      }
+    }
+    return options;
+  }, []);
+
+  
+  const senotype = useMemo(
+    () => {
+      log.debug('EditProvider.useMemo.senotype', data);
+      return data
+    },
+    [data],
+  );
 
   return (
     <EditContext.Provider
       value={{
         senotype,
-        setSenotype,
+        senotypeOntology,
+        formatValue,
+        formatErrorRow,
       }}
     >
       {children}

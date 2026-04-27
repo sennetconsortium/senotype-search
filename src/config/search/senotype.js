@@ -4,10 +4,28 @@ import URLS from '@/lib/urls';
 import ENVS from '@/lib/envs';
 import AUTH from '@/lib/auth';
 
-export const assertionPredicates = [
-  { field: 'in_taxon', ui: { w: 100 } },
-  { field: 'located_in', ui: { w: 250 } },
-  { field: 'has_cell_type', ui: { w: 300 } },
+export const ubkgPredicates = [
+  {
+    field: 'in_taxon',
+    ui: { w: 100, required: true },
+  },
+  {
+    ontologyKey: 'organ_types',
+    field: 'located_in',
+    ui: {
+      w: 250,
+      required: true,
+    },
+  },
+  {
+    field: 'has_cell_type',
+    ui: {
+      w: 300,
+      required: true,
+      tooltip:
+        'Enter either a string that is in the name of the cell type or the Cell Ontology ID (e.g., CL:0020011; 0020011)',
+    },
+  },
   { field: 'has_assay', ui: { w: 200 } },
 ];
 
@@ -126,7 +144,7 @@ export const SEARCH_SENOTYPE = {
       all_text: { type: 'value' },
     },
     source_fields: [
-      ...assertionPredicates.map((a) => a.field),
+      ...ubkgPredicates.map((a) => a.field),
       'has_hallmark',
       'inconclusively_regulates',
       'definition',
