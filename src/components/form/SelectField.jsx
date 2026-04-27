@@ -13,6 +13,7 @@ function SelectField({
   isBusy,
   mode = 'multiple',
 }) {
+
   return (
     <>
       <InputField
@@ -50,7 +51,7 @@ function SelectField({
           ),
           value:
             senotype && senotype[p.field]
-              ? senotype[p.field][0]?.term
+              ? mode.eq('multiple') ? senotype[p.field].map((s) => s.term || s.title) : senotype[p.field][0]?.term
               : undefined,
           required: p.ui.required,
         }}

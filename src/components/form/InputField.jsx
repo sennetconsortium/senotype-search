@@ -19,13 +19,17 @@ function InputField({
   const helpBlockId = `${_id}HelpBlock`;
 
   const handleChange = (e) => {
+    // TODO resolve value for select and added arrays ...
     if (onChange) {
       onChange({ e, field: _id });
     }
   };
 
   return (
-    <Form.Group className={`c-inputField ${className} mt-4`} id={`c-inputField--${_id}`}>
+    <Form.Group
+      className={`c-inputField ${className} mt-4`}
+      id={`c-inputField--${_id}`}
+    >
       <Form.Label htmlFor={_id}>
         <strong>{label}</strong>
         {controlProps.required && (
@@ -49,7 +53,7 @@ function InputField({
 
       {selectData && (
         <Select
-          key={selectData}
+          key={JSON.stringify(selectData) + _id}
           id={_id}
           suffixIcon={dropIcon || <i className="bi bi-chevron-down"></i>}
           showSearch={{
