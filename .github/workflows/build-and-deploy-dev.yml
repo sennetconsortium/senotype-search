@@ -39,7 +39,7 @@ jobs:
           NEXT_PUBLIC_APP_NAME='Senotype Library'
           NEXT_PUBLIC_SENOTYPE_LIB_BASE_URL=https://senlib.dev.sennetconsortium.org/
           NEXT_PUBLIC_INGEST_API_BASE_URL=https://ingest-api.dev.sennetconsortium.org/
-          NEXT_PUBLIC_LOGIN_URL=https://ingest-api.dev.sennetconsortium.org/senotype-search-login
+          NEXT_PUBLIC_LOGIN_URL=https://ingest-api.dev.sennetconsortium.org/senotype-library-login
           NEXT_PUBLIC_SEARCH_API_BASE_URL=https://search-api.dev.sennetconsortium.org/
           NEXT_PUBLIC_ONTOLOGY_API_BASE_URL=https://ontology-api.dev.hubmapconsortium.org/
           NEXT_PUBLIC_PORTAL_BASE_URL=https://data.sennetconsortium.org/
