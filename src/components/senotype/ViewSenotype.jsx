@@ -358,7 +358,7 @@ export default function ViewSenotype({ senotype }) {
   }, []);
 
   const getColumnSearchProps = useCallback(
-    (dataIndex) => ({
+    (title, dataIndex) => ({
       filterDropdown: ({
         setSelectedKeys,
         selectedKeys,
@@ -369,7 +369,7 @@ export default function ViewSenotype({ senotype }) {
         <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
           <Input
             ref={searchInput}
-            placeholder={`Search ${dataIndex}`}
+            placeholder={`Search ${title}`}
             value={selectedKeys[0]}
             onChange={(e) =>
               setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -454,7 +454,7 @@ export default function ViewSenotype({ senotype }) {
         title: title,
         dataIndex: dataIndex,
         key: dataIndex,
-        ...getColumnSearchProps(dataIndex),
+        ...getColumnSearchProps(title, dataIndex),
         sorter: (a, b) => a[dataIndex].localeCompare(b[dataIndex]),
         render: (_, record) => (
           <span>
@@ -594,7 +594,7 @@ export default function ViewSenotype({ senotype }) {
                       `${range[0]}-${range[1]} of ${total} items`,
                   }}
                   columns={[
-                    ...markerColumns('Regulating Marker', 'regulating_marker'),
+                    ...markerColumns('Regulated Marker', 'regulating_marker'),
                     {
                       title: 'Marker Type',
                       key: 'markerType',
