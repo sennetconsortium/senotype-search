@@ -18,8 +18,7 @@ import URLS from '@/lib/urls';
 function SenotypeForm() {
   const [key, setKey] = useState('main');
   const { senotype, senotypeOntology, formatValue } = useContext(EditContext);
-  const { ontology } = useContext(AppContext)
-  const formValues = useRef(senotype || {});
+  const { ontology } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
 
   const senotypeOntologyReducer = useAppReducer(senotypeOntology);
@@ -36,6 +35,7 @@ function SenotypeForm() {
   );
 
   const selectBusyReducer = useAppReducer(getOpenStates());
+  const formValuesReducer = useAppReducer(senotype)
 
   const updateSenotypeOntology = useEffectEvent(() => {
     const _ontology = {...senotypeOntology}
@@ -43,6 +43,7 @@ function SenotypeForm() {
       _ontology[o.field] = _ontology[o.field] || []
     }
     senotypeOntologyReducer.dispatch({ value: _ontology }); 
+    
 
     selectVisibleDropdownReducer.dispatch({
       value: getOpenStates(),
@@ -52,13 +53,17 @@ function SenotypeForm() {
     }); 
   });
 
+  const updateSenotypeValues = useEffectEvent(() => {
+    formValuesReducer.dispatch({ value: senotype });
+  });
+
   useEffect(() => {
     updateSenotypeOntology()
   }, [senotypeOntology])
 
   useEffect(() => {
     if (senotype) {
-      formValues.current = senotype
+      updateSenotypeValues();
     }
   }, [senotype]);
 
@@ -173,7 +178,7 @@ function SenotypeForm() {
       const _result = Array.isArray(data.result) ? data.result : [];
       let regulating_action = regulatingAction || undefined;
       if (isRegulatingMarker(predicate.field) && !regulating_action) {
-        regulating_action = formValues.current.regulating_action || PREDICATE.regulatingActions.up_regulates;
+        regulating_action = formValuesReducer.state.regulating_action || PREDICATE.regulatingActions.up_regulates;
       }
       for (const r of _result) {
         if (_query.includes(PREDICATE.prefixIds.gene)) {
@@ -210,7 +215,7 @@ function SenotypeForm() {
       const prefix = isRegulatingMarker(predicate.field)
         ? 'marker_type_regulating'
         : 'marker_type';
-      _query = `${formValues.current[prefix] || PREDICATE.prefixIds.gene}${query}`;
+      _query = `${formValuesReducer.state[prefix] || PREDICATE.prefixIds.gene}${query}`;
     }
     const options = [];
     const data = await API.fetch({
@@ -342,7 +347,7 @@ function SenotypeForm() {
   const onChange = (data) => {
     let value = data.value || data.e.target?.value;
     log.info('SenotypeForm.onChange', data.field, value);
-    formValues.current = { ...formValues.current, [data.field]: value };
+    formValuesReducer.dispatch({field: data.field, value});
   }
 
   const tabPredicates = () =>
@@ -356,7 +361,7 @@ function SenotypeForm() {
       e.stopPropagation();
 
       const required = tabPredicates()
-        .filter((f) => f.ui?.required === true && formValues.current[f.field] === undefined);
+        .filter((f) => f.ui?.required === true && formValuesReducer.state[f.field] === undefined);
 
       const validationFailed = form.checkValidity() === false || required.length > 0;
       if (validationFailed) {
@@ -370,7 +375,10 @@ function SenotypeForm() {
         })
       } else {
         // TODO: send form to backend
-        log.debug('SenotypeForm.handleSubmit > formValues', formValues);
+        log.debug(
+          'SenotypeForm.handleSubmit > formValuesReducer',
+          formValuesReducer,
+        );
       }
       setValidated(true);
       
@@ -441,7 +449,7 @@ function SenotypeForm() {
                       p={p}
                       getOptions={getOptions}
                       getSearchBehavior={getSearchBehavior}
-                      senotype={senotype}
+                      data={formValuesReducer.state}
                       onChange={onChange}
                       isBusy={selectBusyReducer.state[p.field]}
                     />
@@ -461,7 +469,7 @@ function SenotypeForm() {
                       p={p}
                       getOptions={getOptions}
                       getSearchBehavior={getSearchBehavior}
-                      senotype={senotype}
+                      data={formValuesReducer.state}
                       onChange={onChange}
                       isBusy={selectBusyReducer.state[p.field]}
                     />
@@ -479,7 +487,7 @@ function SenotypeForm() {
                       p={p}
                       getOptions={getOptions}
                       getSearchBehavior={getSearchBehavior}
-                      senotype={senotype}
+                      data={formValuesReducer.state}
                       onChange={onChange}
                     />
                   ))}
@@ -589,7 +597,7 @@ function SenotypeForm() {
                   handleMarkers={handleMarkers}
                   getOptions={getOptions}
                   getSearchBehavior={getSearchBehavior}
-                  senotype={senotype}
+                  data={formValuesReducer.state}
                   onChange={onChange}
                 />
               )}
@@ -612,7 +620,7 @@ function SenotypeForm() {
                   handleMarkers={handleMarkers}
                   getOptions={getOptions}
                   getSearchBehavior={getSearchBehavior}
-                  senotype={senotype}
+                  data={formValuesReducer.state}
                   onChange={onChange}
                 />
               )}

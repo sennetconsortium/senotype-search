@@ -17,7 +17,7 @@ function MarkerFormInputs({
   predicate,
   getOptions,
   getSearchBehavior,
-  senotype,
+  data,
   onChange,
   handleMarkers,
   busy,
@@ -340,7 +340,7 @@ function MarkerFormInputs({
           p={predicate}
           getOptions={getOptions}
           getSearchBehavior={_getSearchBehavior}
-          senotype={senotype}
+          data={data}
           useSearchIcon={true}
           mode={'single'}
           isBusy={busy.selectBusyReducer.state[predicate.field]}

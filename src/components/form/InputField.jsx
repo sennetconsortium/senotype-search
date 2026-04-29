@@ -18,11 +18,19 @@ function InputField({
   const _id = id || label.toCamelCase();
   const helpBlockId = `${_id}HelpBlock`;
 
-  const handleChange = (e) => {
-    // TODO resolve value for select and added arrays ...
-    if (onChange) {
-      onChange({ e, field: _id });
+  const handleChange = (data) => {
+    log.debug('InputField.handleChange', data);
+
+    let value = []
+    if (Array.isArray(data)) {
+      value = data.map((d) => d.includes("{") ? JSON.parse(d) : d)
+    } else {
+      value = data.includes("{") ? JSON.parse(data) : data
     }
+    if (onChange) {
+      onChange({ value, field: _id });
+    }
+    
   };
 
   return (

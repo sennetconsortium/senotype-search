@@ -7,7 +7,7 @@ function SelectField({
   p,
   getOptions,
   getSearchBehavior,
-  senotype,
+  data,
   useSearchIcon,
   onChange,
   isBusy,
@@ -50,8 +50,10 @@ function SelectField({
             </>
           ),
           value:
-            senotype && senotype[p.field]
-              ? mode.eq('multiple') ? senotype[p.field].map((s) => s.term || s.title) : senotype[p.field][0]?.term
+            data && data[p.field]
+              ? mode.eq('multiple') ? data[p.field].map((s) => {
+                return { label: s.title || s.term, value: JSON.stringify(s) };
+              }) : {label: data[p.field][0].term, value: JSON.stringify(data[p.field][0])}
               : undefined,
           required: p.ui.required,
         }}
