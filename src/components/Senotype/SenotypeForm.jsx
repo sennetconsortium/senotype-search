@@ -35,7 +35,7 @@ function SenotypeForm() {
   );
 
   const selectBusyReducer = useAppReducer(getOpenStates());
-  const formValuesReducer = useAppReducer(senotype)
+  const formValuesReducer = useAppReducer(senotype || {})
 
   const updateSenotypeOntology = useEffectEvent(() => {
     const _ontology = {...senotypeOntology}
@@ -360,8 +360,13 @@ function SenotypeForm() {
       e.preventDefault();
       e.stopPropagation();
 
-      const required = tabPredicates()
-        .filter((f) => f.ui?.required === true && formValuesReducer.state[f.field] === undefined);
+      const required = tabPredicates().filter(
+        (f) =>
+          f.ui?.required === true &&
+          ((formValuesReducer.state &&
+            formValuesReducer.state[f.field] === undefined) ||
+            !formValuesReducer.state),
+      );
 
       const validationFailed = form.checkValidity() === false || required.length > 0;
       if (validationFailed) {
