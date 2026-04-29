@@ -43,7 +43,7 @@ case "$COMMAND" in
     esac
     ;;
   stop)
-    docker compose -f docker/docker-compose.yml down --remove-orphans
+    docker compose -f docker/docker-compose.yml down
     ;;
   *)
     usage
