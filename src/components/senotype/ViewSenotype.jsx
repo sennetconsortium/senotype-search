@@ -560,6 +560,9 @@ export default function ViewSenotype({ senotype }) {
               <AppAccordion
                 title={'Specified Markers'}
                 id={'specified-markers'}
+                tooltipTitle={
+                  'These gene or protein markers are a list an investigator might recommend be used to describe the markers that would help identify or characterize a senescent cell of this senotype–e.g., to use as a gene panel for a probed assay.'
+                }
               >
                 <Table
                   pagination={{
@@ -578,8 +581,11 @@ export default function ViewSenotype({ senotype }) {
 
             {regulatingMarkerData.length > 0 && (
               <AppAccordion
-                title={'Regulating Markers'}
+                title={'Regulated Markers'}
                 id={'regulating-markers'}
+                tooltipTitle={
+                  'These are typically a longer list of gene or protein markers that have been tested for the senotype. The investigator observes these markers to be up-regulated; down-regulated; or tested but inconclusive whether up- or down- regulated (e.g., using log2FC and p-value).'
+                }
               >
                 <Table
                   pagination={{
