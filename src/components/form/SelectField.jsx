@@ -11,10 +11,14 @@ function SelectField({
   useSearchIcon,
   onChange,
   isBusy,
+  hideSelectedValue = false,
   mode = 'multiple',
 }) {
 
-  const data = reducer
+  const data = reducer.state
+  const getLabel = (item) => {
+    return item.title || item.term || item.marker?.name || item.marker?.term
+  }
   return (
     <>
       <InputField
@@ -51,10 +55,18 @@ function SelectField({
             </>
           ),
           value:
-            data && data[p.field]
-              ? mode.eq('multiple') ? data[p.field].map((s) => {
-                return { label: s.title || s.term, value: JSON.stringify(s) };
-              }) : {label: data[p.field][0].term, value: JSON.stringify(data[p.field][0])}
+            data && data[p.field] && !hideSelectedValue
+              ? Array.isArray(data[p.field])
+                ? data[p.field].map((s) => {
+                    return {
+                      label: getLabel(s),
+                      value: JSON.stringify(s),
+                    };
+                  })
+                : {
+                    label: getLabel(data[p.field]),
+                    value: JSON.stringify(data[p.field]),
+                  }
               : undefined,
           required: p.ui.required,
         }}

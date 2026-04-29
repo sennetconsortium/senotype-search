@@ -25,6 +25,7 @@ function MarkerFormInputs({
   const [tableData, setTableData] = useState([]);
   const isValidFile = useRef(null);
   const uploadRows = useRef([]);
+  const hasInit = useRef(false)
   const [tableBusy, setTableBusy] = useState(false);
   const tableErrors = useRef([])
   const { formatErrorRow } = useContext(EditContext);
@@ -37,10 +38,11 @@ function MarkerFormInputs({
       list.push({ _id, key, ...d.marker, action: d.action });
     }
     setTableData(list)
+    hasInit.current = true;
   });
 
   useEffect(() => {
-    if (reducer.state) {
+    if (reducer.state && !hasInit.current) {
       updateTable()
     }
   }, [reducer.state])
@@ -249,7 +251,7 @@ function MarkerFormInputs({
     let newItem;
     for (const item of list) {
       newItem = JSON.parse(item);
-      let {key, _id} = getTableId(row);
+      let {key, _id} = getTableId(newItem);
       if (!added.has(key)) {
         added.add(key);
         _tableData.push({ _id, ...newItem });
@@ -364,6 +366,7 @@ function MarkerFormInputs({
           reducer={reducer}
           useSearchIcon={true}
           mode={'single'}
+          hideSelectedValue={true}
           isBusy={busy.selectBusyReducer.state[predicate.field]}
         />
       </Flex>

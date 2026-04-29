@@ -63,6 +63,7 @@ function SenotypeForm() {
 
   useEffect(() => {
     if (senotype) {
+      log.debug('SenotypeForm > senotype', senotype)
       updateSenotypeValues();
     }
   }, [senotype]);
