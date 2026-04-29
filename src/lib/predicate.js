@@ -21,7 +21,7 @@ const PREDICATE = {
     gene: 'HGNC:',
     protein: 'UNIPROTKB:',
   },
-  isRegulatingMarker: (p) => p === 'characterizing_regulating_marker_set',
+  isRegulatingMarker: (p) => p === 'regulating_marker_set',
   isMarker: (p) => p === 'characterizing_marker_set',
   isExternalSource: (p) =>
     PREDICATE.isCellType(p) ||

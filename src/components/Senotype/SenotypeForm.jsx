@@ -176,16 +176,16 @@ function SenotypeForm() {
   const handleMarkers = ({predicate, _query, data, regulatingAction, options}) => {
     if (isMarker(predicate.field) || isRegulatingMarker(predicate.field)) {
       const _result = Array.isArray(data.result) ? data.result : [];
-      let regulating_action = regulatingAction || undefined;
-      if (isRegulatingMarker(predicate.field) && !regulating_action) {
-        regulating_action = formValuesReducer.state.regulating_action || PREDICATE.regulatingActions.up_regulates;
+      let action = regulatingAction || undefined;
+      if (isRegulatingMarker(predicate.field) && !action) {
+        action = formValuesReducer.state.action || PREDICATE.regulatingActions.up_regulates;
       }
       for (const r of _result) {
         if (_query.includes(PREDICATE.prefixIds.gene)) {
           options.push({
             label: r.approved_name,
             value: formatValue({
-              regulating_action,
+              action,
               name: r.approved_name,
               term: r.approved_symbol,
               code: `${_query.split(':')[0]}:${r.hgnc_id}`,
@@ -195,7 +195,7 @@ function SenotypeForm() {
           options.push({
             label: r.recommended_name[0],
             value: formatValue({
-              regulating_action,
+              action,
               term: r.recommended_name[0],
               code: `${_query.split(':')[0]}:${r.uniprotkb_id}`,
             }),
@@ -449,7 +449,7 @@ function SenotypeForm() {
                       p={p}
                       getOptions={getOptions}
                       getSearchBehavior={getSearchBehavior}
-                      data={formValuesReducer.state}
+                      reducer={formValuesReducer}
                       onChange={onChange}
                       isBusy={selectBusyReducer.state[p.field]}
                     />
@@ -469,7 +469,7 @@ function SenotypeForm() {
                       p={p}
                       getOptions={getOptions}
                       getSearchBehavior={getSearchBehavior}
-                      data={formValuesReducer.state}
+                      reducer={formValuesReducer}
                       onChange={onChange}
                       isBusy={selectBusyReducer.state[p.field]}
                     />
@@ -487,7 +487,7 @@ function SenotypeForm() {
                       p={p}
                       getOptions={getOptions}
                       getSearchBehavior={getSearchBehavior}
-                      data={formValuesReducer.state}
+                      reducer={formValuesReducer}
                       onChange={onChange}
                     />
                   ))}
@@ -597,7 +597,7 @@ function SenotypeForm() {
                   handleMarkers={handleMarkers}
                   getOptions={getOptions}
                   getSearchBehavior={getSearchBehavior}
-                  data={formValuesReducer.state}
+                  reducer={formValuesReducer}
                   onChange={onChange}
                 />
               )}
@@ -608,7 +608,7 @@ function SenotypeForm() {
               {!loadingPredicates && (
                 <MarkerFormInputs
                   predicate={{
-                    field: 'characterizing_regulating_marker_set',
+                    field: 'regulating_marker_set',
                     label: 'Gene/Protein ID or Symbol',
                     fields: Object.keys(PREDICATE.regulatingActions),
                     ui: {
@@ -620,7 +620,7 @@ function SenotypeForm() {
                   handleMarkers={handleMarkers}
                   getOptions={getOptions}
                   getSearchBehavior={getSearchBehavior}
-                  data={formValuesReducer.state}
+                  reducer={formValuesReducer}
                   onChange={onChange}
                 />
               )}

@@ -7,13 +7,14 @@ function SelectField({
   p,
   getOptions,
   getSearchBehavior,
-  data,
+  reducer,
   useSearchIcon,
   onChange,
   isBusy,
   mode = 'multiple',
 }) {
 
+  const data = reducer
   return (
     <>
       <InputField

@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef, useContext, useEffect, useEffectEvent } from 'react';
 import { Flex, Radio, message, Upload, Table } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 const { Dragger } = Upload;
@@ -17,7 +17,7 @@ function MarkerFormInputs({
   predicate,
   getOptions,
   getSearchBehavior,
-  data,
+  reducer,
   onChange,
   handleMarkers,
   busy,
@@ -28,6 +28,22 @@ function MarkerFormInputs({
   const [tableBusy, setTableBusy] = useState(false);
   const tableErrors = useRef([])
   const { formatErrorRow } = useContext(EditContext);
+
+  const updateTable= useEffectEvent(() => {
+    const data = reducer.state[predicate.field]
+    const list = []
+    for (const d of data) {
+      let {key, _id} = getTableId({...d.marker, action: d.action})
+      list.push({ _id, key, ...d.marker, action: d.action });
+    }
+    setTableData(list)
+  });
+
+  useEffect(() => {
+    if (reducer.state) {
+      updateTable()
+    }
+  }, [reducer.state])
 
   /**
    * Removes a row from table
@@ -44,7 +60,7 @@ function MarkerFormInputs({
       'name',
       'term',
       'code',
-      ...(predicate.fields ? ['regulating_action'] : []),
+      ...(predicate.fields ? ['action'] : []),
     ];
 
     const columns = [];
@@ -215,6 +231,11 @@ function MarkerFormInputs({
     onChange({ field: data.target.name, e: data });
   };
 
+  const getTableId = (row) => {
+    const key = `${row.code}-${row.action}`;
+    return { key, _id: `${crypto.randomUUID()}-${key}` };
+  }
+
   /**
    * List of formValue strings
    *
@@ -223,15 +244,15 @@ function MarkerFormInputs({
   const addToTable = (list) => {
     const _tableData = [...tableData];
     const added = new Set(
-      _tableData.map((t) => `${t.code}-${t.regulating_action}`),
+      _tableData.map((t) => `${t.code}-${t.action}`),
     );
-    let newItem, key;
+    let newItem;
     for (const item of list) {
       newItem = JSON.parse(item);
-      key = `${newItem.code}-${newItem.regulating_action}`;
+      let {key, _id} = getTableId(row);
       if (!added.has(key)) {
         added.add(key);
-        _tableData.push({ _id: `${crypto.randomUUID()}-${key}`, ...newItem });
+        _tableData.push({ _id, ...newItem });
       }
     }
     setTableData(_tableData);
@@ -301,7 +322,7 @@ function MarkerFormInputs({
                 defaultValue={predicate.fields[0]}
                 buttonStyle="solid"
                 id="action"
-                name="regulating_action"
+                name="action"
               >
                 {predicate.fields.map((p, index) => (
                   <Radio.Button key={`radio-${index}`} value={p}>
@@ -340,7 +361,7 @@ function MarkerFormInputs({
           p={predicate}
           getOptions={getOptions}
           getSearchBehavior={_getSearchBehavior}
-          data={data}
+          reducer={reducer}
           useSearchIcon={true}
           mode={'single'}
           isBusy={busy.selectBusyReducer.state[predicate.field]}
