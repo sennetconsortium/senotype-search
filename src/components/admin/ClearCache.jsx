@@ -18,6 +18,7 @@ function ClearCache({ }) {
       message.success('Cache cleared.');
       sessionStorage.clear();
       log.debug('Admin.clearCache', res);
+      //location.reload();
     }
   };
 

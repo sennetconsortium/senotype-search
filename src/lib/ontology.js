@@ -62,8 +62,7 @@ const ONTOLOGY = {
       log.debug('Is organs', key);
       const isOrgans = 'organ_types' === key;
       if (isSenotypeValueset) {
-        valueKey = 'valueset_code';
-        keyKey = 'valueset_term';
+        valueKey = 'code';
       } else {
         if (isOrgans) {
           valueKey = 'organ_uberon';
@@ -81,7 +80,7 @@ const ONTOLOGY = {
           }
         }
       }
-      if (isOrgans) {
+      if (isOrgans || isSenotypeValueset) {
         termsFlipped = flipObj(terms);
       }
       return { terms, termsFlipped, hierarchy, laterals: Array.from(laterals) };
