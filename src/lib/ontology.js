@@ -21,14 +21,15 @@ const ONTOLOGY = {
     }
     
     const url = isSenotypeValueset
-      ? `${URLS.senotypeLibrary}${path}` // TODO update base for isSenotypeValueset when obtained
+      ? `${URLS.api.senotype}${path}`
       : `${URLS.api.ontology}${path}`; 
 
     log.debug('ONTOLOGY.fetch', url);
     const response = await fetch(url);
     if (response.ok) {
+      const json = await response.json();
       return {
-        [code]: await response.json(),
+        [code]: json.valuesets || json,
       };
     }
     return null;

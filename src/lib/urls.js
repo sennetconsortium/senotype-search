@@ -13,13 +13,17 @@ const URLS = {
     ingest: {
       base: process.env.NEXT_PUBLIC_INGEST_API_BASE_URL,
       privs: {
-        admin: process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'privs/has-data-admin',
+        admin:
+          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'privs/has-data-admin',
         senotypeEdit:
-          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'privs/has-senotype-edit',
+          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL +
+          'privs/has-senotype-edit',
         groups:
-          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'privs/user-write-groups',
+          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL +
+          'privs/user-write-groups',
       },
     },
+    senotype: process.env.NEXT_PUBLIC_SENOTYPE_API_BASE_URL,
     search: process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL,
     ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE_URL,
   },
