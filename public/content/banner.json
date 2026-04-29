@@ -1,0 +1,8 @@
+{
+  "default": {
+    "variant": "success",
+    "containerClassName": null,
+    "title": "Test banner title",
+    "content": "<p>Some content with a <a href='#'>link</a>."
+  }
+}

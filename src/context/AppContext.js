@@ -9,6 +9,7 @@ const AppContext = createContext({});
 export const AppProvider = ({ children }) => {
   const [auth, setAuth] = useState({});
   const [ontology, setOntology] = useState(null);
+  const [bannerContent, setBannerContent] = useState({});
 
   const fetchAuth = async () => {
     const info = AUTH.info();
@@ -73,9 +74,18 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const fetchBannerContent = async () => {
+    const url = URLS.bannerContent;
+    const results = await API.fetch({url, method: 'GET'})
+    if (Object.values(results).length) {
+      setBannerContent(results)
+    }
+  }
+
   useEffect(() => {
     fetchOntology();
     fetchAuth();
+    fetchBannerContent();
   }, []);
 
   return (
@@ -83,6 +93,7 @@ export const AppProvider = ({ children }) => {
       value={{
         auth,
         ontology,
+        bannerContent
       }}
     >
       {children}
