@@ -43,6 +43,19 @@ const buildSenotype = (senotype) => {
   let items = [
     {
       key: '1',
+      label: 'Hallmark',
+      children: (
+        <span className={'flex'}>
+          {senotype['has_hallmark'].map((item, index) => (
+            <div key={`hallmark_${index}`} className={'mb-1'}>
+              {item.term}
+            </div>
+          ))}
+        </span>
+      ),
+    },
+    {
+      key: '2',
       label: 'Taxon',
       children: (
         <span className={'flex'}>
@@ -55,12 +68,12 @@ const buildSenotype = (senotype) => {
       ),
     },
     {
-      key: '2',
-      label: 'Location',
+      key: '3',
+      label: 'Organ',
       children: (
         <span className={'flex'}>
           {senotype['located_in'].map((item, index) => (
-            <div key={`location_${index}`} className={'mb-1'}>
+            <div key={`organ_${index}`} className={'mb-1'}>
               {item.term}&nbsp;
               <img
                 src={URLS.organIcon(item.term)}
@@ -83,7 +96,7 @@ const buildSenotype = (senotype) => {
       ),
     },
     {
-      key: '3',
+      key: '4',
       label: 'Celltype',
       children: (
         <span className={'flex'}>
@@ -101,28 +114,15 @@ const buildSenotype = (senotype) => {
         </span>
       ),
     },
-    {
-      key: '4',
-      label: 'Hallmark',
-      children: (
-        <span className={'flex'}>
-          {senotype['has_hallmark'].map((item, index) => (
-            <div key={`hallmark_${index}`} className={'mb-1'}>
-              {item.term}
-            </div>
-          ))}
-        </span>
-      ),
-    },
   ];
-  if (senotype?.has_mircoenvironment) {
+  if (senotype?.has_microenvironment) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Microenvironment',
       children: (
         <span className={'flex'}>
-          {senotype['has_mircoenvironment'].map((item, index) => (
+          {senotype['has_microenvironment'].map((item, index) => (
             <div key={`microenvironment_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -541,7 +541,7 @@ export default function ViewSenotype({ senotype }) {
               id={'senotype'}
               tooltipTitle={'Senotype title'}
             >
-              <Descriptions items={buildSenotype(senotype)} />
+              <Descriptions items={buildSenotype(senotype)} column={3} />
             </AppAccordion>
 
             {buildDemographic(senotype).length > 0 && (
