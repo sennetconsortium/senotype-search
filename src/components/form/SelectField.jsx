@@ -55,7 +55,7 @@ function SelectField({
             </>
           ),
           value:
-            data && data[p.field] && !hideSelectedValue
+            data && Object.values(data).length > 0 && data[p.field] && !hideSelectedValue
               ? Array.isArray(data[p.field])
                 ? data[p.field].map((s) => {
                     return {

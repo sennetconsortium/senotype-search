@@ -5,7 +5,7 @@ import AppAccordion from '../AppAccordion';
 import InputField from '../form/InputField';
 import AppContext from '@/context/AppContext';
 import { ubkgPredicates } from '@/config/search/senotype';
-import { Skeleton } from 'antd';
+import { Skeleton, App } from 'antd';
 import log from 'xac-loglevel';
 import FormInputGroup from '../form/FormInputGroup';
 import useAppReducer from '@/reducers/useAppReducer';
@@ -16,6 +16,7 @@ import MarkerFormInputs from '../form/MarkerFormInputs';
 import URLS from '@/lib/urls';
 
 function SenotypeForm({isEdit = false}) {
+  const { notification } = App.useApp();
   const [key, setKey] = useState('main');
   const { senotype, senotypeOntology, formatValue } = useContext(EditContext);
   const { ontology } = useContext(AppContext);
@@ -102,11 +103,6 @@ function SenotypeForm({isEdit = false}) {
         field: 'assay',
         label: 'Assay',
         ui: {},
-      },
-      {
-        field: 'hallmark',
-        label: 'Hallmark',
-        ui: { required: true },
       },
       {
         field: 'inducer',
@@ -381,9 +377,20 @@ function SenotypeForm({isEdit = false}) {
         })
       } else {
         // TODO: send form to backend
-        let url = URLS.api.senotype.createEdit
-        url = isEdit ? `${url}/${senotype.uuid}` : url
-        
+        const url = URLS.api.local('senotype')
+        const method = isEdit ? 'PUT' : 'POST';
+        API.fetch({url, body: formValuesReducer.state, method}).then((
+          res
+        )=> {
+          log.debug('handleSubmit', method, res);
+          notification.info({
+            duration: false,
+            title: 'Notification Title',
+            description: 'This notification is triggered using the App hook.',
+            placement: 'top',
+          });
+        })
+
         log.debug(
           'SenotypeForm.handleSubmit > formValuesReducer',
           formValuesReducer,

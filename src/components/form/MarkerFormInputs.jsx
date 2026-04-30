@@ -31,7 +31,7 @@ function MarkerFormInputs({
   const { formatErrorRow } = useContext(EditContext);
 
   const updateTable= useEffectEvent(() => {
-    const data = reducer.state[predicate.field]
+    const data = reducer.state[predicate.field] || []
     const list = []
     for (const d of data) {
       let {key, _id} = getTableId({...d.marker, action: d.action})

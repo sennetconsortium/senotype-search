@@ -25,7 +25,7 @@ function InputField({
     if (Array.isArray(data)) {
       value = data.map((d) => d.includes("{") ? JSON.parse(d) : d)
     } else {
-      value = data.includes("{") ? JSON.parse(data) : data
+      value = data?.includes("{") ? JSON.parse(data) : data
     }
     if (onChange) {
       onChange({ value, field: _id });
@@ -53,7 +53,7 @@ function InputField({
 
       {!selectData && (
         <Form.Control
-          onChange={(e) => handleChange(e)}
+          onChange={(e) => handleChange(e.target.value)}
           aria-describedby={helpText ? helpBlockId : undefined}
           {...controlProps}
         />
