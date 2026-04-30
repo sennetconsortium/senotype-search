@@ -580,7 +580,8 @@ export default function ViewSenotype({ senotype }) {
                 <Table
                   pagination={{
                     total: specifiedMarkerData.length,
-                    showTotal: (total, range) => tableFooter(total, range, regulatingMarkerData),
+                    showTotal: (total, range) =>
+                      tableFooter(total, range, specifiedMarkerData),
                   }}
                   columns={markerColumns(
                     'Specified Marker',
@@ -602,7 +603,8 @@ export default function ViewSenotype({ senotype }) {
                 <Table
                   pagination={{
                     total: regulatingMarkerData.length,
-                    showTotal: (total, range) => tableFooter(total, range, regulatingMarkerData),
+                    showTotal: (total, range) =>
+                      tableFooter(total, range, regulatingMarkerData),
                   }}
                   columns={[
                     ...markerColumns('Regulated Marker', 'regulating_marker'),
