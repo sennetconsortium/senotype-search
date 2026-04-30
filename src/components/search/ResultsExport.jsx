@@ -11,7 +11,7 @@ import { Button } from 'react-bootstrap';
  * @param {array} props.columns antd.Table columns
  * @returns {*}
  */
-function ResultsExport({ data, columns }) {
+function ResultsExport({ data, columns, children }) {
   const handleExport = () => {
     let tableDataTSV = '';
     const _columns = Array.from(columns);
@@ -44,6 +44,7 @@ function ResultsExport({ data, columns }) {
           <DownloadOutlined />
         </Button>
       </Tooltip>
+      {children}
     </div>
   );
 }
