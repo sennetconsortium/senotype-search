@@ -14,7 +14,7 @@ services:
     platform: linux/amd64
     init: true
     volumes:
-      - "../src/public/content/banner.json:/usr/src/app/public/content/banner.json"
+      - "../public/content/banner.json:/usr/src/app/public/content/banner.json"
     healthcheck:
       test: ['CMD', 'curl', '--fail', 'http://localhost:${PORT_MAPPING}']
       interval: 1m30s
