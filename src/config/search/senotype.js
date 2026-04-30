@@ -6,6 +6,10 @@ import AUTH from '@/lib/auth';
 
 export const ubkgPredicates = [
   {
+    field: 'has_hallmark',
+    ui: { w: 250, required: true },
+  },
+  {
     field: 'in_taxon',
     ui: { w: 100, required: true },
   },
@@ -13,17 +17,8 @@ export const ubkgPredicates = [
     ontologyKey: 'organ_types',
     field: 'located_in',
     ui: {
-      w: 250,
+      w: 200,
       required: true,
-    },
-  },
-  {
-    field: 'has_cell_type',
-    ui: {
-      w: 300,
-      required: true,
-      tooltip:
-        'Enter either a string that is in the name of the cell type or the Cell Ontology ID (e.g., CL:0020011; 0020011)',
     },
   },
   { field: 'has_assay', ui: { w: 200 } },
@@ -56,6 +51,18 @@ export const SEARCH_SENOTYPE = {
         facetChipType: 'bulk',
         isAggregationActive: true,
         isFacetVisible: false,
+      },
+      has_hallmark: {
+        label: 'Hallmark',
+        type: 'value',
+        field: 'has_hallmark.term.keyword',
+        filterType: 'any',
+        isExpanded: false,
+        isFilterable: false,
+        facetType: 'term',
+        bucketsTransform: bucketsTransform,
+        isAggregationActive: true,
+        isFacetVisible: doesAggregationHaveBuckets('has_hallmark'),
       },
       in_taxon: {
         label: 'Taxon',
@@ -131,7 +138,9 @@ export const SEARCH_SENOTYPE = {
             isFilterable: false,
             facetType: 'term',
             isAggregationActive: true,
-            isFacetVisible: doesAggregationHaveBuckets('created_by_user_displayname'),
+            isFacetVisible: doesAggregationHaveBuckets(
+              'created_by_user_displayname',
+            ),
           },
         },
       },
@@ -145,13 +154,12 @@ export const SEARCH_SENOTYPE = {
     },
     source_fields: [
       ...ubkgPredicates.map((a) => a.field),
-      'has_hallmark',
       'inconclusively_regulates',
       'definition',
       'sennet_id',
       'title',
       'created_by_user_displayname',
-      'uuid'
+      'uuid',
     ],
     // Moving this configuration into `searchQuery` so the config inside search-tools can read this
     trackTotalHits: true,

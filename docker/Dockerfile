@@ -39,7 +39,8 @@ FROM node:22-bookworm-slim AS final
 WORKDIR /usr/src/app
 
 ENV NODE_ENV=production
-ENV PORT=3002
+ARG PORT_MAPPING
+ENV PORT=$PORT_MAPPING
 ENV HOSTNAME="0.0.0.0"
 
 # Install curl for healthcheck
@@ -59,6 +60,6 @@ COPY --from=builder --chown=codcc:codcc /usr/src/app/.next/static ./.next/static
 
 USER codcc
 
-EXPOSE 3002
+EXPOSE $PORT
 
 CMD ["node", "server.js"]

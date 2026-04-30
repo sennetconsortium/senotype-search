@@ -35,8 +35,8 @@ function HeaderBadges({ data }) {
     let term;
 
     for (const p of ubkgPredicates) {
-      // skip cell types since the terms can be long, which won't output neat badges
-      if (p.field !== 'has_cell_type') {
+      // skip cell types and hallmark  since the terms can be long, which won't output neat badges
+      if (p.field !== 'has_cell_type' && p.field !== 'has_hallmark') {
         for (const v of data[p.field] || []) {
           isOrgan = p.field === 'located_in';
           term = organHierarchy(v.term);
@@ -58,7 +58,7 @@ function HeaderBadges({ data }) {
   return (
     <Row className="c-headerBadges">
       <Col md={8} sm={12} className={'mb-2'}>
-        <div className='c-headerBadges__main'>{getBadges()}</div>
+        <div className="c-headerBadges__main">{getBadges()}</div>
       </Col>
       <Col md={4} sm={12}>
         <Space align="center" className="float-md-end">

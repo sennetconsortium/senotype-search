@@ -31,12 +31,12 @@ const SiderLayout = ({
         </Row>
         <Row>
           {showSider && (
-            <Col lg={2}>
+            <Col lg={3}>
               {!sider && <SiderFacets />}
               {sider}
             </Col>
           )}
-          <Col lg={showSider ? 10 : 12}>
+          <Col lg={showSider ? 9 : 12}>
             <main className={`c-main container--card ${classNameMain}`}>
               {children}
             </main>
