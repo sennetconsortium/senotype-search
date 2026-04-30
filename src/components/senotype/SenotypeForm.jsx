@@ -163,7 +163,7 @@ function SenotypeForm({isEdit = false}) {
       {
         field: 'sex',
         label: 'Sex',
-        ui: { required: true},
+        ui: {},
       },
     ];
 
@@ -371,22 +371,31 @@ function SenotypeForm({isEdit = false}) {
           document
             .querySelectorAll(`#c-inputField--${p.field} .ant-select`)
             .forEach((el) => {
+              const tabId = el
+                .closest('.tab-pane')
+                .getAttribute('aria-labelledby');
+              document
+                .getElementById(tabId)
+                .parentElement.classList.add('is-invalid');
               el.classList.add('is-invalid');
             });
-            
         })
       } else {
-        // TODO: send form to backend
         const url = URLS.api.local('senotype')
         const method = isEdit ? 'PUT' : 'POST';
+        const verb = isEdit ? 'Edited' : 'Created';
         API.fetch({url, body: formValuesReducer.state, method}).then((
           res
         )=> {
           log.debug('handleSubmit', method, res);
-          notification.info({
+          const type = res.error ? 'error' : 'success';
+          // TODO update notification details
+          const description  = res.error ? JSON.stringify(res.description) : 'Yes added';
+          notification.destroy();
+          notification[type]({
             duration: false,
-            title: 'Notification Title',
-            description: 'This notification is triggered using the App hook.',
+            title: res.error || `Senotype ${verb}`,
+            description: <code>{description}</code>,
             placement: 'top',
           });
         })
@@ -435,8 +444,8 @@ function SenotypeForm({isEdit = false}) {
           <Tab eventKey="main" title="Submission">
             <AppAccordion title={'Overview'}>
               <InputField
-                label={'Name'}
-                id={'name'}
+                label={'Title'}
+                id={'title'}
                 onChange={onChange}
                 controlProps={{
                   defaultValue: senotype?.title,

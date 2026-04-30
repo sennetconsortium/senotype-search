@@ -11,13 +11,14 @@ const API = {
     headers.append('Content-Type', 'application/json');
     return headers;
   },
-  fetch: async ({ url, token, body, method = 'POST' }) => {
-    token = token === undefined ? AUTH.token() : token;
+  fetch: async ({ url, token, body, cookies, method = 'POST' }) => {
+    token = token === undefined ? AUTH.token(cookies) : token;
     const headers = API.jsonHeader();
     if (token) {
       headers.append('Authorization', `Bearer ${token}`);
     }
     try {
+      //log.debug('API.fetch', url, token)
       const res = await fetch(url, {
         method,
         headers: headers,
@@ -25,7 +26,8 @@ const API = {
       });
       if (!res.ok) {
         const errMsg = res.statusText ? res.statusText : await res.text()
-        return { error: errMsg, status: res.status };
+        const description = await res.json();
+        return { error: errMsg, description, status: res.status };
       }
       return res.json();
     } catch (error) {
