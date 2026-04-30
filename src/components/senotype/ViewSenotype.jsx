@@ -7,6 +7,8 @@ import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
 import HeaderBadges from './HeaderBadges';
+import ResultsExport from '@/components/search/ResultsExport';
+import PREDICATE from '@/lib/predicate';
 
 const buildSummary = (senotype) => {
   return [
@@ -469,6 +471,17 @@ export default function ViewSenotype({ senotype }) {
     [getColumnSearchProps],
   );
 
+  const tableFooter = (total, range, data) => {
+    return (
+      <ResultsExport
+        data={PREDICATE.markersExportData(data)}
+        columns={PREDICATE.markersExportColumns()}
+      >
+        <span className="mx-4">{`${range[0]}-${range[1]} of ${total} items`}</span>
+      </ResultsExport>
+    );
+  };
+
   return (
     <Container fluid>
       <Row>
@@ -567,8 +580,7 @@ export default function ViewSenotype({ senotype }) {
                 <Table
                   pagination={{
                     total: specifiedMarkerData.length,
-                    showTotal: (total, range) =>
-                      `${range[0]}-${range[1]} of ${total} items`,
+                    showTotal: (total, range) => tableFooter(total, range, regulatingMarkerData),
                   }}
                   columns={markerColumns(
                     'Specified Marker',
@@ -590,8 +602,7 @@ export default function ViewSenotype({ senotype }) {
                 <Table
                   pagination={{
                     total: regulatingMarkerData.length,
-                    showTotal: (total, range) =>
-                      `${range[0]}-${range[1]} of ${total} items`,
+                    showTotal: (total, range) => tableFooter(total, range, regulatingMarkerData),
                   }}
                   columns={[
                     ...markerColumns('Regulated Marker', 'regulating_marker'),
