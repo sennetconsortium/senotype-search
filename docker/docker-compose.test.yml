@@ -1,0 +1,3 @@
+services:
+  senotype-library:
+    image: sennet/senotype-library-test:${VERSION}

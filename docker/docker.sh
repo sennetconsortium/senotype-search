@@ -30,8 +30,8 @@ case "$COMMAND" in
     echo "Built image version $VERSION"
     ;;
   start)
-    if [[ "$ENV" != "dev" && "$ENV" != "prod" ]]; then
-      echo "Unknown deployment environment '$ENV', specify one of the following: dev|prod"
+    if [[ "$ENV" != "dev" && "$ENV" != "prod"  && "$ENV" != "test" ]]; then
+      echo "Unknown deployment environment '$ENV', specify one of the following: dev|test|prod"
     fi
     case "$ENV" in
       prod)
@@ -39,6 +39,9 @@ case "$COMMAND" in
         ;;
       dev)
         docker compose -f docker/docker-compose.yml -f docker/docker-compose.development.yml up -d
+        ;;
+      test)
+        docker compose -f docker/docker-compose.yml -f docker/docker-compose.test.yml up -d
         ;;
     esac
     ;;
