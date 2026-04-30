@@ -1,8 +1,8 @@
 {
   "default": {
-    "variant": "success",
+    "variant": "warning",
     "containerClassName": null,
-    "title": "Test banner title",
-    "content": "<p>Some content with a <a href='#'>link</a>."
+    "title": "This is the DEV Senotype Library",
+    "content": "<p>For the production instance of the Senotype Editor click <a href='http://senlib.sennetconsortium.org/'>here</a>."
   }
 }
