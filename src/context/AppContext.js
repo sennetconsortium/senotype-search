@@ -75,7 +75,7 @@ export const AppProvider = ({ children }) => {
   };
 
   const fetchBannerContent = async () => {
-    const url = URLS.bannerContent;
+    const url = URLS.api.local('content/banner');
     const results = await API.fetch({url, method: 'GET'})
     if (Object.values(results).length) {
       setBannerContent(results)
