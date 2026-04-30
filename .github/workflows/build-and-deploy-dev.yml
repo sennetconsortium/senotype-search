@@ -37,27 +37,28 @@ jobs:
 
           cat <<'EOF' >> .env
           NEXT_PUBLIC_APP_NAME='Senotype Library'
+          NEXT_PUBLIC_SENOTYPE_LIB_BASE_URL=https://senlib.dev.sennetconsortium.org/
           NEXT_PUBLIC_INGEST_API_BASE_URL=https://ingest-api.dev.sennetconsortium.org/
-          NEXT_PUBLIC_LOGIN_URL="${NEXT_PUBLIC_INGEST_API_BASE_URL}senotype-search-login"
+          NEXT_PUBLIC_LOGIN_URL=https://ingest-api.dev.sennetconsortium.org/senotype-library-login
           NEXT_PUBLIC_SEARCH_API_BASE_URL=https://search-api.dev.sennetconsortium.org/
           NEXT_PUBLIC_ONTOLOGY_API_BASE_URL=https://ontology-api.dev.hubmapconsortium.org/
           NEXT_PUBLIC_PORTAL_BASE_URL=https://data.sennetconsortium.org/
-          NEXT_PUBLIC_EDITOR_BASE_URL=https://senlib.dev.sennetconsortium.org/
+          NEXT_PUBLIC_EDITOR_BASE_URL=https://seneditor.dev.sennetconsortium.org/
           NEXT_PUBLIC_LOG_LEVEL='debug'
           NEXT_PUBLIC_INDEX_SENOTYPE='senotypes'
           NEXT_PUBLIC_ONTOLOGY_CODES='{"specimen_categories":"C020076","organ_types": {"path": "organs?application_context=SENNET"}, "entities": "C000012", "source_types":"C050020", "dataset_types": {"path": "dataset-types?application_context=SENNET"}}'
           NEXT_PUBLIC_ONTOLOGY_VALUESET_PATH='valueset?parent_sab=SENNET&parent_code={code}&child_sabs=SENNET'
           NEXT_PUBLIC_OBO_BASE_URL='https://purl.obolibrary.org/obo/'
-          NEXT_PUBLIC_CL_HOME_URL='https://www.ebi.ac.uk/ols4/ontologies/cl?tab=classes'
-          NEXT_PUBLIC_DOID_HOME_URL='https://disease-ontology.org'
-          NEXT_PUBLIC_HGNC_BASE_URL='https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/'
-          NEXT_PUBLIC_HGNC_HOME_URL='https://www.genenames.org/'
+          NEXT_PUBLIC_CL_BASE_URL='https://www.ebi.ac.uk/'
+          NEXT_PUBLIC_DOID_BASE_URL='https://disease-ontology.org/'
+          NEXT_PUBLIC_HGNC_BASE_URL='https://www.genenames.org/'
           NEXT_PUBLIC_UNIPROTKB_BASE_URL='https://www.uniprot.org/uniprotkb/'
           NEXT_PUBLIC_PUBMED_BASE_URL='https://pubmed.ncbi.nlm.nih.gov/'
           NEXT_PUBLIC_SCICRUNCH_BASE_URL='https://scicrunch.org/resolver/'
-          NEXT_PUBLIC_SCICRUNCH_EXPLORE_URL='https://rrid.site/'
-          NEXT_PUBLIC_SCICRUNCH_HIGHER_URL='https://scicrunch.org/scicrunch/resolver/'
+          NEXT_PUBLIC_RRID_BASE_URL='https://rrid.site/'
+          NEXT_PUBLIC_NIH_EUTILS_BASE_URL='https://eutils.ncbi.nlm.nih.gov/'
           NEXT_PUBLIC_OTHER_ORGAN_ICON_URL = 'https://cdn.jsdelivr.net/gh/cns-iu/md-icons@main/other-icons/organs/ico-organs-united.svg'
+          NEXT_PUBLIC_COOKIE_DOMAIN=.sennetconsortium.org
           EOF
         shell: bash
         working-directory: .
