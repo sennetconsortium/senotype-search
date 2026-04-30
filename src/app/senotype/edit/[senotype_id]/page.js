@@ -7,7 +7,7 @@ import { EditProvider } from '@/context/EditContext';
 import AppSpinner from '@/components/AppSpinner';
 import Unauthorized from '@/components/errors/Unauthorized';
 import AppContext from '@/context/AppContext';
-import EditSenotype from '@/components/senotype/EditSenotype';
+import CreateEditSenotype from '@/components/senotype/CreateEditSenotype';
 
 function Page() {
   const params = useParams();
@@ -32,7 +32,7 @@ function Page() {
           (auth.isAuthenticated === false && <Unauthorized />)}
         {data && auth.isAuthenticated && (
           <>
-            <EditSenotype />
+            <CreateEditSenotype isEdit={true} />
           </>
         )}
       </BasicLayout>

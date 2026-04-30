@@ -15,7 +15,7 @@ import SelectField from '../form/SelectField';
 import MarkerFormInputs from '../form/MarkerFormInputs';
 import URLS from '@/lib/urls';
 
-function SenotypeForm() {
+function SenotypeForm({isEdit = false}) {
   const [key, setKey] = useState('main');
   const { senotype, senotypeOntology, formatValue } = useContext(EditContext);
   const { ontology } = useContext(AppContext);
@@ -381,6 +381,9 @@ function SenotypeForm() {
         })
       } else {
         // TODO: send form to backend
+        let url = URLS.api.senotype.createEdit
+        url = isEdit ? `${url}/${senotype.uuid}` : url
+        
         log.debug(
           'SenotypeForm.handleSubmit > formValuesReducer',
           formValuesReducer,

@@ -5,15 +5,15 @@ import SenotypeForm from './SenotypeForm';
  * @param {*} param0
  * @returns
  */
-function EditSenotype({}) {
+function CreateEditSenotype({ isEdit = false }) {
 
   return (
     <>
       <div className="c-senotype">
-        <SenotypeForm />
+        <SenotypeForm isEdit={isEdit} />
       </div>
     </>
   );
 }
 
-export default EditSenotype;
+export default CreateEditSenotype;

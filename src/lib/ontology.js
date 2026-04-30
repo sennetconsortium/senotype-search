@@ -21,7 +21,7 @@ const ONTOLOGY = {
     }
 
     const url = isSenotypeValueset
-      ? `${URLS.api.senotype}${path}`
+      ? `${URLS.api.senotype.base}${path}`
       : `${URLS.api.ontology}${path}`;
 
     log.debug('ONTOLOGY.fetch', url);

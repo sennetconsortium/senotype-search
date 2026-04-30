@@ -23,7 +23,10 @@ const URLS = {
           'privs/user-write-groups',
       },
     },
-    senotype: process.env.NEXT_PUBLIC_SENOTYPE_API_BASE_URL,
+    senotype: {
+      base: process.env.NEXT_PUBLIC_SENOTYPE_API_BASE_URL,
+      createEdit: `${process.env.NEXT_PUBLIC_SENOTYPE_API_BASE_URL}/sentotypes`,
+    },
     search: process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL,
     ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE_URL,
   },
