@@ -28,4 +28,4 @@ services:
 
 networks:
   sennet_docker_network:
-    external: false
+    external: true
