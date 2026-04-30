@@ -1,3 +1,31 @@
 services:
-  senotype-library:
+  senotype-library-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      args:
+        HOST_UID: ${HOST_UID:-1002}
+        HOST_GID: ${HOST_GID:-1002}
+        PORT_MAPPING: ${PORT_MAPPING:-3002}
+    container_name: senotype-library-test
+    hostname: senotype-library-test
     image: sennet/senotype-library-test:${VERSION}
+    restart: unless-stopped
+    platform: linux/amd64
+    init: true
+    healthcheck:
+      test: ['CMD', 'curl', '--fail', 'http://localhost:${PORT_MAPPING}']
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    ports:
+      - '${PORT_MAPPING:-3002}:${PORT_MAPPING:-3002}'
+    env_file:
+      - ../.env
+    networks:
+      - sennet_docker_network
+
+networks:
+  sennet_docker_network:
+    external: true

@@ -21,18 +21,26 @@ usage() {
   echo "  stop    Stop the containers"
 }
 
+if [[ "$ENV" != "dev" && "$ENV" != "prod"  && "$ENV" != "test" ]]; then
+    echo "Unknown deployment environment '$ENV', specify one of the following: dev|test|prod"
+fi
+
 case "$COMMAND" in
   build)
     echo "Extracting NEXT_PUBLIC_* variables from .env to .env.docker..."
     grep '^NEXT_PUBLIC_' .env > .env.docker
     echo "Done. Running docker compose build..."
-    docker compose -f docker/docker-compose.yml build
+     case "$ENV" in
+      prod|dev)
+        docker compose -f docker/docker-compose.yml build
+        ;;
+      test)
+        docker compose -f docker/docker-compose.test.yml build
+        ;;
+    esac
     echo "Built image version $VERSION"
     ;;
   start)
-    if [[ "$ENV" != "dev" && "$ENV" != "prod"  && "$ENV" != "test" ]]; then
-      echo "Unknown deployment environment '$ENV', specify one of the following: dev|test|prod"
-    fi
     case "$ENV" in
       prod)
         docker compose -f docker/docker-compose.yml up -d
@@ -41,12 +49,19 @@ case "$COMMAND" in
         docker compose -f docker/docker-compose.yml -f docker/docker-compose.development.yml up -d
         ;;
       test)
-        docker compose -f docker/docker-compose.yml -f docker/docker-compose.test.yml up -d
+        docker compose -f docker/docker-compose.test.yml up -d
         ;;
     esac
     ;;
   stop)
-    docker compose -f docker/docker-compose.yml down
+     case "$ENV" in
+      prod|dev)
+        docker compose -f docker/docker-compose.yml down
+        ;;
+      test)
+        docker compose -f docker/docker-compose.test.yml down
+        ;;
+    esac
     ;;
   *)
     usage
