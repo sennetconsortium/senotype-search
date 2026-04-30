@@ -64,7 +64,7 @@ jobs:
         working-directory: .
 
       - name: Run the Docker build shell script
-        run: ./docker.sh build test
+        run: ./docker.sh build dev
         working-directory: ./docker
 
       - name: Tag the Docker Image
