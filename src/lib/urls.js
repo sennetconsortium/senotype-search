@@ -56,6 +56,8 @@ const URLS = {
     resolver: `${process.env.NEXT_PUBLIC_SCICRUNCH_BASE_URL}resolver/`,
     higher: `${process.env.NEXT_PUBLIC_SCICRUNCH_BASE_URL}scicrunch/resolver/`,
   },
+  bannerContent: process.env.NEXT_PUBLIC_BANNER_URL ||
+      `${process.env.NEXT_PUBLIC_SENOTYPE_LIB_BASE_URL}content/banner.json`,
   /**
    * Takes the organ hierarchy term and returns a src img url.
    * @param {string} o

@@ -64,7 +64,7 @@ jobs:
         working-directory: .
 
       - name: Run the Docker build shell script
-        run: ./docker.sh build
+        run: ./docker.sh build dev
         working-directory: ./docker
 
       - name: Tag the Docker Image
@@ -119,7 +119,7 @@ jobs:
           use_insecure_cipher: true
           script: |
             # Change to codcc user on server
-            sudo su - codcc -c "cd /opt/sennet/senotype-library/docker/; git pull; docker pull sennet/senotype-library-dev:latest; ./docker.sh stop; ./docker.sh start dev;"
+            sudo su - codcc -c "cd /opt/sennet/senotype-library/docker/; git pull; docker pull sennet/senotype-library-dev:latest; ./docker.sh stop dev; ./docker.sh start dev;"
 
       - name: Remove runner IP from security group
         if: always()

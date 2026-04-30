@@ -1,3 +1,5 @@
+import { flipObj } from "./general";
+
 const PREDICATE = {
   isTaxon: (p) => p === 'taxon',
   isOrgan: (p) => p === 'organ',
@@ -15,6 +17,9 @@ const PREDICATE = {
     up_regulates: '1',
     down_regulates: '-1',
     inconclusively_regulates: '0',
+    up: '1',
+    down: '-1',
+    '?': '0'
   },
   prefixIds: {
     diagnosis: 'DOID:',
@@ -40,6 +45,36 @@ const PREDICATE = {
     PREDICATE.isInducer(p) ||
     PREDICATE.isMircoEnv(p) ||
     PREDICATE.isExternalSource(p),
+  markersExportColumns: () => {
+    const names = ['type', 'id', 'action'];
+
+    const columns = [];
+
+    for (const n of names) {
+      columns.push({
+        title: n,
+        dataIndex: n,
+        key: n,
+      });
+    }
+
+    return columns
+  },
+  markersExportData: (markers) => {
+    const data = []
+    const prefixIds = flipObj(PREDICATE.prefixIds)
+    let parts
+    for (const m of markers) {
+      parts = m.key ? m.key.split(':') : m.marker.code.split(':')
+      data.push({
+        type: prefixIds[parts[0] + ':'],
+        id: parts[1],
+        action: PREDICATE.regulatingActions[m.markerType || m.action],
+      });
+    }
+
+    return data
+  }
 };
 
 export default PREDICATE

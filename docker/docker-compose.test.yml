@@ -1,5 +1,5 @@
 services:
-  senotype-library:
+  senotype-library-test:
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -7,9 +7,9 @@ services:
         HOST_UID: ${HOST_UID:-1002}
         HOST_GID: ${HOST_GID:-1002}
         PORT_MAPPING: ${PORT_MAPPING:-3002}
-    container_name: senotype-library
-    hostname: senotype-library
-    image: sennet/senotype-library:${VERSION}
+    container_name: senotype-library-test
+    hostname: senotype-library-test
+    image: sennet/senotype-library-test:${VERSION}
     restart: unless-stopped
     platform: linux/amd64
     init: true

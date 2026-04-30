@@ -7,6 +7,8 @@ import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
 import HeaderBadges from './HeaderBadges';
+import ResultsExport from '@/components/search/ResultsExport';
+import PREDICATE from '@/lib/predicate';
 
 const buildSummary = (senotype) => {
   return [
@@ -43,6 +45,19 @@ const buildSenotype = (senotype) => {
   let items = [
     {
       key: '1',
+      label: 'Hallmark',
+      children: (
+        <span className={'flex'}>
+          {senotype['has_hallmark'].map((item, index) => (
+            <div key={`hallmark_${index}`} className={'mb-1'}>
+              {item.term}
+            </div>
+          ))}
+        </span>
+      ),
+    },
+    {
+      key: '2',
       label: 'Taxon',
       children: (
         <span className={'flex'}>
@@ -55,12 +70,12 @@ const buildSenotype = (senotype) => {
       ),
     },
     {
-      key: '2',
-      label: 'Location',
+      key: '3',
+      label: 'Organ',
       children: (
         <span className={'flex'}>
           {senotype['located_in'].map((item, index) => (
-            <div key={`location_${index}`} className={'mb-1'}>
+            <div key={`organ_${index}`} className={'mb-1'}>
               {item.term}&nbsp;
               <img
                 src={URLS.organIcon(item.term)}
@@ -83,7 +98,7 @@ const buildSenotype = (senotype) => {
       ),
     },
     {
-      key: '3',
+      key: '4',
       label: 'Celltype',
       children: (
         <span className={'flex'}>
@@ -101,28 +116,15 @@ const buildSenotype = (senotype) => {
         </span>
       ),
     },
-    {
-      key: '4',
-      label: 'Hallmark',
-      children: (
-        <span className={'flex'}>
-          {senotype['has_hallmark'].map((item, index) => (
-            <div key={`hallmark_${index}`} className={'mb-1'}>
-              {item.term}
-            </div>
-          ))}
-        </span>
-      ),
-    },
   ];
-  if (senotype?.has_mircoenvironment) {
+  if (senotype?.has_microenvironment) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Microenvironment',
       children: (
         <span className={'flex'}>
-          {senotype['has_mircoenvironment'].map((item, index) => (
+          {senotype['has_microenvironment'].map((item, index) => (
             <div key={`microenvironment_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -358,7 +360,7 @@ export default function ViewSenotype({ senotype }) {
   }, []);
 
   const getColumnSearchProps = useCallback(
-    (dataIndex) => ({
+    (title, dataIndex) => ({
       filterDropdown: ({
         setSelectedKeys,
         selectedKeys,
@@ -369,7 +371,7 @@ export default function ViewSenotype({ senotype }) {
         <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
           <Input
             ref={searchInput}
-            placeholder={`Search ${dataIndex}`}
+            placeholder={`Search ${title}`}
             value={selectedKeys[0]}
             onChange={(e) =>
               setSelectedKeys(e.target.value ? [e.target.value] : [])
@@ -454,7 +456,7 @@ export default function ViewSenotype({ senotype }) {
         title: title,
         dataIndex: dataIndex,
         key: dataIndex,
-        ...getColumnSearchProps(dataIndex),
+        ...getColumnSearchProps(title, dataIndex),
         sorter: (a, b) => a[dataIndex].localeCompare(b[dataIndex]),
         render: (_, record) => (
           <span>
@@ -468,6 +470,17 @@ export default function ViewSenotype({ senotype }) {
     ],
     [getColumnSearchProps],
   );
+
+  const tableFooter = (total, range, data) => {
+    return (
+      <ResultsExport
+        data={PREDICATE.markersExportData(data)}
+        columns={PREDICATE.markersExportColumns()}
+      >
+        <span className="mx-4">{`${range[0]}-${range[1]} of ${total} items`}</span>
+      </ResultsExport>
+    );
+  };
 
   return (
     <Container fluid>
@@ -541,7 +554,7 @@ export default function ViewSenotype({ senotype }) {
               id={'senotype'}
               tooltipTitle={'Senotype title'}
             >
-              <Descriptions items={buildSenotype(senotype)} />
+              <Descriptions items={buildSenotype(senotype)} column={3} />
             </AppAccordion>
 
             {buildDemographic(senotype).length > 0 && (
@@ -560,12 +573,15 @@ export default function ViewSenotype({ senotype }) {
               <AppAccordion
                 title={'Specified Markers'}
                 id={'specified-markers'}
+                tooltipTitle={
+                  'These gene or protein markers are a list an investigator might recommend be used to describe the markers that would help identify or characterize a senescent cell of this senotype–e.g., to use as a gene panel for a probed assay.'
+                }
               >
                 <Table
                   pagination={{
                     total: specifiedMarkerData.length,
                     showTotal: (total, range) =>
-                      `${range[0]}-${range[1]} of ${total} items`,
+                      tableFooter(total, range, specifiedMarkerData),
                   }}
                   columns={markerColumns(
                     'Specified Marker',
@@ -578,17 +594,20 @@ export default function ViewSenotype({ senotype }) {
 
             {regulatingMarkerData.length > 0 && (
               <AppAccordion
-                title={'Regulating Markers'}
+                title={'Regulated Markers'}
                 id={'regulating-markers'}
+                tooltipTitle={
+                  'These are typically a longer list of gene or protein markers that have been tested for the senotype. The investigator observes these markers to be up-regulated; down-regulated; or tested but inconclusive whether up- or down- regulated (e.g., using log2FC and p-value).'
+                }
               >
                 <Table
                   pagination={{
                     total: regulatingMarkerData.length,
                     showTotal: (total, range) =>
-                      `${range[0]}-${range[1]} of ${total} items`,
+                      tableFooter(total, range, regulatingMarkerData),
                   }}
                   columns={[
-                    ...markerColumns('Regulating Marker', 'regulating_marker'),
+                    ...markerColumns('Regulated Marker', 'regulating_marker'),
                     {
                       title: 'Marker Type',
                       key: 'markerType',

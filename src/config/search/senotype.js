@@ -6,6 +6,10 @@ import AUTH from '@/lib/auth';
 
 export const ubkgPredicates = [
   {
+    field: 'hallmark',
+    ui: { w: 250, required: true },
+  },
+  {
     field: 'taxon',
     ui: { w: 100, required: true },
   },
@@ -13,7 +17,7 @@ export const ubkgPredicates = [
     ontologyKey: 'organ_types',
     field: 'organ',
     ui: {
-      w: 250,
+      w: 200,
       required: true,
     },
   },
@@ -56,6 +60,18 @@ export const SEARCH_SENOTYPE = {
         facetChipType: 'bulk',
         isAggregationActive: true,
         isFacetVisible: false,
+      },
+      hallmark: {
+        label: 'Hallmark',
+        type: 'value',
+        field: 'hallmark.term.keyword',
+        filterType: 'any',
+        isExpanded: false,
+        isFilterable: false,
+        facetType: 'term',
+        bucketsTransform: bucketsTransform,
+        isAggregationActive: true,
+        isFacetVisible: doesAggregationHaveBuckets('has_hallmark'),
       },
       taxon: {
         label: 'Taxon',
@@ -131,7 +147,9 @@ export const SEARCH_SENOTYPE = {
             isFilterable: false,
             facetType: 'term',
             isAggregationActive: true,
-            isFacetVisible: doesAggregationHaveBuckets('created_by_user_displayname'),
+            isFacetVisible: doesAggregationHaveBuckets(
+              'created_by_user_displayname',
+            ),
           },
         },
       },
@@ -145,13 +163,12 @@ export const SEARCH_SENOTYPE = {
     },
     source_fields: [
       ...ubkgPredicates.map((a) => a.field),
-      'hallmark',
       'inconclusively_regulates',
       'description',
       'sennet_id',
       'title',
       'created_by_user_displayname',
-      'uuid'
+      'uuid',
     ],
     // Moving this configuration into `searchQuery` so the config inside search-tools can read this
     trackTotalHits: true,
