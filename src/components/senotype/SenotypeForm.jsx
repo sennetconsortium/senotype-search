@@ -77,8 +77,8 @@ function SenotypeForm({isEdit = false}) {
     isOrigin,
     isDataset,
     isExternalSource,
-    isMarker,
-    isRegulatingMarker,
+    isSpecifiedMarker,
+    isRegulatedMarker,
   } = PREDICATE;
 
   const getOptions = (predicate) => {
@@ -171,11 +171,11 @@ function SenotypeForm({isEdit = false}) {
   };
 
   const handleMarkers = ({predicate, _query, data, regulatingAction, options}) => {
-    if (isMarker(predicate.field) || isRegulatingMarker(predicate.field)) {
+    if (isSpecifiedMarker(predicate.field) || isRegulatedMarker(predicate.field)) {
       const _result = Array.isArray(data.result) ? data.result : [];
       let action = regulatingAction || undefined;
-      if (isRegulatingMarker(predicate.field) && !action) {
-        action = formValuesReducer.state.action || PREDICATE.regulatingActions.up_regulates;
+      if (isRegulatedMarker(predicate.field) && !action) {
+        action = formValuesReducer.state.action || PREDICATE.regulatedActions.up_regulates;
       }
       for (const r of _result) {
         if (_query.includes(PREDICATE.prefixIds.gene)) {
@@ -208,8 +208,8 @@ function SenotypeForm({isEdit = false}) {
     toggleBusy(predicate.field, true);
     let _query = query
     // Prefix for marker with selected radio or default
-    if (isMarker(predicate.field) || isRegulatingMarker(predicate.field)) {
-      const prefix = isRegulatingMarker(predicate.field)
+    if (isSpecifiedMarker(predicate.field) || isRegulatedMarker(predicate.field)) {
+      const prefix = isRegulatedMarker(predicate.field)
         ? 'marker_type_regulating'
         : 'marker_type';
       _query = `${formValuesReducer.state[prefix] || PREDICATE.prefixIds.gene}${query}`;
@@ -611,7 +611,7 @@ function SenotypeForm({isEdit = false}) {
               {!loadingPredicates && (
                 <MarkerFormInputs
                   predicate={{
-                    field: 'characterizing_marker_set',
+                    field: 'specified_marker_set',
                     label: 'Gene/Protein ID or Symbol',
                     ui: {
                       tooltip:
@@ -628,14 +628,14 @@ function SenotypeForm({isEdit = false}) {
               )}
             </AppAccordion>
 
-            <AppAccordion title={'Regulating Marker'}>
+            <AppAccordion title={'Regulated Marker'}>
               {loadingPredicates && <Skeleton />}
               {!loadingPredicates && (
                 <MarkerFormInputs
                   predicate={{
-                    field: 'regulating_marker_set',
+                    field: 'regulated_marker_set',
                     label: 'Gene/Protein ID or Symbol',
-                    fields: Object.keys(PREDICATE.regulatingActions),
+                    fields: Object.keys(PREDICATE.regulatedActions),
                     ui: {
                       tooltip:
                         'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',

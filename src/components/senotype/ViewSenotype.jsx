@@ -430,7 +430,7 @@ export default function ViewSenotype({ senotype }) {
   const specifiedMarkerData = useMemo(
     () =>
       buildMarkers(
-        senotype?.has_characterizing_marker_set,
+        senotype?.has_specified_marker_set,
         'specified_marker',
         null,
       ),

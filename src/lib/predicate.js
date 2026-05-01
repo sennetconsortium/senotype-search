@@ -13,7 +13,7 @@ const PREDICATE = {
   isCitation: (p) => p === 'citation',
   isOrigin: (p) => p === 'origin',
   isDataset: (p) => p === 'dataset',
-  regulatingActions: {
+  regulatedActions: {
     up_regulates: '1',
     down_regulates: '-1',
     inconclusively_regulates: '0',
@@ -26,15 +26,15 @@ const PREDICATE = {
     gene: 'HGNC:',
     protein: 'UNIPROTKB:',
   },
-  isRegulatingMarker: (p) => p === 'regulating_marker_set',
-  isMarker: (p) => p === 'characterizing_marker_set',
+  isRegulatedMarker: (p) => p === 'regulated_marker_set',
+  isSpecifiedMarker: (p) => p === 'specified_marker_set',
   isExternalSource: (p) =>
     PREDICATE.isCellType(p) ||
     PREDICATE.isDiagnosis(p) ||
     PREDICATE.isCitation(p) ||
     PREDICATE.isOrigin(p) ||
-    PREDICATE.isMarker(p) ||
-    PREDICATE.isRegulatingMarker(p) ||
+    PREDICATE.isSpecifiedMarker(p) ||
+    PREDICATE.isRegulatedMarker(p) ||
     PREDICATE.isDataset(p),
   isPredicate: (p) =>
     PREDICATE.isTaxon(p) ||
@@ -69,7 +69,7 @@ const PREDICATE = {
       data.push({
         type: prefixIds[parts[0] + ':'],
         id: parts[1],
-        action: PREDICATE.regulatingActions[m.markerType || m.action],
+        action: PREDICATE.regulatedActions[m.markerType || m.action],
       });
     }
 

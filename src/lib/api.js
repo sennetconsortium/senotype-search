@@ -79,7 +79,7 @@ const API = {
         byCode: `${URLS.api.ontology}codes/<query>/terms`,
         byTerm: `${URLS.api.ontology}terms/<query>/codes`,
       },
-      characterizing_marker_set: {
+      specified_marker_set: {
         genes: `${URLS.api.ontology}genes/<query>`,
         proteins: `${URLS.api.ontology}proteins/<query>`,
       },
@@ -93,8 +93,8 @@ const API = {
       const byCode = hasCode || isNum;
       const {
           isCellType,
-          isMarker,
-          isRegulatingMarker,
+          isSpecifiedMarker,
+          isRegulatedMarker,
           isDiagnosis,
           isCitation,
           isOrigin,
@@ -123,8 +123,8 @@ const API = {
       if (
         (isCellType(predicate) ||
         isCitation(predicate) ||
-        isMarker(predicate) ||
-        isRegulatingMarker(predicate)) && hasCode
+        isSpecifiedMarker(predicate) ||
+        isRegulatedMarker(predicate)) && hasCode
       ) {
         // Remove the preceeding CL: from query
         _query = query.split(':')[1];
@@ -136,11 +136,11 @@ const API = {
           // ADD required DOID: to query
           _query = isNum && !hasCode ? `${PREDICATE.prefixIds.diagnosis}${query}` : query;
         }
-      } else if (isMarker(predicate) || isRegulatingMarker(predicate)) {
+      } else if (isSpecifiedMarker(predicate) || isRegulatedMarker(predicate)) {
         if (query.toUpperCase().includes(PREDICATE.prefixIds.protein)) {
-          url = urls.characterizing_marker_set.proteins;
+          url = urls.specified_marker_set.proteins;
         } else {
-          url = urls.characterizing_marker_set.genes;
+          url = urls.specified_marker_set.genes;
         }
       } else {
         if (isOrigin(predicate)) {

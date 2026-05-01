@@ -147,12 +147,12 @@ function MarkerFormInputs({
     setTableBusy(true);
     let _query, regulatingAction, prefix, error;
     const promises = [];
-    const regulatingActions = flipObj(PREDICATE.regulatingActions);
+    const regulatedActions = flipObj(PREDICATE.regulatedActions);
     let row = 1;
     for (const d of uploadData) {
       prefix = PREDICATE.prefixIds[d.type.toLowerCase()];
       _query = d.id.includes(':') ? d.id : prefix + d.id;
-      regulatingAction = regulatingActions[d.action];
+      regulatingAction = regulatedActions[d.action];
       if (prefix && regulatingAction) {
         promises.push(fetchVocabulary({ predicate, _query, regulatingAction, row, query: d.id }));
       } else {
