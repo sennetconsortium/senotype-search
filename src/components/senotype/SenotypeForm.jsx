@@ -763,7 +763,7 @@ function SenotypeForm({isEdit = false}) {
         </Tabs>
         <div className="c-senotypeForm__fotter mt-4 text-end">
           <Button
-            disabled={isBusy !== false || (isEdit && !auth.isSameUser(senotype?.created_by_user_email))}
+            disabled={isBusy !== false || (isEdit && !auth.isSameUser(senotype?.created_by_user_sub))}
             type="submit"
           >
             Submit
