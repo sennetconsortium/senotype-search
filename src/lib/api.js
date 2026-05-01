@@ -25,7 +25,7 @@ const API = {
         body: body ? JSON.stringify(body) : undefined,
       });
       if (!res.ok) {
-        const errMsg = res.statusText ? res.statusText : await res.text()
+        const errMsg = res.statusText ? res.statusText : 'An error occurred.';
         const description = await res.json();
         return { error: errMsg, description, status: res.status };
       }
