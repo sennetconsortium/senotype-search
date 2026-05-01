@@ -1,9 +1,10 @@
 import React from 'react';
-import { Layout, Menu, Skeleton } from 'antd';
+import { Layout,  Skeleton } from 'antd';
 import Facets from 'search-ui/components/core/Facets';
 import { useSearchUIContext } from 'search-ui/components/core/SearchUIContext';
 const { Content, Sider } = Layout;
 import ClearFiltersButton from './ClearFiltersButton';
+import ENVS from '@/lib/envs';
 
 function SiderFacets({}) {
   const { wasSearched, rawResponse } = useSearchUIContext();
@@ -25,7 +26,7 @@ function SiderFacets({}) {
           </>
         )}
         {wasSearched && <Facets transformFunction={transformFunction} />}
-        {wasSearched && (rawResponse?.records === undefined || rawResponse?.records?.senotypes.length <= 0) && (
+        {wasSearched && (rawResponse?.records === undefined || rawResponse?.records[ENVS.index.senotype].length <= 0) && (
           <span>No facets to show.</span>
         )}
       </Sider>

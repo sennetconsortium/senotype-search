@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef, useContext, useEffect, useEffectEvent } from 'react';
 import { Flex, Radio, message, Upload, Table } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 const { Dragger } = Upload;
@@ -17,7 +17,7 @@ function MarkerFormInputs({
   predicate,
   getOptions,
   getSearchBehavior,
-  senotype,
+  reducer,
   onChange,
   handleMarkers,
   busy,
@@ -25,9 +25,29 @@ function MarkerFormInputs({
   const [tableData, setTableData] = useState([]);
   const isValidFile = useRef(null);
   const uploadRows = useRef([]);
+  const hasInit = useRef(false)
   const [tableBusy, setTableBusy] = useState(false);
   const tableErrors = useRef([])
   const { formatErrorRow } = useContext(EditContext);
+
+  const updateTable= useEffectEvent(() => {
+    const data = reducer.state[predicate.field] || []
+    const list = []
+    let marker 
+    for (const d of data) {
+      marker = d.marker || {...d}
+      let { key, _id } = getTableId({ ...marker, action: d.action });
+      list.push({ _id, key, ...marker, action: d.action });
+    }
+    hasInit.current = true;
+    setTableData(list)
+  });
+
+  useEffect(() => {
+    if (reducer.state && !hasInit.current) {
+      updateTable();
+    }
+  }, [])
 
   /**
    * Removes a row from table
@@ -44,7 +64,7 @@ function MarkerFormInputs({
       'name',
       'term',
       'code',
-      ...(predicate.fields ? ['regulating_action'] : []),
+      ...(predicate.fields ? ['action'] : []),
     ];
 
     const columns = [];
@@ -110,7 +130,7 @@ function MarkerFormInputs({
           error: (
             <span>
               {data.result?.error || JSON.stringify(data.result)} on search of
-              column <code>id</code> with value <code>query</code>
+              column <code>id</code> with value <code>{query}</code>
             </span>
           ),
           row,
@@ -129,12 +149,12 @@ function MarkerFormInputs({
     setTableBusy(true);
     let _query, regulatingAction, prefix, error;
     const promises = [];
-    const regulatingActions = flipObj(PREDICATE.regulatingActions);
+    const regulatedActions = flipObj(PREDICATE.regulatedActions);
     let row = 1;
     for (const d of uploadData) {
       prefix = PREDICATE.prefixIds[d.type.toLowerCase()];
       _query = d.id.includes(':') ? d.id : prefix + d.id;
-      regulatingAction = regulatingActions[d.action];
+      regulatingAction = regulatedActions[d.action];
       if (prefix && regulatingAction) {
         promises.push(fetchVocabulary({ predicate, _query, regulatingAction, row, query: d.id }));
       } else {
@@ -215,6 +235,11 @@ function MarkerFormInputs({
     onChange({ field: data.target.name, e: data });
   };
 
+  const getTableId = (row) => {
+    const key = `${row.code}-${row.action}`;
+    return { key, _id: `${crypto.randomUUID()}-${key}` };
+  }
+
   /**
    * List of formValue strings
    *
@@ -223,19 +248,19 @@ function MarkerFormInputs({
   const addToTable = (list) => {
     const _tableData = [...tableData];
     const added = new Set(
-      _tableData.map((t) => `${t.code}-${t.regulating_action}`),
+      _tableData.map((t) => `${t.code}-${t.action}`),
     );
-    let newItem, key;
+    let newItem;
     for (const item of list) {
-      newItem = JSON.parse(item);
-      key = `${newItem.code}-${newItem.regulating_action}`;
+      newItem = typeof item === 'string' ? JSON.parse(item) : item;
+      let {key, _id} = getTableId(newItem);
       if (!added.has(key)) {
         added.add(key);
-        _tableData.push({ _id: `${crypto.randomUUID()}-${key}`, ...newItem });
+        _tableData.push({ _id, ...newItem });
       }
     }
     setTableData(_tableData);
-    onChange({ field: predicate.field, value: JSON.stringify(_tableData) });
+    onChange({ field: predicate.field, value: _tableData });
     log.debug('MarkerFormInputs.handleOnChange', _tableData);
   };
 
@@ -283,7 +308,7 @@ function MarkerFormInputs({
           defaultValue={PREDICATE.prefixIds.gene}
           buttonStyle="solid"
           id="marker-type"
-          name={`marker_type${predicate.fields ? '_regulating' : ''}`}
+          name={`marker_type${predicate.fields ? '_regulated' : ''}`}
         >
           <Radio.Button value={PREDICATE.prefixIds.gene}>Gene</Radio.Button>
           <Radio.Button value={PREDICATE.prefixIds.protein}>
@@ -301,7 +326,7 @@ function MarkerFormInputs({
                 defaultValue={predicate.fields[0]}
                 buttonStyle="solid"
                 id="action"
-                name="regulating_action"
+                name="action"
               >
                 {predicate.fields.map((p, index) => (
                   <Radio.Button key={`radio-${index}`} value={p}>
@@ -340,9 +365,10 @@ function MarkerFormInputs({
           p={predicate}
           getOptions={getOptions}
           getSearchBehavior={_getSearchBehavior}
-          senotype={senotype}
+          reducer={reducer}
           useSearchIcon={true}
           mode={'single'}
+          hideSelectedValue={true}
           isBusy={busy.selectBusyReducer.state[predicate.field]}
         />
       </Flex>

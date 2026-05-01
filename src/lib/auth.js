@@ -2,8 +2,8 @@ import {deleteCookie, getCookie} from 'cookies-next';
 import log from 'xac-loglevel';
 
 const AUTH = {
-  info: () => {
-    const info = getCookie('info');
+  info: (cookies) => {
+    const info = cookies ? cookies.get('info')?.value : getCookie('info');
     if (!info) return {};
     try {
       const auth = JSON.parse(atob(info));
@@ -14,7 +14,7 @@ const AUTH = {
     }
     return {};
   },
-  token: () => AUTH.info().groups_token,
+  token: (cookies) => AUTH.info(cookies).groups_token,
   logout: () => {
     deleteCookie('info', {path: '/', domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN, sameSite: "Lax"})
     sessionStorage.clear();

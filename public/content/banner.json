@@ -1,0 +1,8 @@
+{
+  "default": {
+    "variant": "warning",
+    "containerClassName": null,
+    "title": "This is the DEV Senotype Library",
+    "content": "<p>For the production instance of the Senotype Editor click <a href='http://senlib.sennetconsortium.org/'>here</a>."
+  }
+}

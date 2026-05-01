@@ -1,14 +1,14 @@
-import { Button, Skeleton, Space, Tooltip } from 'antd';
+import { Skeleton } from 'antd';
 import { ubkgPredicates } from '@/config/search/senotype';
 import URLS from '@/lib/urls';
 import { organHierarchy } from '@/lib/general';
+import PREDICATE from '@/lib/predicate';
 import React, { useContext } from 'react';
 import AppContext from '@/context/AppContext';
-import { Col, Row } from 'react-bootstrap';
-import { FileOutlined } from '@ant-design/icons';
 
 function HeaderBadges({ data }) {
   const { auth } = useContext(AppContext);
+  const {isCellType, isHallmark, isOrgan} = PREDICATE;
 
   const badge = ({ v, p, term, isOrgan }) => {
     return (
@@ -31,20 +31,19 @@ function HeaderBadges({ data }) {
   const getBadges = () => {
     const list = [];
     const added = {};
-    let isOrgan = false;
     let term;
 
     for (const p of ubkgPredicates) {
+      // TODO update fields
       // skip cell types and hallmark  since the terms can be long, which won't output neat badges
-      if (p.field !== 'has_cell_type' && p.field !== 'has_hallmark') {
+      if (!isCellType(p.field) && !isHallmark(p.field)) {
         for (const v of data[p.field] || []) {
-          isOrgan = p.field === 'located_in';
           term = organHierarchy(v.term);
 
           if (!added[term]) {
             // Don't want to add any multiple times
             added[term] = true;
-            list.push(badge({ v, p, term, isOrgan }));
+            list.push(badge({ v, p, term, isOrgan: isOrgan(p.field) }));
           }
         }
       }
@@ -55,27 +54,7 @@ function HeaderBadges({ data }) {
   if (!data) {
     return <Skeleton.Node />;
   }
-  return (
-    <Row className="c-headerBadges">
-      <Col md={8} sm={12} className={'mb-2'}>
-        <div className="c-headerBadges__main">{getBadges()}</div>
-      </Col>
-      <Col md={4} sm={12}>
-        <Space align="center" className="float-md-end">
-          {auth.isAuthenticated && auth.hasSenotypeEdit && (
-            <Button href={`${URLS.senotypeEditor}edit/${data.sennet_id}`}>
-              Edit
-            </Button>
-          )}
-          <Tooltip title={'View JSON'}>
-            <Button href={`/api/json/senotype/${data.uuid}`}>
-              <FileOutlined />
-            </Button>
-          </Tooltip>
-        </Space>
-      </Col>
-    </Row>
-  );
+  return <div className="c-headerBadges">{getBadges()}</div>;
 }
 
 export default HeaderBadges;

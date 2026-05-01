@@ -1,50 +1,66 @@
 import EditContext from '@/context/EditContext';
 import React, { useState, useContext, useEffect, useEffectEvent, useRef } from 'react';
 import { Tab, Tabs, Form, Button } from 'react-bootstrap';
-import AppAccordion from '../AppAccordion';
-import InputField from '../form/InputField';
+import AppAccordion from '@/components/AppAccordion';
+import InputField from '@/components/form/InputField';
 import AppContext from '@/context/AppContext';
 import { ubkgPredicates } from '@/config/search/senotype';
-import { Skeleton } from 'antd';
+import { Skeleton, App, Table } from 'antd';
 import log from 'xac-loglevel';
-import FormInputGroup from '../form/FormInputGroup';
+import FormInputGroup from '@/components/form/FormInputGroup';
 import useAppReducer from '@/reducers/useAppReducer';
 import API from '@/lib/api';
 import PREDICATE from '@/lib/predicate'
-import SelectField from '../form/SelectField';
-import MarkerFormInputs from '../form/MarkerFormInputs';
+import SelectField from '@/components/form/SelectField';
+import MarkerFormInputs from '@/components/form/MarkerFormInputs';
 import URLS from '@/lib/urls';
+import HeaderBadges from '@/components/senotype/HeaderBadges';
+import ClipboardCopy from '@/components/ClipboardCopy';
+import AppSpinner from '@/components/AppSpinner';
+import { Divider } from 'antd';
+import THEME from '@/lib/theme';
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 
-function SenotypeForm() {
+function SenotypeForm({isEdit = false}) {
+  const { notification } = App.useApp();
   const [key, setKey] = useState('main');
   const { senotype, senotypeOntology, formatValue } = useContext(EditContext);
-  const { ontology } = useContext(AppContext)
-  const formValues = useRef(senotype || {});
+  const { ontology, auth } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
-
-  const senotypeOntologyReducer = useAppReducer(senotypeOntology || {});
+  const [isBusy, setIsBusy] = useState(false);
+  const senotypeOntologyReducer = useAppReducer(senotypeOntology);
   const getOpenStates = () => {
     return Object.fromEntries(
-      Object.entries(senotypeOntology || {}).map(([key, value]) => [
+      Object.entries(senotypeOntology).map(([key, value]) => [
         key,
         false,
       ]),
     );
   }
-  const selectAutocompleteReducer = useAppReducer(
+  const selectVisibleDropdownReducer = useAppReducer(
     getOpenStates()
   );
 
   const selectBusyReducer = useAppReducer(getOpenStates());
+  const formValuesReducer = useAppReducer(senotype || {})
 
   const updateSenotypeOntology = useEffectEvent(() => {
-    senotypeOntologyReducer.dispatch({ value: senotypeOntology }); 
-    selectAutocompleteReducer.dispatch({
+    const _ontology = {...senotypeOntology}
+    for (const o of tabPredicates()) {
+      _ontology[o.field] = _ontology[o.field] || []
+    }
+    senotypeOntologyReducer.dispatch({ value: _ontology }); 
+
+    selectVisibleDropdownReducer.dispatch({
       value: getOpenStates(),
     }); 
     selectBusyReducer.dispatch({
       value: getOpenStates(),
     }); 
+  });
+
+  const updateSenotypeValues = useEffectEvent(() => {
+    formValuesReducer.dispatch({ value: senotype });
   });
 
   useEffect(() => {
@@ -53,21 +69,21 @@ function SenotypeForm() {
 
   useEffect(() => {
     if (senotype) {
-      formValues.current = senotype
+      log.debug('SenotypeForm > senotype', senotype)
+      updateSenotypeValues();
     }
   }, [senotype]);
 
   const {
     isAssay,
     isCellType,
-    isHallmark,
     isDiagnosis,
     isCitation,
     isOrigin,
     isDataset,
     isExternalSource,
-    isMarker,
-    isRegulatingMarker,
+    isSpecifiedMarker,
+    isRegulatedMarker,
   } = PREDICATE;
 
   const getOptions = (predicate) => {
@@ -89,28 +105,23 @@ function SenotypeForm() {
     const results = [
       ...ubkgPredicates.filter((p) => !isAssay(p.field)),
       {
-        field: 'has_assay',
+        field: 'assay',
         label: 'Assay',
         ui: {},
       },
       {
-        field: 'has_hallmark',
-        label: 'Hallmark',
-        ui: { required: true },
-      },
-      {
-        field: 'has_inducer',
+        field: 'inducer',
         label: 'Inducer',
         ui: {},
       },
       {
-        field: 'has_microenvironment',
+        field: 'microenvironment',
         label: 'Microenvironment',
         ui: {},
       },
     ];
     results.push({
-      field: 'has_diagnosis',
+      field: 'diagnosis',
       label: 'Diagnosis',
       ui: {
         tooltip:
@@ -123,7 +134,7 @@ function SenotypeForm() {
   const tab2Predicates = () => {
     const results = [
       {
-        field: 'has_citation',
+        field: 'citation',
         label: 'Citation',
         ui: {
           tooltip:
@@ -131,7 +142,7 @@ function SenotypeForm() {
         },
       },
       {
-        field: 'has_origin',
+        field: 'origin',
         label: 'Origin',
         ui: {
           tooltip:
@@ -139,7 +150,7 @@ function SenotypeForm() {
         },
       },
       {
-        field: 'has_dataset',
+        field: 'dataset',
         label: 'Dataset',
         ui: {
           tooltip:
@@ -155,9 +166,9 @@ function SenotypeForm() {
   const tab2bPredicates = () => {
     const results = [
       {
-        field: 'has_sex',
+        field: 'sex',
         label: 'Sex',
-        ui: { required: true},
+        ui: {},
       },
     ];
 
@@ -165,18 +176,18 @@ function SenotypeForm() {
   };
 
   const handleMarkers = ({predicate, _query, data, regulatingAction, options}) => {
-    if (isMarker(predicate.field) || isRegulatingMarker(predicate.field)) {
+    if (isSpecifiedMarker(predicate.field) || isRegulatedMarker(predicate.field)) {
       const _result = Array.isArray(data.result) ? data.result : [];
-      let regulating_action = regulatingAction || undefined;
-      if (isRegulatingMarker(predicate.field) && !regulating_action) {
-        regulating_action = formValues.current.regulating_action || PREDICATE.regulatingActions.up_regulates;
+      let action = regulatingAction || undefined;
+      if (isRegulatedMarker(predicate.field) && !action) {
+        action = formValuesReducer.state.action || PREDICATE.regulatedActions.up_regulates;
       }
       for (const r of _result) {
         if (_query.includes(PREDICATE.prefixIds.gene)) {
           options.push({
             label: r.approved_name,
             value: formatValue({
-              regulating_action,
+              action,
               name: r.approved_name,
               term: r.approved_symbol,
               code: `${_query.split(':')[0]}:${r.hgnc_id}`,
@@ -186,7 +197,7 @@ function SenotypeForm() {
           options.push({
             label: r.recommended_name[0],
             value: formatValue({
-              regulating_action,
+              action,
               term: r.recommended_name[0],
               code: `${_query.split(':')[0]}:${r.uniprotkb_id}`,
             }),
@@ -202,11 +213,12 @@ function SenotypeForm() {
     toggleBusy(predicate.field, true);
     let _query = query
     // Prefix for marker with selected radio or default
-    if (isMarker(predicate.field) || isRegulatingMarker(predicate.field)) {
-      const prefix = isRegulatingMarker(predicate.field)
-        ? 'marker_type_regulating'
+    if (isSpecifiedMarker(predicate.field) || isRegulatedMarker(predicate.field)) {
+      const prefix = isRegulatedMarker(predicate.field)
+        ? 'marker_type_regulated'
         : 'marker_type';
-      _query = `${formValues.current[prefix] || PREDICATE.prefixIds.gene}${query}`;
+      _query = query.includes(':') ? query.split(':')[1] : query
+      _query = `${formValuesReducer.state[prefix] || PREDICATE.prefixIds.gene}${_query}`;
     }
     const options = [];
     const data = await API.fetch({
@@ -291,7 +303,6 @@ function SenotypeForm() {
 
     if (options.length) {
       senotypeOntologyReducer.dispatch({
-        type: 'setOne',
         field: predicate.field,
         value: options,
       });
@@ -300,7 +311,7 @@ function SenotypeForm() {
   };
 
   const toggleOpen = (field, value) => {
-    selectAutocompleteReducer.dispatch({
+    selectVisibleDropdownReducer.dispatch({
       field,
       value
     });
@@ -317,7 +328,7 @@ function SenotypeForm() {
 
     if (isExternalSource(predicate.field)) {
       return {
-        open: selectAutocompleteReducer?.state[predicate.field],
+        open: selectVisibleDropdownReducer?.state[predicate.field],
         onBlur: () => toggleOpen(predicate.field, undefined),
         onSelect: () => {
           toggleOpen(predicate.field, undefined);
@@ -337,55 +348,188 @@ function SenotypeForm() {
   }
 
   const onChange = (data) => {
-    let value = data.value || data.e.target?.value;
+    let value = data.value
     log.info('SenotypeForm.onChange', data.field, value);
-    formValues.current = { ...formValues.current, [data.field]: value };
+    formValuesReducer.dispatch({field: data.field, value});
+  }
+
+  const tabPredicates = () =>
+    tab1Predicates().concat(tab2Predicates()).concat(tab2bPredicates());
+
+  const formatRequestBody = () => {
+    const body = {};
+    for (const f in formValuesReducer.state) {
+      if (isRegulatedMarker(f)) {
+        body[f] = formValuesReducer.state[f].map((t) => ({
+          action: t.action,
+          marker: t.code || t.marker?.code,
+        }));
+      } else {
+        if (!Array.isArray(formValuesReducer.state[f]) || isDiagnosis(f)) {
+          body[f] = formValuesReducer.state[f];
+        } else {
+          body[f] = formValuesReducer.state[f].map((t) => t.code || t.uuid);
+        }
+      }
+    }
+    return body
+  }
+
+  const submissionNotification = (res) => {
+    const verb = isEdit ? 'Edited': 'Created';
+    let icon = (
+      <CheckCircleFilled style={{ color: '#198754', fontSize: '22px' }} />
+    );
+    let description;
+    if (res.error) {
+      icon = <CloseCircleFilled style={{ color: '#dc3545', fontSize: '22px' }} />;
+      if (res.description.errors) {
+        const errorData = Object.entries(res.description.errors).map(
+          (value, i) => {
+            return {
+              field: value[0],
+              error: Array.isArray(value[1])
+                ? value[1].join(', ')
+                : value[1].toString(),
+            };
+          },
+        );
+        const errorColumns = ['field', 'error'].map((n) => ({
+          title: n,
+          dataIndex: n,
+          key: n,
+        }));
+        description = (
+          <>
+            <p>There were errors in your request.</p>
+            <Table
+              dataSource={errorData}
+              columns={errorColumns}
+              rowKey={'field'}
+            />
+          </>
+        );
+      } else {
+        description = <>{res.description.message}</>;
+      }
+      setIsBusy(false);
+    } else {
+     
+      description = (
+        <>
+          <p>Your Senotype has been {verb.toLowerCase()}.</p>
+          <p>
+            <strong>SenNet ID: </strong>
+            {res?.sennet_id}
+            <ClipboardCopy
+              text={res?.sennet_id}
+              title={'Copy Senotype ID {text} to clipboard'}
+            />{' '}
+          </p>
+
+          <div>
+            <HeaderBadges data={formValuesReducer.state} />
+          </div>
+          <Divider />
+          <div className={THEME.classNames.rightAlign}>
+            <a className="btn btn-outline-primary rounded-0" href="/search">
+              Search Senotypes
+            </a>
+            <a
+              className="btn btn-outline-secondary mx-2 rounded-0"
+              href={`/senotype/${res.uuid}`}
+            >
+              View Senotype
+            </a>
+          </div>
+        </>
+      );
+      setIsBusy(isEdit ? false : null); 
+    }
+
+    // TODO update notification details
+    const title = (
+      <span>
+        {icon} <span className="mx-2">{res.error || `Senotype ${verb}`}</span>
+      </span>
+    );
+    notification.destroy();
+    notification.open({
+      className: 'ant-notification--middle',
+      duration: false,
+      title,
+      description,
+      placement: 'top',
+    });
+  }
+
+  const postPut = () => {
+    const url = URLS.api.local('senotype');
+    const method = isEdit ? 'PUT': 'POST';
+
+    // Format the request body according to expected API structure
+    const body = formatRequestBody()
+
+    API.fetch({ url, body, method }).then((res) => {
+      submissionNotification(res.description || res.senotype)
+    });
+
+    log.debug(
+      'SenotypeForm.handleSubmit > formValuesReducer',
+      formValuesReducer,
+    );
+  }
+
+  const toggleErrorStyles = (required) => {
+    required.map((p) => {
+      document
+        .querySelectorAll(`#c-inputField--${p.field} .ant-select`)
+        .forEach((el) => {
+          THEME.getTabPaneTab(el).classList.add(THEME.classNames.invalid);
+          el.classList.add(THEME.classNames.invalid);
+        });
+    });
   }
 
   const handleSubmit = (e) => {
-  
-    log.info('SenotypeForm.handleSubmit', formValues)
     try {
       const form = e.currentTarget;
+      setIsBusy(true);
 
       e.preventDefault();
       e.stopPropagation();
 
-      // document
-      //   .querySelectorAll('ant-select')
-      //   .forEach((el) => el.removeAttribute('is-invalid'));
-
-      const required = tab1Predicates()
-        .concat(tab2Predicates())
-        .concat(tab2bPredicates())
-        .filter((f) => f.ui?.required === true && formValues.current[f.field] === undefined);
+      const required = tabPredicates().filter(
+        (f) =>
+          f.ui?.required === true &&
+          ((formValuesReducer.state &&
+            formValuesReducer.state[f.field] === undefined) ||
+            !formValuesReducer.state),
+      );
 
       const validationFailed = form.checkValidity() === false || required.length > 0;
       if (validationFailed) {
-        e.preventDefault();
-        e.stopPropagation();
-        required.map((p) => {
-          document
-            .querySelectorAll(`#c-inputField--${p.field} .ant-select`)
-            .forEach((el) => {
-              el.classList.add('is-invalid');
-            });
-            
-        })
+        toggleErrorStyles(required)
+        setIsBusy(false);
+      } else {
+        postPut();
       }
       setValidated(true);
       
     } catch (errorInfo) {
-      console.log('Manual validation failed:', errorInfo);
+      log.error(
+        'SenotypeForm.handleSubmit > Manual validation failed:',
+        errorInfo,
+      );
     }
   }
 
-  const loadingPredicates = !senotypeOntology || !senotypeOntologyReducer.state || !selectBusyReducer.state
+  const loadingPredicates = !senotypeOntology || !senotypeOntologyReducer.state || !selectBusyReducer.state || (isEdit && !formValuesReducer.state)
 
   return (
     <>
       <Form
-        className='c-senotypeForm'
+        className="c-senotypeForm"
         noValidate
         validated={validated}
         onSubmit={handleSubmit}
@@ -409,8 +553,8 @@ function SenotypeForm() {
           <Tab eventKey="main" title="Submission">
             <AppAccordion title={'Overview'}>
               <InputField
-                label={'Name'}
-                id={'name'}
+                label={'Title'}
+                id={'title'}
                 onChange={onChange}
                 controlProps={{
                   defaultValue: senotype?.title,
@@ -419,18 +563,18 @@ function SenotypeForm() {
               />
               <InputField
                 label={'Description'}
-                id={'definition'}
+                id={'description'}
                 onChange={onChange}
                 controlProps={{
                   required: true,
-                  defaultValue: senotype?.definition,
+                  defaultValue: senotype?.description,
                   as: 'textarea',
                   rows: 3,
                 }}
               />
             </AppAccordion>
             <AppAccordion title={'Senotype'}>
-              {loadingPredicates && <Skeleton />}
+              {loadingPredicates && <Skeleton.Input block={true} />}
               {!loadingPredicates && (
                 <>
                   {tab1Predicates().map((p, index) => (
@@ -439,8 +583,9 @@ function SenotypeForm() {
                       p={p}
                       getOptions={getOptions}
                       getSearchBehavior={getSearchBehavior}
-                      senotype={senotype}
+                      reducer={formValuesReducer}
                       onChange={onChange}
+                      isBusy={selectBusyReducer.state[p.field]}
                     />
                   ))}
                 </>
@@ -449,7 +594,7 @@ function SenotypeForm() {
           </Tab>
           <Tab eventKey="citationDemographics" title="Citation & Demographics">
             <AppAccordion title={'Citation & Origin'}>
-              {loadingPredicates && <Skeleton />}
+              {loadingPredicates && <Skeleton.Input block={true} />}
               {!loadingPredicates && (
                 <>
                   {tab2Predicates().map((p, index) => (
@@ -458,15 +603,16 @@ function SenotypeForm() {
                       p={p}
                       getOptions={getOptions}
                       getSearchBehavior={getSearchBehavior}
-                      senotype={senotype}
+                      reducer={formValuesReducer}
                       onChange={onChange}
+                      isBusy={selectBusyReducer.state[p.field]}
                     />
                   ))}
                 </>
               )}
             </AppAccordion>
             <AppAccordion title={'Demographics'}>
-              {loadingPredicates && <Skeleton />}
+              {loadingPredicates && <Skeleton.Input block={true} />}
               {!loadingPredicates && (
                 <>
                   {tab2bPredicates().map((p, index) => (
@@ -475,7 +621,7 @@ function SenotypeForm() {
                       p={p}
                       getOptions={getOptions}
                       getSearchBehavior={getSearchBehavior}
-                      senotype={senotype}
+                      reducer={formValuesReducer}
                       onChange={onChange}
                     />
                   ))}
@@ -483,11 +629,13 @@ function SenotypeForm() {
               )}
               <FormInputGroup
                 label={'Age'}
-                field={'age'}
+                id={'age'}
                 onChange={onChange}
                 inputs={[
                   {
                     label: 'Value',
+                    id: 'value',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -495,6 +643,8 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Lower',
+                    id: 'lowerbound',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -502,6 +652,8 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Upper',
+                    id: 'upperbound',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -509,6 +661,7 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Unit',
+                    id: 'unit',
                     controlProps: {
                       value: 'year',
                       disabled: true,
@@ -519,11 +672,13 @@ function SenotypeForm() {
 
               <FormInputGroup
                 label={'BMI'}
-                field={'bmi'}
+                id={'bmi'}
                 onChange={onChange}
                 inputs={[
                   {
                     label: 'Value',
+                    id: 'value',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -531,6 +686,8 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Lower',
+                    id: 'lowerbound',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -538,6 +695,8 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Upper',
+                    id: 'upperbound',
+                    formatter: Number,
                     controlProps: {
                       type: 'number',
                       min: 0,
@@ -545,6 +704,7 @@ function SenotypeForm() {
                   },
                   {
                     label: 'Unit',
+                    id: 'unit',
                     controlProps: {
                       value: 'kg/m2',
                       disabled: true,
@@ -560,7 +720,7 @@ function SenotypeForm() {
               {!loadingPredicates && (
                 <MarkerFormInputs
                   predicate={{
-                    field: 'has_characterizing_marker_set',
+                    field: 'specified_marker_set',
                     label: 'Gene/Protein ID or Symbol',
                     ui: {
                       tooltip:
@@ -571,20 +731,20 @@ function SenotypeForm() {
                   handleMarkers={handleMarkers}
                   getOptions={getOptions}
                   getSearchBehavior={getSearchBehavior}
-                  senotype={senotype}
+                  reducer={formValuesReducer}
                   onChange={onChange}
                 />
               )}
             </AppAccordion>
 
-            <AppAccordion title={'Regulating Marker'}>
+            <AppAccordion title={'Regulated Marker'}>
               {loadingPredicates && <Skeleton />}
               {!loadingPredicates && (
                 <MarkerFormInputs
                   predicate={{
-                    field: 'has_characterizing_regulating_marker_set',
+                    field: 'regulated_marker_set',
                     label: 'Gene/Protein ID or Symbol',
-                    fields: Object.keys(PREDICATE.regulatingActions),
+                    fields: Object.keys(PREDICATE.regulatedActions),
                     ui: {
                       tooltip:
                         'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
@@ -594,7 +754,7 @@ function SenotypeForm() {
                   handleMarkers={handleMarkers}
                   getOptions={getOptions}
                   getSearchBehavior={getSearchBehavior}
-                  senotype={senotype}
+                  reducer={formValuesReducer}
                   onChange={onChange}
                 />
               )}
@@ -602,7 +762,13 @@ function SenotypeForm() {
           </Tab>
         </Tabs>
         <div className="c-senotypeForm__fotter mt-4 text-end">
-          <Button type="submit">Submit</Button>
+          <Button
+            disabled={isBusy !== false || (isEdit && !auth.isSameUser(senotype?.created_by_user_email))}
+            type="submit"
+          >
+            Submit
+          </Button>
+          <AppSpinner otherProps={{ spinning: isBusy }} />
         </div>
       </Form>
     </>

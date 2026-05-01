@@ -7,7 +7,9 @@ import { EditProvider } from '@/context/EditContext';
 import AppSpinner from '@/components/AppSpinner';
 import Unauthorized from '@/components/errors/Unauthorized';
 import AppContext from '@/context/AppContext';
-import EditSenotype from '@/components/senotype/EditSenotype';
+import CreateEditSenotype from '@/components/senotype/CreateEditSenotype';
+import { Alert } from 'react-bootstrap';
+import NotFound from '@/components/errors/NotFound';
 
 function Page() {
   const params = useParams();
@@ -32,8 +34,18 @@ function Page() {
           (auth.isAuthenticated === false && <Unauthorized />)}
         {data && auth.isAuthenticated && (
           <>
-            <EditSenotype />
+            <CreateEditSenotype isEdit={true} />
           </>
+        )}
+        {!loading && !data && (
+          <NotFound
+            subTitle={
+              <span>
+                The <strong>Senotype</strong> with uuid{' '}
+                <code>{senotype_id}</code> could not be found.
+              </span>
+            }
+          />
         )}
       </BasicLayout>
     </EditProvider>

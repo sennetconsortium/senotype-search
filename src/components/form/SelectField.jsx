@@ -7,12 +7,18 @@ function SelectField({
   p,
   getOptions,
   getSearchBehavior,
-  senotype,
+  reducer,
   useSearchIcon,
   onChange,
   isBusy,
+  hideSelectedValue = false,
   mode = 'multiple',
 }) {
+
+  const data = reducer.state
+  const getLabel = (item) => {
+    return item.title || item.term || item.marker?.name || item.marker?.term
+  }
   return (
     <>
       <InputField
@@ -48,9 +54,20 @@ function SelectField({
               {isBusy && <AppSpinner size={'small'} fullscreen={false} />}
             </>
           ),
-          defaultValue: senotype && senotype[p.field]
-            ? senotype[p.field][0]?.term
-            : undefined,
+          value:
+            data && Object.values(data).length > 0 && data[p.field] && !hideSelectedValue
+              ? Array.isArray(data[p.field])
+                ? data[p.field].map((s) => {
+                    return {
+                      label: getLabel(s),
+                      value: JSON.stringify(s),
+                    };
+                  })
+                : {
+                    label: getLabel(data[p.field]),
+                    value: JSON.stringify(data[p.field]),
+                  }
+              : undefined,
           required: p.ui.required,
         }}
       />

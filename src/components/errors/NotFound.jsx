@@ -4,7 +4,9 @@ import { useRouter } from 'next/navigation';
 import { useContext } from 'react';
 import AppContext from '@/context/AppContext';
 
-export default function NotFound() {
+export default function NotFound({
+  subTitle = 'Sorry, the page you visited does not exist.',
+}) {
   const router = useRouter();
   const { auth } = useContext(AppContext);
 
@@ -12,9 +14,13 @@ export default function NotFound() {
     <Result
       status="404"
       title={404}
-      subTitle="Sorry, the page you visited does not exist."
+      subTitle={subTitle}
       extra={[
-        <Button type={"primary"} key="home" onClick={() => router.push('/search')}>
+        <Button
+          type={'primary'}
+          key="home"
+          onClick={() => router.push('/search')}
+        >
           Back Home
         </Button>,
       ]}

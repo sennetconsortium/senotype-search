@@ -3,6 +3,7 @@ import { Form } from 'react-bootstrap';
 import { Select } from 'antd';
 import log from 'xac-loglevel'
 import { Tooltip } from 'antd';
+import THEME from '@/lib/theme';
 
 function InputField({
   id,
@@ -18,14 +19,32 @@ function InputField({
   const _id = id || label.toCamelCase();
   const helpBlockId = `${_id}HelpBlock`;
 
-  const handleChange = (e) => {
-    if (onChange) {
-      onChange({ e, field: _id });
+  const handleChange = (data) => {
+    log.debug('InputField.handleChange', data);
+
+    let value = []
+    if (Array.isArray(data)) {
+      value = data.map((d) => d.includes("{") ? JSON.parse(d) : d)
+    } else {
+      value = data?.includes("{") ? JSON.parse(data) : data
     }
+    if (onChange) {
+      onChange({ value, field: _id });
+    }
+
+    const $io = document.getElementById(`c-inputField--${_id}`)
+    const errorList = THEME.getTabPane($io).querySelectorAll(THEME.selectors.invalid);
+    if (!errorList.length) {
+      THEME.getTabPaneTab($io).classList.remove(THEME.classNames.invalid)
+    }
+    
   };
 
   return (
-    <Form.Group className={`c-inputField ${className} mt-4`} id={`c-inputField--${_id}`}>
+    <Form.Group
+      className={`c-inputField ${className} mt-4`}
+      id={`c-inputField--${_id}`}
+    >
       <Form.Label htmlFor={_id}>
         <strong>{label}</strong>
         {controlProps.required && (
@@ -41,7 +60,7 @@ function InputField({
 
       {!selectData && (
         <Form.Control
-          onChange={(e) => handleChange(e)}
+          onChange={(e) => handleChange(e.target.value)}
           aria-describedby={helpText ? helpBlockId : undefined}
           {...controlProps}
         />
@@ -49,6 +68,7 @@ function InputField({
 
       {selectData && (
         <Select
+          key={JSON.stringify(selectData) + _id}
           id={_id}
           suffixIcon={dropIcon || <i className="bi bi-chevron-down"></i>}
           showSearch={{

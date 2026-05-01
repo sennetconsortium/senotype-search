@@ -23,12 +23,16 @@ const URLS = {
           'privs/user-write-groups',
       },
     },
+    senotype: {
+      base: process.env.NEXT_PUBLIC_SENOTYPE_API_BASE_URL,
+      createEdit: `${process.env.NEXT_PUBLIC_SENOTYPE_API_BASE_URL}senotypes`,
+    },
     search: process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL,
     ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE_URL,
   },
   nih: {
-    base: process.NEXT_PUBLIC_NIH_EUTILS_BASE_URL,
-    pubMed: `${process.NEXT_PUBLIC_NIH_EUTILS_BASE_URL}entrez/eutils/esummary.fcgi?db=pubmed&retmode=json`,
+    base: process.env.NEXT_PUBLIC_NIH_EUTILS_BASE_URL,
+    pubMed: `${process.env.NEXT_PUBLIC_NIH_EUTILS_BASE_URL}entrez/eutils/esummary.fcgi?db=pubmed&retmode=json`,
   },
   senotypeEditor: process.env.NEXT_PUBLIC_EDITOR_BASE_URL,
   portal: process.env.NEXT_PUBLIC_PORTAL_BASE_URL,
@@ -52,8 +56,9 @@ const URLS = {
     resolver: `${process.env.NEXT_PUBLIC_SCICRUNCH_BASE_URL}resolver/`,
     higher: `${process.env.NEXT_PUBLIC_SCICRUNCH_BASE_URL}scicrunch/resolver/`,
   },
-  bannerContent: process.env.NEXT_PUBLIC_BANNER_URL ||
-      `${process.env.NEXT_PUBLIC_SENOTYPE_LIB_BASE_URL}content/banner.json`,
+  bannerContent:
+    process.env.NEXT_PUBLIC_BANNER_URL ||
+    `${process.env.NEXT_PUBLIC_SENOTYPE_LIB_BASE_URL}content/banner.json`,
   /**
    * Takes the organ hierarchy term and returns a src img url.
    * @param {string} o

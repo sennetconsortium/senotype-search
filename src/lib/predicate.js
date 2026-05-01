@@ -1,40 +1,42 @@
 import { flipObj } from "./general";
 
 const PREDICATE = {
-  isTaxon: (p) => p === 'in_taxon',
-  isOrgan: (p) => p === 'located_in',
-  isAssay: (p) => p === 'has_assay',
-  isHallmark: (p) => p === 'has_hallmark',
-  isSex: (p) => p === 'has_sex',
-  isInducer: (p) => p === 'has_inducer',
-  isMircoEnv: (p) => p === 'has_microenvironment',
-  isCellType: (p) => p === 'has_cell_type',
-  isDiagnosis: (p) => p === 'has_diagnosis',
-  isCitation: (p) => p === 'has_citation',
-  isOrigin: (p) => p === 'has_origin',
-  isDataset: (p) => p === 'has_dataset',
-  regulatingActions: {
+  isTaxon: (p) => p === 'taxon',
+  isOrgan: (p) => p === 'organ',
+  isAssay: (p) => p === 'assay',
+  isHallmark: (p) => p === 'hallmark',
+  isSex: (p) => p === 'sex',
+  isInducer: (p) => p === 'inducer',
+  isMircoEnv: (p) => p === 'microenvironment',
+  isCellType: (p) => p === 'cell_type',
+  isDiagnosis: (p) => p === 'diagnosis',
+  isCitation: (p) => p === 'citation',
+  isOrigin: (p) => p === 'origin',
+  isDataset: (p) => p === 'dataset',
+  regulatedActions: {
     up_regulates: '1',
     down_regulates: '-1',
     inconclusively_regulates: '0',
+  },
+  regulatedActionsView: {
     up: '1',
     down: '-1',
-    '?': '0'
+    '?': '0',
   },
   prefixIds: {
     diagnosis: 'DOID:',
     gene: 'HGNC:',
     protein: 'UNIPROTKB:',
   },
-  isRegulatingMarker: (p) => p === 'has_characterizing_regulating_marker_set',
-  isMarker: (p) => p === 'has_characterizing_marker_set',
+  isRegulatedMarker: (p) => p === 'regulated_marker_set',
+  isSpecifiedMarker: (p) => p === 'specified_marker_set',
   isExternalSource: (p) =>
     PREDICATE.isCellType(p) ||
     PREDICATE.isDiagnosis(p) ||
     PREDICATE.isCitation(p) ||
     PREDICATE.isOrigin(p) ||
-    PREDICATE.isMarker(p) ||
-    PREDICATE.isRegulatingMarker(p) ||
+    PREDICATE.isSpecifiedMarker(p) ||
+    PREDICATE.isRegulatedMarker(p) ||
     PREDICATE.isDataset(p),
   isPredicate: (p) =>
     PREDICATE.isTaxon(p) ||
@@ -63,13 +65,15 @@ const PREDICATE = {
   markersExportData: (markers) => {
     const data = []
     const prefixIds = flipObj(PREDICATE.prefixIds)
-    let parts
+    const regulatedActions = { ...PREDICATE.regulatedActions, ...PREDICATE.regulatedActionsView}; 
+    let parts, code
     for (const m of markers) {
-      parts = m.key ? m.key.split(':') : m.marker.code.split(':')
+      code = m.key || m.code || m.marker.code
+      parts = code.split(':')
       data.push({
         type: prefixIds[parts[0] + ':'],
         id: parts[1],
-        action: PREDICATE.regulatingActions[m.markerType || m.action],
+        action: regulatedActions[m.markerType || m.action],
       });
     }
 

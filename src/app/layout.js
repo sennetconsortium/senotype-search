@@ -9,9 +9,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-          <AntdRegistry>
-            <MountedWrapper>{children}</MountedWrapper>
-          </AntdRegistry>
+        <AntdRegistry>
+          <MountedWrapper>{children}</MountedWrapper>
+        </AntdRegistry>
       </body>
     </html>
   );

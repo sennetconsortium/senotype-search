@@ -11,13 +11,14 @@ const API = {
     headers.append('Content-Type', 'application/json');
     return headers;
   },
-  fetch: async ({ url, token, body, method = 'POST' }) => {
-    token = token === undefined ? AUTH.token() : token;
+  fetch: async ({ url, token, body, cookies, method = 'POST' }) => {
+    token = token === undefined ? AUTH.token(cookies) : token;
     const headers = API.jsonHeader();
     if (token) {
       headers.append('Authorization', `Bearer ${token}`);
     }
     try {
+      //log.debug('API.fetch', url, token)
       const res = await fetch(url, {
         method,
         headers: headers,
@@ -25,7 +26,8 @@ const API = {
       });
       if (!res.ok) {
         const errMsg = res.statusText ? res.statusText : await res.text()
-        return { error: errMsg, status: res.status };
+        const description = await res.json();
+        return { error: errMsg, description, status: res.status };
       }
       return res.json();
     } catch (error) {
@@ -64,20 +66,20 @@ const API = {
     return API.fetch({ url: `${URLS.api.ontology}${endpoint}`, method: 'GET' });
   },
   fetchForForm: async (predicate, query) => {
-    
+    log.debug('API.fetchForForm', predicate, query);
     const urls = {
-      has_citation: {
+      citation: {
         byCode: `${URLS.nih.pubMed}&id=<query>`,
         byTerm: `${URLS.nih.pubMed}&term=<query>`,
       },
-      has_origin: `${URLS.sciCrunch.resolver}<query>`,
-      has_dataset: `${URLS.api.entity.base}entities/search`, //TODO: point to search-api
-      has_cell_type: `${URLS.api.ontology}celltypes/<query>`,
-      has_diagnosis: {
+      origin: `${URLS.sciCrunch.resolver}<query>`,
+      dataset: `${URLS.api.search}entities/search`,
+      cell_type: `${URLS.api.ontology}celltypes/<query>`,
+      diagnosis: {
         byCode: `${URLS.api.ontology}codes/<query>/terms`,
         byTerm: `${URLS.api.ontology}terms/<query>/codes`,
       },
-      has_characterizing_marker_set: {
+      specified_marker_set: {
         genes: `${URLS.api.ontology}genes/<query>`,
         proteins: `${URLS.api.ontology}proteins/<query>`,
       },
@@ -91,8 +93,8 @@ const API = {
       const byCode = hasCode || isNum;
       const {
           isCellType,
-          isMarker,
-          isRegulatingMarker,
+          isSpecifiedMarker,
+          isRegulatedMarker,
           isDiagnosis,
           isCitation,
           isOrigin,
@@ -119,10 +121,10 @@ const API = {
       // Handle api param requirements per predicate
 
       if (
-        isCellType(predicate) ||
+        (isCellType(predicate) ||
         isCitation(predicate) ||
-        isMarker(predicate) ||
-        (isRegulatingMarker(predicate) && hasCode)
+        isSpecifiedMarker(predicate) ||
+        isRegulatedMarker(predicate)) && hasCode
       ) {
         // Remove the preceeding CL: from query
         _query = query.split(':')[1];
@@ -134,11 +136,11 @@ const API = {
           // ADD required DOID: to query
           _query = isNum && !hasCode ? `${PREDICATE.prefixIds.diagnosis}${query}` : query;
         }
-      } else if (isMarker(predicate) || isRegulatingMarker(predicate)) {
+      } else if (isSpecifiedMarker(predicate) || isRegulatedMarker(predicate)) {
         if (query.toUpperCase().includes(PREDICATE.prefixIds.protein)) {
-          url = urls.has_characterizing_marker_set.proteins;
+          url = urls.specified_marker_set.proteins;
         } else {
-          url = urls.has_characterizing_marker_set.genes;
+          url = urls.specified_marker_set.genes;
         }
       } else {
         if (isOrigin(predicate)) {

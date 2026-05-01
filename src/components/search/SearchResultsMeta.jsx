@@ -1,4 +1,5 @@
 import { useSearchUIContext } from 'search-ui/components/core/SearchUIContext';
+import ENVS from '@/lib/envs';
 
 function SearchResultsMeta() {
   const { wasSearched, filters, rawResponse } = useSearchUIContext();
@@ -7,7 +8,9 @@ function SearchResultsMeta() {
   }
 
   const renderText = () => {
-    const info = rawResponse.info?.senotypes;
+    const indexName = ENVS.index.senotype
+    const info = rawResponse.info?.[indexName];
+    console.log(info);
     if (!info?.total_result_count) {
       return <></>;
     }

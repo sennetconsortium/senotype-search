@@ -18,5 +18,17 @@
       border-color #86b7fe !important
       outline 0
       box-shadow 0 0 0 .25rem #0d6efd40 !important
+
+  &-notification
+    &-notice
+      &-title 
+        font-weight bold
+      &-wrapper
+        &:has(.ant-notification--middle)
+          transform translate3d(-50%, 50%, 0px) !important
+    &--middle
+      &.ant-notification-notice-error
+        width 650px !important
+
     
     

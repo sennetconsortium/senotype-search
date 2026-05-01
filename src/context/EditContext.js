@@ -29,10 +29,10 @@ export const EditProvider = ({ children, data }) => {
         for (const r of ontology[o].raw) {
           options[o].push({
             value: formatValue({
-              code: r.valueset_code,
-              term: r.valueset_term,
+              code: r.code,
+              term: r.term,
             }),
-            label: r.valueset_term,
+            label: r.term,
           });
         }
       }
