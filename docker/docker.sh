@@ -49,7 +49,7 @@ case "$COMMAND" in
         docker compose -f docker/docker-compose.yml -f docker/docker-compose.development.yml -p senotype-library up -d
         ;;
       test)
-        docker compose -f docker/docker-compose.test.yml up -p senotype-library-test -d
+        docker compose -f docker/docker-compose.test.yml -p senotype-library-test  up -d
         ;;
     esac
     ;;
