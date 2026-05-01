@@ -9,7 +9,7 @@ const PREDICATE = {
   isInducer: (p) => p === 'inducer',
   isMircoEnv: (p) => p === 'microenvironment',
   isCellType: (p) => p === 'cell_type',
-  isDiagnosis: (p) => p === 'iagnosis',
+  isDiagnosis: (p) => p === 'diagnosis',
   isCitation: (p) => p === 'citation',
   isOrigin: (p) => p === 'origin',
   isDataset: (p) => p === 'dataset',

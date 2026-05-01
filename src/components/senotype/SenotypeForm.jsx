@@ -16,12 +16,13 @@ import MarkerFormInputs from '../form/MarkerFormInputs';
 import URLS from '@/lib/urls';
 import HeaderBadges from './HeaderBadges';
 import ClipboardCopy from '../ClipboardCopy';
+import AppSpinner from '../AppSpinner';
 
 function SenotypeForm({isEdit = false}) {
   const { notification } = App.useApp();
   const [key, setKey] = useState('main');
   const { senotype, senotypeOntology, formatValue } = useContext(EditContext);
-  const { ontology } = useContext(AppContext);
+  const { ontology, auth } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
 
@@ -361,10 +362,10 @@ function SenotypeForm({isEdit = false}) {
           marker: t.code,
         }));
       } else {
-        if (typeof formValuesReducer.state[f] === 'string') {
+        if (typeof formValuesReducer.state[f] === 'string' || isDiagnosis(f)) {
           body[f] = formValuesReducer.state[f];
         } else {
-          body[f] = formValuesReducer.state[f].map((t) => t.code);
+          body[f] = formValuesReducer.state[f].map((t) => t.code || t.uuid);
         }
       }
     }
@@ -377,9 +378,37 @@ function SenotypeForm({isEdit = false}) {
     let description;
     if (res.error) {
       type = 'error';
-      const errorData = [];
-      const errorColumns = [];
-      description = <Table dataSource={errorData} columns={errorColumns} />;
+      if (res.description.errors) {
+        const errorData = Object.entries(res.description.errors).map(
+          (value, i) => {
+            return {
+              field: value[0],
+              error: Array.isArray(value[1])
+                ? value[1].join(', ')
+                : value[1].toString(),
+            };
+          },
+        );
+        const errorColumns = ['field', 'error'].map((n) => ({
+          title: n,
+          dataIndex: n,
+          key: n,
+        }));
+        description = (
+          <>
+            <p>There were errors in your request.</p>
+            <Table
+              dataSource={errorData}
+              columns={errorColumns}
+              rowKey={'field'}
+            />
+          </>
+        );
+      } else {
+        description = <>{res.description.message}</>;
+      }
+      
+      setIsBusy(false);
     } else {
       description = (
         <>
@@ -390,7 +419,7 @@ function SenotypeForm({isEdit = false}) {
               title={'Copy Senotype ID {text} to clipboard'}
             />{' '}
           </p>
-          <p>Your Senotype has been {verb}.</p>
+          <p>Your Senotype has been {verb.toLowerCase()}.</p>
           <p>
             <HeaderBadges data={formValuesReducer.state} />
           </p>
@@ -401,6 +430,7 @@ function SenotypeForm({isEdit = false}) {
     // TODO update notification details
     notification.destroy();
     notification[type]({
+      className: 'ant-notification--middle',
       duration: false,
       title: res.error || `Senotype ${verb}`,
       description,
@@ -416,7 +446,7 @@ function SenotypeForm({isEdit = false}) {
     const body = formatRequestBody()
 
     API.fetch({ url, body, method }).then((res) => {
-      submissionNotification(res)
+      submissionNotification(res.description)
     });
 
     log.debug(
@@ -710,7 +740,13 @@ function SenotypeForm({isEdit = false}) {
           </Tab>
         </Tabs>
         <div className="c-senotypeForm__fotter mt-4 text-end">
-          <Button disabled={isBusy} type="submit">Submit</Button>
+          <Button
+            disabled={isBusy || !auth.isSameUser(senotype.created_by_user_email)}
+            type="submit"
+          >
+            Submit
+          </Button>
+          <AppSpinner otherProps={{ spinning: isBusy }} />
         </div>
       </Form>
     </>
