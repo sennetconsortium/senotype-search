@@ -437,7 +437,12 @@ function SenotypeForm({isEdit = false}) {
               Search Senotype
             </a>
             {!isEdit && (
-              <a href={`/senotype/edit/${res.uuid}`}>Edit Senotype</a>
+              <a
+                className="btn btn-outline-secondary mx-2 rounded-0"
+                href={`/senotype/edit/${res.uuid}`}
+              >
+                Edit Senotype
+              </a>
             )}
           </div>
         </>
