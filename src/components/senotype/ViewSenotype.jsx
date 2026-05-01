@@ -35,7 +35,7 @@ const buildSummary = (senotype) => {
     {
       key: '3',
       label: 'Description',
-      children: senotype.definition,
+      children: senotype.description,
     },
   ];
 };
@@ -48,7 +48,7 @@ const buildSenotype = (senotype) => {
       label: 'Hallmark',
       children: (
         <span className={'flex'}>
-          {senotype['has_hallmark'].map((item, index) => (
+          {senotype['hallmark'].map((item, index) => (
             <div key={`hallmark_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -61,7 +61,7 @@ const buildSenotype = (senotype) => {
       label: 'Taxon',
       children: (
         <span className={'flex'}>
-          {senotype['in_taxon'].map((item, index) => (
+          {senotype['taxon'].map((item, index) => (
             <div key={`taxon_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -74,7 +74,7 @@ const buildSenotype = (senotype) => {
       label: 'Organ',
       children: (
         <span className={'flex'}>
-          {senotype['located_in'].map((item, index) => (
+          {senotype['organ'].map((item, index) => (
             <div key={`organ_${index}`} className={'mb-1'}>
               {item.term}&nbsp;
               <img
@@ -102,7 +102,7 @@ const buildSenotype = (senotype) => {
       label: 'Celltype',
       children: (
         <span className={'flex'}>
-          {senotype['has_cell_type'].map((item, index) => (
+          {senotype['cell_type'].map((item, index) => (
             <div key={`celltype_${index}`} className={'mb-1'}>
               {item.term} ({item.code}){' '}
               <a
@@ -117,14 +117,14 @@ const buildSenotype = (senotype) => {
       ),
     },
   ];
-  if (senotype?.has_microenvironment) {
+  if (senotype?.microenvironment) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Microenvironment',
       children: (
         <span className={'flex'}>
-          {senotype['has_microenvironment'].map((item, index) => (
+          {senotype['microenvironment'].map((item, index) => (
             <div key={`microenvironment_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -134,14 +134,14 @@ const buildSenotype = (senotype) => {
     });
   }
 
-  if (senotype?.has_inducer) {
+  if (senotype?.inducer) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Inducer',
       children: (
         <span className={'flex'}>
-          {senotype['has_inducer'].map((item, index) => (
+          {senotype['inducer'].map((item, index) => (
             <div key={`inducer_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -151,14 +151,14 @@ const buildSenotype = (senotype) => {
     });
   }
 
-  if (senotype?.has_assay) {
+  if (senotype?.assay) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Assay',
       children: (
         <span className={'flex'}>
-          {senotype['has_assay'].map((item, index) => (
+          {senotype['assay'].map((item, index) => (
             <div key={`assay_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -168,14 +168,14 @@ const buildSenotype = (senotype) => {
     });
   }
 
-  if (senotype?.has_diagnosis) {
+  if (senotype?.diagnosis) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Diagnosis',
       children: (
         <span className={'flex'}>
-          {senotype['has_diagnosis'].map((item, index) => (
+          {senotype['diagnosis'].map((item, index) => (
             <div key={`diagnosis_${index}`} className={'mb-1'}>
               {item.term}{' '}
               <a
@@ -207,7 +207,7 @@ const buildDemographic = (senotype) => {
         <span className={'flex'}>
           {senotype['sex'].map((item, index) => (
             <div key={`sex_${index}`} className={'mb-1'}>
-              {item}
+              {item.term}
             </div>
           ))}
         </span>
@@ -251,14 +251,14 @@ const buildReferences = (senotype) => {
   let keyCounter = 0;
   let items = [];
 
-  if (senotype?.has_citation) {
+  if (senotype?.citation) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Citation',
       children: (
         <span className={'flex'}>
-          {senotype['has_citation'].map((item, index) => (
+          {senotype['citation'].map((item, index) => (
             <div key={`citation_${index}`} className={'mb-2'}>
               {item.term}{' '}
               <a
@@ -277,14 +277,14 @@ const buildReferences = (senotype) => {
     });
   }
 
-  if (senotype?.has_origin) {
+  if (senotype?.origin) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Origin',
       children: (
         <span className={'flex'}>
-          {senotype['has_origin'].map((item, index) => (
+          {senotype['origin'].map((item, index) => (
             <div key={`origin_${index}`} className={'mb-2'}>
               {item.term}{' '}
               <a target={'_blank'} href={URLS.getSciCrunchUrl(item.code)}>
@@ -297,14 +297,14 @@ const buildReferences = (senotype) => {
     });
   }
 
-  if (senotype?.has_dataset) {
+  if (senotype?.dataset) {
     keyCounter++;
     items.push({
       key: keyCounter,
       label: 'Dataset',
       children: (
         <span className={'flex'}>
-          {senotype['has_dataset'].map((item, index) => (
+          {senotype['dataset'].map((item, index) => (
             <div key={`dataset_${index}`} className={'mb-2'}>
               {item.term}{' '}
               <a
@@ -430,7 +430,7 @@ export default function ViewSenotype({ senotype }) {
   const specifiedMarkerData = useMemo(
     () =>
       buildMarkers(
-        senotype?.has_specified_marker_set,
+        senotype?.specified_marker_set,
         'specified_marker',
         null,
       ),
@@ -592,35 +592,35 @@ export default function ViewSenotype({ senotype }) {
               </AppAccordion>
             )}
 
-            {regulatingMarkerData.length > 0 && (
-              <AppAccordion
-                title={'Regulated Markers'}
-                id={'regulating-markers'}
-                tooltipTitle={
-                  'These are typically a longer list of gene or protein markers that have been tested for the senotype. The investigator observes these markers to be up-regulated; down-regulated; or tested but inconclusive whether up- or down- regulated (e.g., using log2FC and p-value).'
-                }
-              >
-                <Table
-                  pagination={{
-                    total: regulatingMarkerData.length,
-                    showTotal: (total, range) =>
-                      tableFooter(total, range, regulatingMarkerData),
-                  }}
-                  columns={[
-                    ...markerColumns('Regulated Marker', 'regulating_marker'),
-                    {
-                      title: 'Marker Type',
-                      key: 'markerType',
-                      dataIndex: 'markerType',
-                      sorter: (a, b) =>
-                        a.markerType.localeCompare(b.markerType),
-                    },
-                  ]}
-                  dataSource={regulatingMarkerData}
-                  onChange={handleChange}
-                ></Table>
-              </AppAccordion>
-            )}
+            {/*{regulatingMarkerData.length > 0 && (*/}
+            {/*  <AppAccordion*/}
+            {/*    title={'Regulated Markers'}*/}
+            {/*    id={'regulating-markers'}*/}
+            {/*    tooltipTitle={*/}
+            {/*      'These are typically a longer list of gene or protein markers that have been tested for the senotype. The investigator observes these markers to be up-regulated; down-regulated; or tested but inconclusive whether up- or down- regulated (e.g., using log2FC and p-value).'*/}
+            {/*    }*/}
+            {/*  >*/}
+            {/*    <Table*/}
+            {/*      pagination={{*/}
+            {/*        total: regulatingMarkerData.length,*/}
+            {/*        showTotal: (total, range) =>*/}
+            {/*          tableFooter(total, range, regulatingMarkerData),*/}
+            {/*      }}*/}
+            {/*      columns={[*/}
+            {/*        ...markerColumns('Regulated Marker', 'regulating_marker'),*/}
+            {/*        {*/}
+            {/*          title: 'Marker Type',*/}
+            {/*          key: 'markerType',*/}
+            {/*          dataIndex: 'markerType',*/}
+            {/*          sorter: (a, b) =>*/}
+            {/*            a.markerType.localeCompare(b.markerType),*/}
+            {/*        },*/}
+            {/*      ]}*/}
+            {/*      dataSource={regulatingMarkerData}*/}
+            {/*      onChange={handleChange}*/}
+            {/*    ></Table>*/}
+            {/*  </AppAccordion>*/}
+            {/*)}*/}
           </div>
         </Col>
       </Row>
