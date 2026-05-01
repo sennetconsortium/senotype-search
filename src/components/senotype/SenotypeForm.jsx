@@ -434,14 +434,14 @@ function SenotypeForm({isEdit = false}) {
           <Divider />
           <div className={THEME.classNames.rightAlign}>
             <a className="btn btn-outline-primary rounded-0" href="/search">
-              Search Senotype
+              Search Senotypes
             </a>
             {!isEdit && (
               <a
                 className="btn btn-outline-secondary mx-2 rounded-0"
-                href={`/senotype/edit/${res.uuid}`}
+                href={`/senotype/${res.uuid}`}
               >
-                Edit Senotype
+                View Senotype
               </a>
             )}
           </div>
