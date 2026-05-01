@@ -33,15 +33,18 @@ function MarkerFormInputs({
   const updateTable= useEffectEvent(() => {
     const data = reducer.state[predicate.field] || []
     const list = []
+    let marker 
     for (const d of data) {
-      let {key, _id} = getTableId({...d.marker, action: d.action})
-      list.push({ _id, key, ...d.marker, action: d.action });
+      marker = d.marker || {...d}
+      let { key, _id } = getTableId({ ...marker, action: d.action });
+      list.push({ _id, key, ...marker, action: d.action });
     }
+    hasInit.current = true;
     setTableData(list)
   });
 
   useEffect(() => {
-    if (reducer.state) {
+    if (reducer.state && !hasInit.current) {
       updateTable();
     }
   }, [])
@@ -305,7 +308,7 @@ function MarkerFormInputs({
           defaultValue={PREDICATE.prefixIds.gene}
           buttonStyle="solid"
           id="marker-type"
-          name={`marker_type${predicate.fields ? '_regulating' : ''}`}
+          name={`marker_type${predicate.fields ? '_regulated' : ''}`}
         >
           <Radio.Button value={PREDICATE.prefixIds.gene}>Gene</Radio.Button>
           <Radio.Button value={PREDICATE.prefixIds.protein}>

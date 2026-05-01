@@ -53,7 +53,7 @@ export const AppProvider = ({ children }) => {
       hasSenotypeEdit: senotypeEdit?.has_senotype_edit,
       isAdmin: admin?.has_data_admin_privs,
       userGroups: groups?.user_write_groups,
-      isSameUser: (email) => email.eq(info.email),
+      isSameUser: (email) => info.email.eq(email),
     });
   };
 

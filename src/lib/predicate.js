@@ -14,12 +14,14 @@ const PREDICATE = {
   isOrigin: (p) => p === 'origin',
   isDataset: (p) => p === 'dataset',
   regulatedActions: {
-    up: '1',
-    down: '-1',
-    '?': '0',
     up_regulates: '1',
     down_regulates: '-1',
     inconclusively_regulates: '0',
+  },
+  regulatedActionsView: {
+    up: '1',
+    down: '-1',
+    '?': '0',
   },
   prefixIds: {
     diagnosis: 'DOID:',
@@ -63,13 +65,15 @@ const PREDICATE = {
   markersExportData: (markers) => {
     const data = []
     const prefixIds = flipObj(PREDICATE.prefixIds)
-    let parts
+    const regulatedActions = { ...PREDICATE.regulatedActions, ...PREDICATE.regulatedActionsView}; 
+    let parts, code
     for (const m of markers) {
-      parts = m.key ? m.key.split(':') : m.marker.code.split(':')
+      code = m.key || m.code || m.marker.code
+      parts = code.split(':')
       data.push({
         type: prefixIds[parts[0] + ':'],
         id: parts[1],
-        action: PREDICATE.regulatedActions[m.markerType || m.action],
+        action: regulatedActions[m.markerType || m.action],
       });
     }
 

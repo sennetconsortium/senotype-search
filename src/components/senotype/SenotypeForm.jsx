@@ -17,6 +17,8 @@ import URLS from '@/lib/urls';
 import HeaderBadges from './HeaderBadges';
 import ClipboardCopy from '../ClipboardCopy';
 import AppSpinner from '../AppSpinner';
+import { Divider } from 'antd';
+import THEME from '@/lib/theme';
 
 function SenotypeForm({isEdit = false}) {
   const { notification } = App.useApp();
@@ -25,7 +27,6 @@ function SenotypeForm({isEdit = false}) {
   const { ontology, auth } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
-
   const senotypeOntologyReducer = useAppReducer(senotypeOntology);
   const getOpenStates = () => {
     return Object.fromEntries(
@@ -213,9 +214,10 @@ function SenotypeForm({isEdit = false}) {
     // Prefix for marker with selected radio or default
     if (isSpecifiedMarker(predicate.field) || isRegulatedMarker(predicate.field)) {
       const prefix = isRegulatedMarker(predicate.field)
-        ? 'marker_type_regulating'
+        ? 'marker_type_regulated'
         : 'marker_type';
-      _query = `${formValuesReducer.state[prefix] || PREDICATE.prefixIds.gene}${query}`;
+      _query = query.includes(':') ? query.split(':')[1] : query
+      _query = `${formValuesReducer.state[prefix] || PREDICATE.prefixIds.gene}${_query}`;
     }
     const options = [];
     const data = await API.fetch({
@@ -362,7 +364,11 @@ function SenotypeForm({isEdit = false}) {
           marker: t.code,
         }));
       } else {
-        if (typeof formValuesReducer.state[f] === 'string' || isDiagnosis(f)) {
+        if (
+          typeof formValuesReducer.state[f] === 'string' ||
+          typeof formValuesReducer.state[f] === 'number' ||
+          isDiagnosis(f)
+        ) {
           body[f] = formValuesReducer.state[f];
         } else {
           body[f] = formValuesReducer.state[f].map((t) => t.code || t.uuid);
@@ -407,24 +413,36 @@ function SenotypeForm({isEdit = false}) {
       } else {
         description = <>{res.description.message}</>;
       }
-      
       setIsBusy(false);
     } else {
+     
       description = (
         <>
+          <p>Your Senotype has been {verb.toLowerCase()}.</p>
           <p>
+            <strong>SenNet ID: </strong>
             {res?.sennet_id}
             <ClipboardCopy
               text={res?.sennet_id}
               title={'Copy Senotype ID {text} to clipboard'}
             />{' '}
           </p>
-          <p>Your Senotype has been {verb.toLowerCase()}.</p>
-          <p>
+
+          <div>
             <HeaderBadges data={formValuesReducer.state} />
-          </p>
+          </div>
+          <Divider />
+          <div className={THEME.classNames.rightAlign}>
+            <a className="btn btn-outline-primary rounded-0" href="/search">
+              Search Senotype
+            </a>
+            {!isEdit && (
+              <a href={`/senotype/edit/${res.uuid}`}>Edit Senotype</a>
+            )}
+          </div>
         </>
       );
+      setIsBusy(isEdit ? false : null); 
     }
 
     // TODO update notification details
@@ -446,7 +464,7 @@ function SenotypeForm({isEdit = false}) {
     const body = formatRequestBody()
 
     API.fetch({ url, body, method }).then((res) => {
-      submissionNotification(res.description)
+      submissionNotification(res.description || res.senotype)
     });
 
     log.debug(
@@ -741,7 +759,7 @@ function SenotypeForm({isEdit = false}) {
         </Tabs>
         <div className="c-senotypeForm__fotter mt-4 text-end">
           <Button
-            disabled={isBusy || !auth.isSameUser(senotype.created_by_user_email)}
+            disabled={isBusy !== false || (isEdit && !auth.isSameUser(senotype?.created_by_user_email))}
             type="submit"
           >
             Submit
