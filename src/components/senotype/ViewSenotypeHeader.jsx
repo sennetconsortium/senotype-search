@@ -1,10 +1,9 @@
 import { Button, Skeleton, Space, Tooltip } from 'antd';
-import URLS from '@/lib/urls';
 import React, { useContext } from 'react';
 import AppContext from '@/context/AppContext';
 import { Col, Row } from 'react-bootstrap';
 import { FileOutlined } from '@ant-design/icons';
-import HeaderBadges from './HeaderBadges';
+import HeaderBadges from '@/components/senotype/HeaderBadges';
 
 function ViewSenotypeHeader({ data }) {
   const { auth } = useContext(AppContext);
@@ -20,9 +19,7 @@ function ViewSenotypeHeader({ data }) {
       <Col md={4} sm={12}>
         <Space align="center" className="float-md-end">
           {auth.isAuthenticated && auth.hasSenotypeEdit && (
-            <Button href={`${URLS.senotypeEditor}edit/${data.sennet_id}`}>
-              Edit
-            </Button>
+            <Button href={`/senotype/edit/${data.uuid}`}>Edit</Button>
           )}
           <Tooltip title={'View JSON'}>
             <Button href={`/api/json/senotype/${data.uuid}`}>

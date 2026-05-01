@@ -8,7 +8,7 @@ import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
 import ResultsExport from '@/components/search/ResultsExport';
 import PREDICATE from '@/lib/predicate';
-import ViewSenotypeHeader from './ViewSenotypeHeader';
+import ViewSenotypeHeader from '@/components/senotype/ViewSenotypeHeader';
 
 const buildSummary = (senotype) => {
   return [

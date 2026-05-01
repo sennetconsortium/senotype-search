@@ -1,24 +1,25 @@
 import EditContext from '@/context/EditContext';
 import React, { useState, useContext, useEffect, useEffectEvent, useRef } from 'react';
 import { Tab, Tabs, Form, Button } from 'react-bootstrap';
-import AppAccordion from '../AppAccordion';
-import InputField from '../form/InputField';
+import AppAccordion from '@/components/AppAccordion';
+import InputField from '@/components/form/InputField';
 import AppContext from '@/context/AppContext';
 import { ubkgPredicates } from '@/config/search/senotype';
 import { Skeleton, App, Table } from 'antd';
 import log from 'xac-loglevel';
-import FormInputGroup from '../form/FormInputGroup';
+import FormInputGroup from '@/components/form/FormInputGroup';
 import useAppReducer from '@/reducers/useAppReducer';
 import API from '@/lib/api';
 import PREDICATE from '@/lib/predicate'
-import SelectField from '../form/SelectField';
-import MarkerFormInputs from '../form/MarkerFormInputs';
+import SelectField from '@/components/form/SelectField';
+import MarkerFormInputs from '@/components/form/MarkerFormInputs';
 import URLS from '@/lib/urls';
-import HeaderBadges from './HeaderBadges';
-import ClipboardCopy from '../ClipboardCopy';
-import AppSpinner from '../AppSpinner';
+import HeaderBadges from '@/components/senotype/HeaderBadges';
+import ClipboardCopy from '@/components/ClipboardCopy';
+import AppSpinner from '@/components/AppSpinner';
 import { Divider } from 'antd';
 import THEME from '@/lib/theme';
+import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 
 function SenotypeForm({isEdit = false}) {
   const { notification } = App.useApp();
@@ -376,10 +377,12 @@ function SenotypeForm({isEdit = false}) {
 
   const submissionNotification = (res) => {
     const verb = isEdit ? 'Edited': 'Created';
-    let type = 'success';
+    let icon = (
+      <CheckCircleFilled style={{ color: '#198754', fontSize: '22px' }} />
+    );
     let description;
     if (res.error) {
-      type = 'error';
+      icon = <CloseCircleFilled style={{ color: '#dc3545', fontSize: '22px' }} />;
       if (res.description.errors) {
         const errorData = Object.entries(res.description.errors).map(
           (value, i) => {
@@ -445,11 +448,16 @@ function SenotypeForm({isEdit = false}) {
     }
 
     // TODO update notification details
+    const title = (
+      <span>
+        {icon} <span className="mx-2">{res.error || `Senotype ${verb}`}</span>
+      </span>
+    );
     notification.destroy();
-    notification[type]({
+    notification.open({
       className: 'ant-notification--middle',
       duration: false,
-      title: res.error || `Senotype ${verb}`,
+      title,
       description,
       placement: 'top',
     });
