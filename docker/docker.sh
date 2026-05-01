@@ -32,10 +32,10 @@ case "$COMMAND" in
     echo "Done. Running docker compose build..."
      case "$ENV" in
       prod|dev)
-        docker compose -f docker/docker-compose.yml build
+        docker compose -f docker/docker-compose.yml -p senotype-library build
         ;;
       test)
-        docker compose -f docker/docker-compose.test.yml build
+        docker compose -f docker/docker-compose.test.yml -p senotype-library-test build
         ;;
     esac
     echo "Built image version $VERSION"
@@ -43,23 +43,23 @@ case "$COMMAND" in
   start)
     case "$ENV" in
       prod)
-        docker compose -f docker/docker-compose.yml up -d
+        docker compose -f docker/docker-compose.yml -p senotype-library up -d
         ;;
       dev)
-        docker compose -f docker/docker-compose.yml -f docker/docker-compose.development.yml up -d
+        docker compose -f docker/docker-compose.yml -f docker/docker-compose.development.yml -p senotype-library up -d
         ;;
       test)
-        docker compose -f docker/docker-compose.test.yml up -d
+        docker compose -f docker/docker-compose.test.yml up -p senotype-library-test -d
         ;;
     esac
     ;;
   stop)
      case "$ENV" in
       prod|dev)
-        docker compose -f docker/docker-compose.yml down
+        docker compose -f docker/docker-compose.yml -p senotype-library down
         ;;
       test)
-        docker compose -f docker/docker-compose.test.yml down
+        docker compose -f docker/docker-compose.test.yml -p senotype-library-test down
         ;;
     esac
     ;;
