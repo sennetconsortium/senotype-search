@@ -3,6 +3,7 @@ import { Form } from 'react-bootstrap';
 import { Select } from 'antd';
 import log from 'xac-loglevel'
 import { Tooltip } from 'antd';
+import THEME from '@/lib/theme';
 
 function InputField({
   id,
@@ -29,6 +30,12 @@ function InputField({
     }
     if (onChange) {
       onChange({ value, field: _id });
+    }
+
+    const $io = document.getElementById(`c-inputField--${_id}`)
+    const errorList = THEME.getTabPane($io).querySelectorAll(THEME.selectors.invalid);
+    if (!errorList.length) {
+      THEME.getTabPaneTab($io).classList.remove(THEME.classNames.invalid)
     }
     
   };

@@ -483,11 +483,8 @@ function SenotypeForm({isEdit = false}) {
       document
         .querySelectorAll(`#c-inputField--${p.field} .ant-select`)
         .forEach((el) => {
-          const tabId = el.closest('.tab-pane').getAttribute('aria-labelledby');
-          document
-            .getElementById(tabId)
-            .parentElement.classList.add('is-invalid');
-          el.classList.add('is-invalid');
+          THEME.getTabPaneTab(el).classList.add(THEME.classNames.invalid);
+          el.classList.add(THEME.classNames.invalid);
         });
     });
   }
