@@ -1,5 +1,6 @@
 import { useSearchUIContext } from 'search-ui/components/core/SearchUIContext';
 import ENVS from '@/lib/envs';
+import log from 'xac-loglevel';
 
 function SearchResultsMeta() {
   const { wasSearched, filters, rawResponse } = useSearchUIContext();
@@ -10,7 +11,7 @@ function SearchResultsMeta() {
   const renderText = () => {
     const indexName = ENVS.index.senotype
     const info = rawResponse.info?.[indexName];
-    console.log(info);
+    log.debug('SearchResultsMeta.renderText', info);
     if (!info?.total_result_count) {
       return <></>;
     }

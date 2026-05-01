@@ -592,35 +592,35 @@ export default function ViewSenotype({ senotype }) {
               </AppAccordion>
             )}
 
-            {/*{regulatingMarkerData.length > 0 && (*/}
-            {/*  <AppAccordion*/}
-            {/*    title={'Regulated Markers'}*/}
-            {/*    id={'regulating-markers'}*/}
-            {/*    tooltipTitle={*/}
-            {/*      'These are typically a longer list of gene or protein markers that have been tested for the senotype. The investigator observes these markers to be up-regulated; down-regulated; or tested but inconclusive whether up- or down- regulated (e.g., using log2FC and p-value).'*/}
-            {/*    }*/}
-            {/*  >*/}
-            {/*    <Table*/}
-            {/*      pagination={{*/}
-            {/*        total: regulatingMarkerData.length,*/}
-            {/*        showTotal: (total, range) =>*/}
-            {/*          tableFooter(total, range, regulatingMarkerData),*/}
-            {/*      }}*/}
-            {/*      columns={[*/}
-            {/*        ...markerColumns('Regulated Marker', 'regulating_marker'),*/}
-            {/*        {*/}
-            {/*          title: 'Marker Type',*/}
-            {/*          key: 'markerType',*/}
-            {/*          dataIndex: 'markerType',*/}
-            {/*          sorter: (a, b) =>*/}
-            {/*            a.markerType.localeCompare(b.markerType),*/}
-            {/*        },*/}
-            {/*      ]}*/}
-            {/*      dataSource={regulatingMarkerData}*/}
-            {/*      onChange={handleChange}*/}
-            {/*    ></Table>*/}
-            {/*  </AppAccordion>*/}
-            {/*)}*/}
+            {regulatingMarkerData.length > 0 && (
+              <AppAccordion
+                title={'Regulated Markers'}
+                id={'regulating-markers'}
+                tooltipTitle={
+                  'These are typically a longer list of gene or protein markers that have been tested for the senotype. The investigator observes these markers to be up-regulated; down-regulated; or tested but inconclusive whether up- or down- regulated (e.g., using log2FC and p-value).'
+                }
+              >
+                <Table
+                  pagination={{
+                    total: regulatingMarkerData.length,
+                    showTotal: (total, range) =>
+                      tableFooter(total, range, regulatingMarkerData),
+                  }}
+                  columns={[
+                    ...markerColumns('Regulated Marker', 'regulating_marker'),
+                    {
+                      title: 'Marker Type',
+                      key: 'markerType',
+                      dataIndex: 'markerType',
+                      sorter: (a, b) =>
+                        a.markerType.localeCompare(b.markerType),
+                    },
+                  ]}
+                  dataSource={regulatingMarkerData}
+                  onChange={handleChange}
+                ></Table>
+              </AppAccordion>
+            )}
           </div>
         </Col>
       </Row>
