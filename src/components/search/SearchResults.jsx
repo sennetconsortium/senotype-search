@@ -12,6 +12,7 @@ import URLS from '@/lib/urls';
 import { Col, Row } from 'react-bootstrap';
 import ResultsExport from './ResultsExport';
 import Image from 'next/image';
+import ENVS from '@/lib/envs';
 
 function SearchResults() {
   const {
@@ -23,8 +24,10 @@ function SearchResults() {
     setPageSize,
   } = useSearchUIContext();
 
+  const indexName = ENVS.index.senotype;
+
   const tableData = useMemo(
-    () => rawResponse?.records?.senotypes ?? [],
+    () => rawResponse?.records ? rawResponse?.records[indexName] : [],
     [rawResponse],
   );
 
