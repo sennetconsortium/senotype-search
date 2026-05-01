@@ -6,9 +6,9 @@ import { Button, Descriptions, Input, Space, Table } from 'antd';
 import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
-import HeaderBadges from './HeaderBadges';
 import ResultsExport from '@/components/search/ResultsExport';
 import PREDICATE from '@/lib/predicate';
+import ViewSenotypeHeader from './ViewSenotypeHeader';
 
 const buildSummary = (senotype) => {
   return [
@@ -543,7 +543,7 @@ export default function ViewSenotype({ senotype }) {
               />
             </h2>
 
-            <HeaderBadges data={senotype} />
+            <ViewSenotypeHeader data={senotype} />
 
             <AppAccordion title={'Summary'} id={'summary'}>
               <Descriptions items={buildSummary(senotype)} column={2} />

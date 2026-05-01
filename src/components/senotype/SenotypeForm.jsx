@@ -5,7 +5,7 @@ import AppAccordion from '../AppAccordion';
 import InputField from '../form/InputField';
 import AppContext from '@/context/AppContext';
 import { ubkgPredicates } from '@/config/search/senotype';
-import { Skeleton, App } from 'antd';
+import { Skeleton, App, Table } from 'antd';
 import log from 'xac-loglevel';
 import FormInputGroup from '../form/FormInputGroup';
 import useAppReducer from '@/reducers/useAppReducer';
@@ -14,6 +14,8 @@ import PREDICATE from '@/lib/predicate'
 import SelectField from '../form/SelectField';
 import MarkerFormInputs from '../form/MarkerFormInputs';
 import URLS from '@/lib/urls';
+import HeaderBadges from './HeaderBadges';
+import ClipboardCopy from '../ClipboardCopy';
 
 function SenotypeForm({isEdit = false}) {
   const { notification } = App.useApp();
@@ -21,6 +23,7 @@ function SenotypeForm({isEdit = false}) {
   const { senotype, senotypeOntology, formatValue } = useContext(EditContext);
   const { ontology } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
 
   const senotypeOntologyReducer = useAppReducer(senotypeOntology);
   const getOpenStates = () => {
@@ -44,7 +47,6 @@ function SenotypeForm({isEdit = false}) {
       _ontology[o.field] = _ontology[o.field] || []
     }
     senotypeOntologyReducer.dispatch({ value: _ontology }); 
-    
 
     selectVisibleDropdownReducer.dispatch({
       value: getOpenStates(),
@@ -342,7 +344,7 @@ function SenotypeForm({isEdit = false}) {
   }
 
   const onChange = (data) => {
-    let value = data.value || data.e.target?.value;
+    let value = data.value
     log.info('SenotypeForm.onChange', data.field, value);
     formValuesReducer.dispatch({field: data.field, value});
   }
@@ -350,9 +352,97 @@ function SenotypeForm({isEdit = false}) {
   const tabPredicates = () =>
     tab1Predicates().concat(tab2Predicates()).concat(tab2bPredicates());
 
+  const formatRequestBody = () => {
+    const body = {};
+    for (const f in formValuesReducer.state) {
+      if (isRegulatedMarker(f)) {
+        body[f] = formValuesReducer.state[f].map((t) => ({
+          action: t.action,
+          marker: t.code,
+        }));
+      } else {
+        if (typeof formValuesReducer.state[f] === 'string') {
+          body[f] = formValuesReducer.state[f];
+        } else {
+          body[f] = formValuesReducer.state[f].map((t) => t.code);
+        }
+      }
+    }
+    return body
+  }
+
+  const submissionNotification = (res) => {
+    const verb = isEdit ? 'Edited': 'Created';
+    let type = 'success';
+    let description;
+    if (res.error) {
+      type = 'error';
+      const errorData = [];
+      const errorColumns = [];
+      description = <Table dataSource={errorData} columns={errorColumns} />;
+    } else {
+      description = (
+        <>
+          <p>
+            {res?.sennet_id}
+            <ClipboardCopy
+              text={res?.sennet_id}
+              title={'Copy Senotype ID {text} to clipboard'}
+            />{' '}
+          </p>
+          <p>Your Senotype has been {verb}.</p>
+          <p>
+            <HeaderBadges data={formValuesReducer.state} />
+          </p>
+        </>
+      );
+    }
+
+    // TODO update notification details
+    notification.destroy();
+    notification[type]({
+      duration: false,
+      title: res.error || `Senotype ${verb}`,
+      description,
+      placement: 'top',
+    });
+  }
+
+  const postPut = () => {
+    const url = URLS.api.local('senotype');
+    const method = isEdit ? 'PUT': 'POST';
+
+    // Format the request body according to expected API structure
+    const body = formatRequestBody()
+
+    API.fetch({ url, body, method }).then((res) => {
+      submissionNotification(res)
+    });
+
+    log.debug(
+      'SenotypeForm.handleSubmit > formValuesReducer',
+      formValuesReducer,
+    );
+  }
+
+  const toggleErrorStyles = (required) => {
+    required.map((p) => {
+      document
+        .querySelectorAll(`#c-inputField--${p.field} .ant-select`)
+        .forEach((el) => {
+          const tabId = el.closest('.tab-pane').getAttribute('aria-labelledby');
+          document
+            .getElementById(tabId)
+            .parentElement.classList.add('is-invalid');
+          el.classList.add('is-invalid');
+        });
+    });
+  }
+
   const handleSubmit = (e) => {
     try {
       const form = e.currentTarget;
+      setIsBusy(true);
 
       e.preventDefault();
       e.stopPropagation();
@@ -367,43 +457,10 @@ function SenotypeForm({isEdit = false}) {
 
       const validationFailed = form.checkValidity() === false || required.length > 0;
       if (validationFailed) {
-        required.map((p) => {
-          document
-            .querySelectorAll(`#c-inputField--${p.field} .ant-select`)
-            .forEach((el) => {
-              const tabId = el
-                .closest('.tab-pane')
-                .getAttribute('aria-labelledby');
-              document
-                .getElementById(tabId)
-                .parentElement.classList.add('is-invalid');
-              el.classList.add('is-invalid');
-            });
-        })
+        toggleErrorStyles(required)
+        setIsBusy(false);
       } else {
-        const url = URLS.api.local('senotype')
-        const method = isEdit ? 'PUT' : 'POST';
-        const verb = isEdit ? 'Edited' : 'Created';
-        API.fetch({url, body: formValuesReducer.state, method}).then((
-          res
-        )=> {
-          log.debug('handleSubmit', method, res);
-          const type = res.error ? 'error' : 'success';
-          // TODO update notification details
-          const description  = res.error ? JSON.stringify(res.description) : 'Yes added';
-          notification.destroy();
-          notification[type]({
-            duration: false,
-            title: res.error || `Senotype ${verb}`,
-            description: <code>{description}</code>,
-            placement: 'top',
-          });
-        })
-
-        log.debug(
-          'SenotypeForm.handleSubmit > formValuesReducer',
-          formValuesReducer,
-        );
+        postPut();
       }
       setValidated(true);
       
@@ -415,7 +472,7 @@ function SenotypeForm({isEdit = false}) {
     }
   }
 
-  const loadingPredicates = !senotypeOntology || !senotypeOntologyReducer.state || !selectBusyReducer.state
+  const loadingPredicates = !senotypeOntology || !senotypeOntologyReducer.state || !selectBusyReducer.state || (isEdit && !formValuesReducer.state)
 
   return (
     <>
@@ -653,7 +710,7 @@ function SenotypeForm({isEdit = false}) {
           </Tab>
         </Tabs>
         <div className="c-senotypeForm__fotter mt-4 text-end">
-          <Button type="submit">Submit</Button>
+          <Button disabled={isBusy} type="submit">Submit</Button>
         </div>
       </Form>
     </>

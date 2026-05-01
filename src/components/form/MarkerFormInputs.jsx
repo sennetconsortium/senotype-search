@@ -38,14 +38,13 @@ function MarkerFormInputs({
       list.push({ _id, key, ...d.marker, action: d.action });
     }
     setTableData(list)
-    hasInit.current = true;
   });
 
   useEffect(() => {
-    if (reducer.state && !hasInit.current) {
-      updateTable()
+    if (reducer.state) {
+      updateTable();
     }
-  }, [reducer.state])
+  }, [])
 
   /**
    * Removes a row from table
@@ -250,7 +249,7 @@ function MarkerFormInputs({
     );
     let newItem;
     for (const item of list) {
-      newItem = JSON.parse(item);
+      newItem = typeof item === 'string' ? JSON.parse(item) : item;
       let {key, _id} = getTableId(newItem);
       if (!added.has(key)) {
         added.add(key);
@@ -258,7 +257,7 @@ function MarkerFormInputs({
       }
     }
     setTableData(_tableData);
-    onChange({ field: predicate.field, value: JSON.stringify(_tableData) });
+    onChange({ field: predicate.field, value: _tableData });
     log.debug('MarkerFormInputs.handleOnChange', _tableData);
   };
 

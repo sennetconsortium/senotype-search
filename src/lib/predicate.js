@@ -14,12 +14,12 @@ const PREDICATE = {
   isOrigin: (p) => p === 'origin',
   isDataset: (p) => p === 'dataset',
   regulatedActions: {
+    up: '1',
+    down: '-1',
+    '?': '0',
     up_regulates: '1',
     down_regulates: '-1',
     inconclusively_regulates: '0',
-    up: '1',
-    down: '-1',
-    '?': '0'
   },
   prefixIds: {
     diagnosis: 'DOID:',
