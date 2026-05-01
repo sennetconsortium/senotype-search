@@ -19,7 +19,14 @@ function ViewSenotypeHeader({ data }) {
       <Col md={4} sm={12}>
         <Space align="center" className="float-md-end">
           {auth.isAuthenticated && auth.hasSenotypeEdit && (
-            <Button href={`/senotype/edit/${data.uuid}`}>Edit</Button>
+            <Button
+              disabled={
+                (!auth.isSameUser(data?.created_by_user_sub))
+              }
+              href={`/senotype/edit/${data.uuid}`}
+            >
+              Edit
+            </Button>
           )}
           <Tooltip title={'View JSON'}>
             <Button href={`/api/json/senotype/${data.uuid}`}>
