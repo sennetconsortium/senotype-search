@@ -761,7 +761,7 @@ function SenotypeForm({isEdit = false}) {
             </AppAccordion>
           </Tab>
         </Tabs>
-        <div className="c-senotypeForm__fotter mt-4 text-end">
+        <div className="c-senotypeForm__footer mt-4 text-end">
           <Button
             disabled={isBusy !== false || (isEdit && !auth.isSameUser(senotype?.created_by_user_email))}
             type="submit"
