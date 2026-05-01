@@ -361,14 +361,10 @@ function SenotypeForm({isEdit = false}) {
       if (isRegulatedMarker(f)) {
         body[f] = formValuesReducer.state[f].map((t) => ({
           action: t.action,
-          marker: t.code,
+          marker: t.code || t.marker?.code,
         }));
       } else {
-        if (
-          typeof formValuesReducer.state[f] === 'string' ||
-          typeof formValuesReducer.state[f] === 'number' ||
-          isDiagnosis(f)
-        ) {
+        if (!Array.isArray(formValuesReducer.state[f]) || isDiagnosis(f)) {
           body[f] = formValuesReducer.state[f];
         } else {
           body[f] = formValuesReducer.state[f].map((t) => t.code || t.uuid);
@@ -436,14 +432,12 @@ function SenotypeForm({isEdit = false}) {
             <a className="btn btn-outline-primary rounded-0" href="/search">
               Search Senotypes
             </a>
-            {!isEdit && (
-              <a
-                className="btn btn-outline-secondary mx-2 rounded-0"
-                href={`/senotype/${res.uuid}`}
-              >
-                View Senotype
-              </a>
-            )}
+            <a
+              className="btn btn-outline-secondary mx-2 rounded-0"
+              href={`/senotype/${res.uuid}`}
+            >
+              View Senotype
+            </a>
           </div>
         </>
       );
