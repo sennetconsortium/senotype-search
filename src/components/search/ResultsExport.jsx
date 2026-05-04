@@ -13,27 +13,31 @@ import { Button } from 'react-bootstrap';
  */
 function ResultsExport({ data, columns, children }) {
   const handleExport = () => {
-    let tableDataTSV = '';
+    let tableDataCSV = '';
     const _columns = Array.from(columns);
-    for (let col of _columns) {
-      if (col.title.length) {
-        tableDataTSV += `${col.title}\t`;
-      }
-    }
-    tableDataTSV += '\n';
-    for (const d of data) {
-      for (let col of _columns) {
-        if (col.title.length) {
-          tableDataTSV += `${JSON.stringify(d[col.dataIndex] || '')}\t`;
+    const csv = (d) => {
+      let sep, c, val;
+      for (let i = 0; i < _columns.length; i++) {
+        sep = i === _columns.length - 1 ? '' : ',';
+        c = _columns[i];
+        if (c.title.length) {
+          val = d ? d[c.dataIndex] || '' : c.title;
+          tableDataCSV += `"${typeof val === 'string' ? val : JSON.stringify(val)}"${sep}`;
         }
+        
       }
-      tableDataTSV += '\n';
+    };
+    csv();
+    tableDataCSV += '\n';
+    for (const d of data) {
+      csv(d);
+      tableDataCSV += '\n';
     }
     
     autoBlobDownloader(
-      [tableDataTSV],
-      'text/tab-separated-values',
-      `senotypes-${new Date().toLocaleString()}.tsv`,
+      [tableDataCSV],
+      'text/comma-separated-values',
+      `senotypes-${new Date().toLocaleString()}.csv`,
     );
   };
 

@@ -521,6 +521,7 @@ function SenotypeForm({isEdit = false}) {
         'SenotypeForm.handleSubmit > Manual validation failed:',
         errorInfo,
       );
+      setIsBusy(null);
     }
   }
 
