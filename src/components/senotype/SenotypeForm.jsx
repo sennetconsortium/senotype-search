@@ -293,7 +293,7 @@ function SenotypeForm({isEdit = false}) {
           ),
           value: formatValue({
             term: r._source.title,
-            code: r._source.sennet_id,
+            code: r._source.uuid,
           }),
         });
       }
