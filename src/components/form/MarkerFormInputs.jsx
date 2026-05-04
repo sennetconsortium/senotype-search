@@ -297,6 +297,8 @@ function MarkerFormInputs({
     return res;
   };
 
+  const _isRegulatedMarker = predicate.fields;
+
   return (
     <div className="c-markerForm">
       <Flex vertical gap={0}>
@@ -379,12 +381,18 @@ function MarkerFormInputs({
             <InboxOutlined />
           </p>
           <p className="ant-upload-text">
-            Click or drag a CSV file with <code>type</code>, <code>id</code>,
-            and <code>action</code> columns. file to this area to upload.
+            Click or drag a CSV file with <code>type</code>
+            {_isRegulatedMarker ? ',' : ' and '} <code>id</code>
+            {_isRegulatedMarker && (
+              <span>
+                , and <code>action</code>
+              </span>
+            )}{' '}
+            columns. file to this area to upload.
           </p>
           <p className="ant-upload-hint">
-            Download an <a href="/bulk/markers-example.csv">example file csv</a>
-            .{' '}
+            Download an{' '}
+            <a href={`/bulk/markers-example${_isRegulatedMarker ? '-regulated' : ''}.csv`}>example file csv</a>.{' '}
             <Tooltip
               color={'lightgrey'}
               styles={{ root: { maxWidth: '500px' } }}
