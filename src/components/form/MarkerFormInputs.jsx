@@ -140,6 +140,8 @@ function MarkerFormInputs({
      
   };
 
+  const _isRegulatedMarker = predicate.fields;
+
   /**
    * Validate the rows from the uploaded CSV.
    *
@@ -155,7 +157,7 @@ function MarkerFormInputs({
       prefix = PREDICATE.prefixIds[d.type.toLowerCase()];
       _query = d.id.includes(':') ? d.id : prefix + d.id;
       regulatingAction = regulatedActions[d.action];
-      if (prefix && regulatingAction) {
+      if (prefix && (regulatingAction || !predicate.fields)) {
         promises.push(fetchVocabulary({ predicate, _query, regulatingAction, row, query: d.id }));
       } else {
         error = !prefix ? (
@@ -296,8 +298,6 @@ function MarkerFormInputs({
     };
     return res;
   };
-
-  const _isRegulatedMarker = predicate.fields;
 
   return (
     <div className="c-markerForm">
