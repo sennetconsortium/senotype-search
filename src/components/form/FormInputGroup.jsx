@@ -7,6 +7,7 @@ function FormInputGroup({
   id,
   label,
   labelTooltip,
+  reducer,
   onChange,
   className = '',
   required = false,
@@ -55,6 +56,11 @@ function FormInputGroup({
               onChange={handleChange}
               aria-label="Small"
               aria-describedby={getId(io)}
+              value={
+                reducer?.state[_id] && reducer?.state[_id][io.id]
+                  ? reducer?.state[_id][io.id]
+                  : ''
+              }
               {...io.controlProps}
             />
           </Fragment>

@@ -628,91 +628,98 @@ function SenotypeForm({isEdit = false}) {
                   ))}
                 </>
               )}
-              <FormInputGroup
-                label={'Age'}
-                id={'age'}
-                onChange={onChange}
-                inputs={[
-                  {
-                    label: 'Value',
-                    id: 'value',
-                    formatter: Number,
-                    controlProps: {
-                      type: 'number',
-                      min: 0,
-                    },
-                  },
-                  {
-                    label: 'Lower',
-                    id: 'lowerbound',
-                    formatter: Number,
-                    controlProps: {
-                      type: 'number',
-                      min: 0,
-                    },
-                  },
-                  {
-                    label: 'Upper',
-                    id: 'upperbound',
-                    formatter: Number,
-                    controlProps: {
-                      type: 'number',
-                      min: 0,
-                    },
-                  },
-                  {
-                    label: 'Unit',
-                    id: 'unit',
-                    controlProps: {
-                      value: 'year',
-                      disabled: true,
-                    },
-                  },
-                ]}
-              />
+              {loadingPredicates && <Skeleton.Input block={true} />}
+              {!loadingPredicates && (
+                <>
+                  <FormInputGroup
+                    label={'Age'}
+                    id={'age'}
+                    onChange={onChange}
+                    reducer={formValuesReducer}
+                    inputs={[
+                      {
+                        label: 'Value',
+                        id: 'value',
+                        formatter: Number,
+                        controlProps: {
+                          type: 'number',
+                          min: 0,
+                        },
+                      },
+                      {
+                        label: 'Lower',
+                        id: 'lowerbound',
+                        formatter: Number,
+                        controlProps: {
+                          type: 'number',
+                          min: 0,
+                        },
+                      },
+                      {
+                        label: 'Upper',
+                        id: 'upperbound',
+                        formatter: Number,
+                        controlProps: {
+                          type: 'number',
+                          min: 0,
+                        },
+                      },
+                      {
+                        label: 'Unit',
+                        id: 'unit',
+                        controlProps: {
+                          value: 'year',
+                          disabled: true,
+                        },
+                      },
+                    ]}
+                  />
 
-              <FormInputGroup
-                label={'BMI'}
-                id={'bmi'}
-                onChange={onChange}
-                inputs={[
-                  {
-                    label: 'Value',
-                    id: 'value',
-                    formatter: Number,
-                    controlProps: {
-                      type: 'number',
-                      min: 0,
-                    },
-                  },
-                  {
-                    label: 'Lower',
-                    id: 'lowerbound',
-                    formatter: Number,
-                    controlProps: {
-                      type: 'number',
-                      min: 0,
-                    },
-                  },
-                  {
-                    label: 'Upper',
-                    id: 'upperbound',
-                    formatter: Number,
-                    controlProps: {
-                      type: 'number',
-                      min: 0,
-                    },
-                  },
-                  {
-                    label: 'Unit',
-                    id: 'unit',
-                    controlProps: {
-                      value: 'kg/m2',
-                      disabled: true,
-                    },
-                  },
-                ]}
-              />
+                  <FormInputGroup
+                    label={'BMI'}
+                    id={'bmi'}
+                    onChange={onChange}
+                    reducer={formValuesReducer}
+                    inputs={[
+                      {
+                        label: 'Value',
+                        id: 'value',
+                        formatter: Number,
+                        controlProps: {
+                          type: 'number',
+                          min: 0,
+                        },
+                      },
+                      {
+                        label: 'Lower',
+                        id: 'lowerbound',
+                        formatter: Number,
+                        controlProps: {
+                          type: 'number',
+                          min: 0,
+                        },
+                      },
+                      {
+                        label: 'Upper',
+                        id: 'upperbound',
+                        formatter: Number,
+                        controlProps: {
+                          type: 'number',
+                          min: 0,
+                        },
+                      },
+                      {
+                        label: 'Unit',
+                        id: 'unit',
+                        controlProps: {
+                          value: 'kg/m^2',
+                          disabled: true,
+                        },
+                      },
+                    ]}
+                  />
+                </>
+              )}
             </AppAccordion>
           </Tab>
           <Tab eventKey="markers" title="Markers">
@@ -764,7 +771,10 @@ function SenotypeForm({isEdit = false}) {
         </Tabs>
         <div className="c-senotypeForm__footer mt-4 text-end">
           <Button
-            disabled={isBusy !== false || (isEdit && !auth.isSameUser(senotype?.created_by_user_sub))}
+            disabled={
+              isBusy !== false ||
+              (isEdit && !auth.isSameUser(senotype?.created_by_user_sub))
+            }
             type="submit"
           >
             Submit
