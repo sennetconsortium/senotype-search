@@ -306,10 +306,10 @@ const buildReferences = (senotype) => {
         <span className={'flex'}>
           {senotype['dataset'].map((item, index) => (
             <div key={`dataset_${index}`} className={'mb-2'}>
-              {item.title}{' '}
+              {item.title || item.term}{' '}
               <a
                 target={'_blank'}
-                href={`${URLS.portal}dataset?uuid=${item.uuid}`}
+                href={`${URLS.portal}dataset?uuid=${item.uuid || item.code}`}
               >
                 <LinkOutlined />
               </a>
@@ -429,11 +429,7 @@ export default function ViewSenotype({ senotype }) {
 
   const specifiedMarkerData = useMemo(
     () =>
-      buildMarkers(
-        senotype?.specified_marker_set,
-        'specified_marker',
-        null,
-      ),
+      buildMarkers(senotype?.specified_marker_set, 'specified_marker', null),
     [senotype, buildMarkers],
   );
 
