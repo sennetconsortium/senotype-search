@@ -25,9 +25,10 @@ const API = {
         body: body ? JSON.stringify(body) : undefined,
       });
       if (!res.ok) {
-        const errMsg = res.statusText ? res.statusText : 'An error occurred.';
-        const description = await res.json();
-        return { error: errMsg, description, status: res.status };
+        const contentType = res.headers.get('content-type');
+        const description = contentType && contentType.includes("application/json") ? await res.json() : await res.text();
+        const error = res.statusText ? res.statusText : 'An error occurred.';
+        return { error, description, status: res.status };
       }
       return res.json();
     } catch (error) {
