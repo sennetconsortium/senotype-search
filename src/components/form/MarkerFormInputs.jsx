@@ -234,7 +234,7 @@ function MarkerFormInputs({
    */
   const handleRadioChange = (data) => {
     log.debug('MarkerFormInputs.handleRadioChange', data);
-    onChange({ field: data.target.name, e: data });
+    onChange({ field: data.target.name, value: data.target.value, e: data });
   };
 
   const getTableId = (row) => {

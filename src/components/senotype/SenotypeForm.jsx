@@ -180,7 +180,7 @@ function SenotypeForm({isEdit = false}) {
       const _result = Array.isArray(data.result) ? data.result : [];
       let action = regulatingAction || undefined;
       if (isRegulatedMarker(predicate.field) && !action) {
-        action = formValuesReducer.state.action || PREDICATE.regulatedActions.up_regulates;
+        action = formValuesReducer?.state?.action || 'up_regulates'; // Set the default value of action
       }
       for (const r of _result) {
         if (_query.includes(PREDICATE.prefixIds.gene)) {
@@ -218,7 +218,7 @@ function SenotypeForm({isEdit = false}) {
         ? 'marker_type_regulated'
         : 'marker_type';
       _query = query.includes(':') ? query.split(':')[1] : query
-      _query = `${formValuesReducer.state[prefix] || PREDICATE.prefixIds.gene}${_query}`;
+      _query = `${formValuesReducer?.state?.[prefix] || PREDICATE.prefixIds.gene}${_query}`;
     }
     const options = [];
     const data = await API.fetch({
