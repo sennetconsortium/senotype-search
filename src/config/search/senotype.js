@@ -71,7 +71,7 @@ export const SEARCH_SENOTYPE = {
         facetType: 'term',
         bucketsTransform: bucketsTransform,
         isAggregationActive: true,
-        isFacetVisible: doesAggregationHaveBuckets('has_hallmark'),
+        isFacetVisible: doesAggregationHaveBuckets('hallmark'),
       },
       taxon: {
         label: 'Taxon',
