@@ -68,10 +68,6 @@ export const AppProvider = ({ children }) => {
           sessionStorage.setItem('oneTimeInit', true);
         }
       }
-    } else {
-      const result = await import('@/cache/ontology.js');
-      window.ONTOLOGY_CACHE = result.ontology;
-      setOntology(result.ontology);
     }
   };
 

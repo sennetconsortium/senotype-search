@@ -1,8 +1,4 @@
-import API from '@/lib/api';
-import AUTH from '@/lib/auth';
-import URLS from '@/lib/urls';
-import { createContext, useEffect, useState } from 'react';
-import log from 'xac-loglevel';
+import { createContext, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 
 const AdminContext = createContext({});

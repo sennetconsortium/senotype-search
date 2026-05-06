@@ -6,7 +6,7 @@ import ModalOverComponent from '../ModalOverComponent';
 import SearchResultsMeta from './SearchResultsMeta';
 import log from 'xac-loglevel';
 import { ubkgPredicates, SEARCH_SENOTYPE } from '@/config/search/senotype';
-import { ontology } from '@/cache/ontology';
+import ontology from '@/cache/ontology.json' with { type: 'json' };
 import Icon from '@ant-design/icons';
 import URLS from '@/lib/urls';
 import { Col, Row } from 'react-bootstrap';
