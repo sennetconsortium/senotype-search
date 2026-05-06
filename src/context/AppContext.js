@@ -3,7 +3,7 @@ import AUTH from '@/lib/auth';
 import URLS from '@/lib/urls';
 import { createContext, useEffect, useState } from 'react';
 import log from 'xac-loglevel';
-import ontology from '@/cache/ontology.json' with { type: 'json' };
+import ontologyCache from '@/cache/ontology.json' with { type: 'json' };
 
 const AppContext = createContext({});
 
@@ -59,36 +59,30 @@ export const AppProvider = ({ children }) => {
   };
 
   const fetchOntology = async () => {
-    if (!sessionStorage.getItem('oneTimeInit')) {
-      if (Object.values(ontology).length) {
-        window.ONTOLOGY_CACHE = ontology;
-        setOntology(ontology);
-      } else {
-        const response = await fetch(URLS.api.local('ontology'));
-        if (response.ok) {
-          const result = await response.json();
-          if (Object.keys(result.ontology).length) {
-            window.ONTOLOGY_CACHE = result.ontology;
-            setOntology(result.ontology);
-            sessionStorage.setItem('oneTimeInit', true);
-          }
+    if (Object.values(ontologyCache).length) {
+      window.ONTOLOGY_CACHE = ontologyCache;
+      setOntology(ontologyCache);
+    } else {
+      const response = await fetch(URLS.api.local('ontology'));
+      if (response.ok) {
+        const result = await response.json();
+        if (Object.keys(result.ontology).length) {
+          window.ONTOLOGY_CACHE = result.ontology;
+          setOntology(result.ontology);
         }
       }
-      
     }
   };
 
   const fetchBannerContent = async () => {
     const url = URLS.api.local('content/banner');
-    const results = await API.fetch({url, method: 'GET'})
+    const results = await API.fetch({ url, method: 'GET' });
     if (Object.values(results).length) {
-      setBannerContent(results)
+      setBannerContent(results);
     }
-  }
+  };
 
-  const isUserCreator = async () => {
-
-  }
+  const isUserCreator = async () => {};
 
   useEffect(() => {
     fetchOntology();
@@ -101,7 +95,7 @@ export const AppProvider = ({ children }) => {
       value={{
         auth,
         ontology,
-        bannerContent
+        bannerContent,
       }}
     >
       {children}
