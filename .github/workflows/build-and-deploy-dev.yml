@@ -59,6 +59,7 @@ jobs:
           NEXT_PUBLIC_NIH_EUTILS_BASE_URL='https://eutils.ncbi.nlm.nih.gov/'
           NEXT_PUBLIC_OTHER_ORGAN_ICON_URL = 'https://cdn.jsdelivr.net/gh/cns-iu/md-icons@main/other-icons/organs/ico-organs-united.svg'
           NEXT_PUBLIC_COOKIE_DOMAIN=.sennetconsortium.org
+          NEXT_PUBLIC_GTM='GTM-KD56LR2G'
           EOF
         shell: bash
         working-directory: .
