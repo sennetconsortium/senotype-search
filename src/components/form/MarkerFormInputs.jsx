@@ -227,6 +227,19 @@ function MarkerFormInputs({
     },
   };
 
+  const updateOptions = (newAction) => {
+    const ontologyReducer = getOptions({})
+    const options = ontologyReducer.state[predicate.field] || []
+    const updatedOptions = []
+    let value
+    for (const o of options) {
+      value = JSON.parse(o.value)
+      value.action = newAction
+      updatedOptions.push({...o, value: JSON.stringify(value) })
+    }
+    ontologyReducer.dispatch({field: predicate.field, value: updatedOptions })
+  }
+
   /**
    * Handles a user change from
    *
@@ -234,7 +247,12 @@ function MarkerFormInputs({
    */
   const handleRadioChange = (data) => {
     log.debug('MarkerFormInputs.handleRadioChange', data);
-    onChange({ field: data.target.name, value: data.target.value, e: data });
+    onChange({ field: data.target.name, value: data.target.value });
+  };
+
+  const handleActionChange = (data) => {
+    updateOptions(data.target.value);
+    handleRadioChange(data)
   };
 
   const getTableId = (row) => {
@@ -324,7 +342,7 @@ function MarkerFormInputs({
             </Form.Label>
             <div>
               <Radio.Group
-                onChange={handleRadioChange}
+                onChange={handleActionChange}
                 defaultValue={predicate.fields[0]}
                 buttonStyle="solid"
                 id="action"
@@ -392,7 +410,12 @@ function MarkerFormInputs({
           </p>
           <p className="ant-upload-hint">
             Download an{' '}
-            <a href={`/bulk/markers-example${_isRegulatedMarker ? '-regulated' : ''}.csv`}>example file csv</a>.{' '}
+            <a
+              href={`/bulk/markers-example${_isRegulatedMarker ? '-regulated' : ''}.csv`}
+            >
+              example file csv
+            </a>
+            .{' '}
             <Tooltip
               color={'lightgrey'}
               styles={{ root: { maxWidth: '500px' } }}
