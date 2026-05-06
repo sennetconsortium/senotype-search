@@ -26,6 +26,11 @@ jobs:
           echo "SENOTYPE_LIBRARY_VERSION=$SENOTYPE_LIBRARY_VERSION" >> $GITHUB_ENV
         working-directory: ./docker
 
+      - name: Set AWS Log Group
+        run: |
+          export SENOTYPE_LIBRARY_CLOUDWATCH_LOG_GROUP="/aws/ec2/sennet-dev/portal-ui/next-server"
+          echo "SENOTYPE_LIBRARY_CLOUDWATCH_LOG_GROUP=$SENOTYPE_LIBRARY_CLOUDWATCH_LOG_GROUP" >> $GITHUB_ENV
+
       - name: Make build script executable
         run: chmod +x ./docker.sh
         working-directory: ./docker
