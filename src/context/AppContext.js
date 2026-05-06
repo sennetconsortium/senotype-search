@@ -3,6 +3,7 @@ import AUTH from '@/lib/auth';
 import URLS from '@/lib/urls';
 import { createContext, useEffect, useState } from 'react';
 import log from 'xac-loglevel';
+import ontology from '@/cache/ontology.json' with { type: 'json' };
 
 const AppContext = createContext({});
 
@@ -59,15 +60,21 @@ export const AppProvider = ({ children }) => {
 
   const fetchOntology = async () => {
     if (!sessionStorage.getItem('oneTimeInit')) {
-      const response = await fetch(URLS.api.local('ontology'));
-      if (response.ok) {
-        const result = await response.json();
-        if (Object.keys(result.ontology).length) {
-          window.ONTOLOGY_CACHE = result.ontology;
-          setOntology(result.ontology);
-          sessionStorage.setItem('oneTimeInit', true);
+      if (Object.values(ontology).length) {
+        window.ONTOLOGY_CACHE = ontology;
+        setOntology(ontology);
+      } else {
+        const response = await fetch(URLS.api.local('ontology'));
+        if (response.ok) {
+          const result = await response.json();
+          if (Object.keys(result.ontology).length) {
+            window.ONTOLOGY_CACHE = result.ontology;
+            setOntology(result.ontology);
+            sessionStorage.setItem('oneTimeInit', true);
+          }
         }
       }
+      
     }
   };
 
