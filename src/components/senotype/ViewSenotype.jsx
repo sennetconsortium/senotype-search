@@ -8,6 +8,7 @@ import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
 import ResultsExport from '@/components/search/ResultsExport';
 import PREDICATE from '@/lib/predicate';
+import predicate from '@/lib/predicate';
 import ViewSenotypeHeader from '@/components/senotype/ViewSenotypeHeader';
 
 const buildSummary = (senotype) => {
@@ -340,14 +341,14 @@ export default function ViewSenotype({ senotype }) {
     confirm();
   };
 
-  const buildMarkers = useCallback((markerSet, dataIndex, markerType) => {
+  const buildMarkers = useCallback((markerSet, dataIndex) => {
     if (markerSet) {
       return markerSet.map((obj) =>
-        markerType
+        'action' in obj
           ? {
-              key: obj.code,
-              [dataIndex]: `${obj.name ? obj.name : obj.term} (${obj.code})`,
-              markerType,
+              key: obj.marker.code,
+              [dataIndex]: `${obj.marker.name ? obj.marker.name : obj.marker.term} (${obj.marker.code})`,
+              markerAction: predicate.regulatedActionsTable[obj.action],
             }
           : {
               key: obj.code,
@@ -428,21 +429,12 @@ export default function ViewSenotype({ senotype }) {
   );
 
   const specifiedMarkerData = useMemo(
-    () =>
-      buildMarkers(senotype?.specified_marker_set, 'specified_marker', null),
+    () => buildMarkers(senotype?.specified_marker_set, 'specified_marker'),
     [senotype, buildMarkers],
   );
 
-  const regulatingMarkerData = useMemo(
-    () => [
-      ...buildMarkers(senotype['down_regulates'], 'regulating_marker', 'down'),
-      ...buildMarkers(senotype['up_regulates'], 'regulating_marker', 'up'),
-      ...buildMarkers(
-        senotype['inconclusively_regulates'],
-        'regulating_marker',
-        '?',
-      ),
-    ],
+  const regulatedMarkerData = useMemo(
+    () => buildMarkers(senotype?.regulated_marker_set, 'regulated_marker'),
     [senotype, buildMarkers],
   );
 
@@ -513,7 +505,7 @@ export default function ViewSenotype({ senotype }) {
                     },
                   ]
                 : []),
-              ...(regulatingMarkerData.length > 0
+              ...(regulatedMarkerData.length > 0
                 ? [
                     {
                       key: 'Regulating Markers',
@@ -588,7 +580,7 @@ export default function ViewSenotype({ senotype }) {
               </AppAccordion>
             )}
 
-            {regulatingMarkerData.length > 0 && (
+            {regulatedMarkerData.length > 0 && (
               <AppAccordion
                 title={'Regulated Markers'}
                 id={'regulating-markers'}
@@ -598,21 +590,21 @@ export default function ViewSenotype({ senotype }) {
               >
                 <Table
                   pagination={{
-                    total: regulatingMarkerData.length,
+                    total: regulatedMarkerData.length,
                     showTotal: (total, range) =>
-                      tableFooter(total, range, regulatingMarkerData),
+                      tableFooter(total, range, regulatedMarkerData),
                   }}
                   columns={[
-                    ...markerColumns('Regulated Marker', 'regulating_marker'),
+                    ...markerColumns('Regulated Marker', 'regulated_marker'),
                     {
-                      title: 'Marker Type',
-                      key: 'markerType',
-                      dataIndex: 'markerType',
+                      title: 'Marker Action',
+                      key: 'markerAction',
+                      dataIndex: 'markerAction',
                       sorter: (a, b) =>
-                        a.markerType.localeCompare(b.markerType),
+                        a.markerAction.localeCompare(b.markerAction),
                     },
                   ]}
-                  dataSource={regulatingMarkerData}
+                  dataSource={regulatedMarkerData}
                   onChange={handleChange}
                 ></Table>
               </AppAccordion>

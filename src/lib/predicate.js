@@ -13,6 +13,11 @@ const PREDICATE = {
   isCitation: (p) => p === 'citation',
   isOrigin: (p) => p === 'origin',
   isDataset: (p) => p === 'dataset',
+  regulatedActionsTable: {
+    up_regulates: 'up',
+    down_regulates: 'down',
+    inconclusively_regulates: 'inconclusive',
+  },
   regulatedActions: {
     up_regulates: '1',
     down_regulates: '-1',
@@ -60,16 +65,19 @@ const PREDICATE = {
       });
     }
 
-    return columns
+    return columns;
   },
   markersExportData: (markers) => {
-    const data = []
-    const prefixIds = flipObj(PREDICATE.prefixIds)
-    const regulatedActions = { ...PREDICATE.regulatedActions, ...PREDICATE.regulatedActionsView}; 
-    let parts, code
+    const data = [];
+    const prefixIds = flipObj(PREDICATE.prefixIds);
+    const regulatedActions = {
+      ...PREDICATE.regulatedActions,
+      ...PREDICATE.regulatedActionsView,
+    };
+    let parts, code;
     for (const m of markers) {
-      code = m.key || m.code || m.marker.code
-      parts = code.split(':')
+      code = m.key || m.code || m.marker.code;
+      parts = code.split(':');
       data.push({
         type: prefixIds[parts[0] + ':'],
         id: parts[1],
@@ -77,8 +85,8 @@ const PREDICATE = {
       });
     }
 
-    return data
-  }
+    return data;
+  },
 };
 
 export default PREDICATE
