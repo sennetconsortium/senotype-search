@@ -773,6 +773,7 @@ function SenotypeForm({isEdit = false}) {
           </Tab>
         </Tabs>
         <div className="c-senotypeForm__footer mt-4 text-end">
+          {isEdit && <Button href={`/senotype/${senotype?.uuid}`} className='mx-3' variant='outline-secondary'>Cancel</Button>}
           <Button
             disabled={
               isBusy !== false ||
