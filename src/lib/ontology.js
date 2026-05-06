@@ -6,8 +6,7 @@ import URLS from './urls';
 import { flipObj } from './general';
 
 const ONTOLOGY_CACHE_PATH = path.join(process.cwd(), 'src/cache');
-const exportString = 'export const ontology=';
-const filePath = ONTOLOGY_CACHE_PATH + '/ontology.js';
+const filePath = ONTOLOGY_CACHE_PATH + '/ontology.json';
 
 const ONTOLOGY = {
   fetch: async (codes, code) => {
@@ -90,7 +89,7 @@ const ONTOLOGY = {
   },
   writeImport: async (content) => {
     await fs.mkdir(path.dirname(filePath), { recursive: true });
-    await fs.writeFile(filePath, exportString + content, 'utf8');
+    await fs.writeFile(filePath, content, 'utf8');
   },
   createImport: async () => {
     try {
@@ -109,7 +108,7 @@ const ONTOLOGY = {
       }
       await ONTOLOGY.writeImport(JSON.stringify(ontologyResults));
       let ontology = await fs.readFile(filePath, 'utf8');
-      return JSON.parse(ontology.replace(exportString, ''));
+      return JSON.parse(ontology);
     } catch (e) {
       log.error('ONTOLOGY.createImport.catch', e);
     }
@@ -117,7 +116,7 @@ const ONTOLOGY = {
   clearCache: async () => {
     let err;
     try {
-      await ONTOLOGY.writeImport('{};');
+      await ONTOLOGY.writeImport('{}');
       return true;
     } catch (e) {
       err = e;
@@ -129,8 +128,8 @@ const ONTOLOGY = {
     try {
       log.info('ONTOLOGY.getImport', '...');
       let ontology = await fs.readFile(filePath, 'utf8');
-      ontology = JSON.parse(ontology.replace(exportString, ''));
-      log.info('ONTOLOGY.getImport', '...', ontology);
+      ontology = JSON.parse(ontology);
+      log.trace('ONTOLOGY.getImport', '...', ontology);
 
       if (!ontology || !Object.values(ontology).length) {
         return await ONTOLOGY.createImport();

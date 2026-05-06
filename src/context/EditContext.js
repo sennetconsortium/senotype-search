@@ -1,6 +1,6 @@
 import { createContext, useMemo } from 'react';
 import log from 'xac-loglevel';
-import { ontology } from '@/cache/ontology';
+import ontology from '@/cache/ontology.json' with { type: 'json' };
 import PREDICATE from '@/lib/predicate';
 
 const EditContext = createContext({});
