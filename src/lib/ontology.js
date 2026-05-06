@@ -129,7 +129,7 @@ const ONTOLOGY = {
       log.info('ONTOLOGY.getImport', '...');
       let ontology = await fs.readFile(filePath, 'utf8');
       ontology = JSON.parse(ontology);
-      log.info('ONTOLOGY.getImport', '...', ontology);
+      log.trace('ONTOLOGY.getImport', '...', ontology);
 
       if (!ontology || !Object.values(ontology).length) {
         return await ONTOLOGY.createImport();
