@@ -57,7 +57,7 @@ function FormInputGroup({
               aria-label="Small"
               aria-describedby={getId(io)}
               value={
-                reducer?.state[_id] && reducer?.state[_id][io.id]
+                reducer?.state && reducer?.state[_id] && reducer?.state[_id][io.id]
                   ? reducer?.state[_id][io.id]
                   : ''
               }

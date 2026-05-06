@@ -88,7 +88,7 @@ function SenotypeForm({isEdit = false}) {
 
   const getOptions = (predicate) => {
     const options = []
-    if (predicate.ontologyKey) {
+    if (predicate?.ontologyKey) {
       for (const o in ontology[predicate.ontologyKey].terms) {
         options.push({
           value: formatValue({ code: ontology[predicate.ontologyKey].terms[o], term: o}),
@@ -96,7 +96,7 @@ function SenotypeForm({isEdit = false}) {
         });
       }
     } else {
-      return senotypeOntologyReducer?.state[predicate.field] || [];
+      return !predicate.field ? senotypeOntologyReducer : (senotypeOntologyReducer?.state[predicate.field] || []);
     }
     return options
   }
@@ -180,7 +180,9 @@ function SenotypeForm({isEdit = false}) {
       const _result = Array.isArray(data.result) ? data.result : [];
       let action = regulatingAction || undefined;
       if (isRegulatedMarker(predicate.field) && !action) {
-        action = formValuesReducer.state.action || PREDICATE.regulatedActions.up_regulates;
+        action =
+          formValuesReducer?.state?.action ||
+          Object.keys(PREDICATE.regulatedActions)[0]; // Set the default value of action
       }
       for (const r of _result) {
         if (_query.includes(PREDICATE.prefixIds.gene)) {
@@ -218,7 +220,7 @@ function SenotypeForm({isEdit = false}) {
         ? 'marker_type_regulated'
         : 'marker_type';
       _query = query.includes(':') ? query.split(':')[1] : query
-      _query = `${formValuesReducer.state[prefix] || PREDICATE.prefixIds.gene}${_query}`;
+      _query = `${formValuesReducer?.state?.[prefix] || PREDICATE.prefixIds.gene}${_query}`;
     }
     const options = [];
     const data = await API.fetch({
