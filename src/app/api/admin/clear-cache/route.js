@@ -11,7 +11,6 @@ export async function DELETE() {
     cookies: _cookies,
     method: 'GET',
   });
-  console.log('admin', admin);
 
   const result = admin?.has_data_admin_privs
     ? await ONTOLOGY.clearCache()
