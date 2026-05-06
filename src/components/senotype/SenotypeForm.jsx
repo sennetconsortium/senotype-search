@@ -200,7 +200,8 @@ function SenotypeForm({isEdit = false}) {
             label: r.recommended_name[0],
             value: formatValue({
               action,
-              term: r.recommended_name[0],
+              name: r.recommended_name[0].trim(),
+              term: r.entry_name[0].trim(),
               code: `${_query.split(':')[0]}:${r.uniprotkb_id}`,
             }),
           });
