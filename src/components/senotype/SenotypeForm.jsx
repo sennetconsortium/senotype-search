@@ -200,7 +200,8 @@ function SenotypeForm({isEdit = false}) {
             label: r.recommended_name[0],
             value: formatValue({
               action,
-              term: r.recommended_name[0],
+              name: r.recommended_name[0].trim(),
+              term: r.entry_name[0].trim(),
               code: `${_query.split(':')[0]}:${r.uniprotkb_id}`,
             }),
           });
@@ -772,6 +773,7 @@ function SenotypeForm({isEdit = false}) {
           </Tab>
         </Tabs>
         <div className="c-senotypeForm__footer mt-4 text-end">
+          {isEdit && <Button href={`/senotype/${senotype?.uuid}`} className='mx-3' variant='outline-secondary'>Cancel</Button>}
           <Button
             disabled={
               isBusy !== false ||
