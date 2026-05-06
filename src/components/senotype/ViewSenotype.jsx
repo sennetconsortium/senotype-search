@@ -8,8 +8,8 @@ import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
 import ResultsExport from '@/components/search/ResultsExport';
 import PREDICATE from '@/lib/predicate';
-import ViewSenotypeHeader from '@/components/senotype/ViewSenotypeHeader';
 import predicate from '@/lib/predicate';
+import ViewSenotypeHeader from '@/components/senotype/ViewSenotypeHeader';
 
 const buildSummary = (senotype) => {
   return [
@@ -342,18 +342,22 @@ export default function ViewSenotype({ senotype }) {
   };
 
   const buildMarkers = useCallback((markerSet, dataIndex) => {
-    return markerSet.map((obj) =>
-      'action' in obj
-        ? {
-            key: obj.marker.code,
-            [dataIndex]: `${obj.marker.name ? obj.marker.name : obj.marker.term} (${obj.marker.code})`,
-            markerAction: predicate.regulatedActionsTable[obj.action]
-          }
-        : {
-            key: obj.code,
-            [dataIndex]: `${obj.name ? obj.name : obj.term} (${obj.code})`,
-          },
-    );
+    if (markerSet) {
+      return markerSet.map((obj) =>
+        'action' in obj
+          ? {
+              key: obj.marker.code,
+              [dataIndex]: `${obj.marker.name ? obj.marker.name : obj.marker.term} (${obj.marker.code})`,
+              markerAction: predicate.regulatedActionsTable[obj.action],
+            }
+          : {
+              key: obj.code,
+              [dataIndex]: `${obj.name ? obj.name : obj.term} (${obj.code})`,
+            },
+      );
+    } else {
+      return [];
+    }
   }, []);
 
   const getColumnSearchProps = useCallback(
