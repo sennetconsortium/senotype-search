@@ -27,7 +27,7 @@
     "react-dom": "19.2.4",
     "search-ui": "workspace:*",
     "stylus": "^0.64.0",
-    "xac-loglevel": "github:x-atlas-consortia/xac-loglevel#1.0.3"
+    "xac-loglevel": "github:x-atlas-consortia/xac-loglevel#1.0.3-betb"
   },
   "devDependencies": {
     "eslint": "^9",
