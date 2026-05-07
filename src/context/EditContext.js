@@ -1,13 +1,14 @@
-import { createContext, useMemo } from 'react';
+import { createContext, useMemo, useContext } from 'react';
 import log from 'xac-loglevel';
-import ontology from '@/cache/ontology.json' with { type: 'json' };
 import PREDICATE from '@/lib/predicate';
+import AppContext from './AppContext';
 
 const EditContext = createContext({});
 
 export const EditProvider = ({ children, data }) => {
 
   const formatValue = (data) => JSON.stringify(data);
+  const {ontology} = useContext(AppContext);
 
   const formatErrorRow = ({row, error}) => {
     return {

@@ -1,4 +1,9 @@
-import React, { useMemo } from 'react';
+import React, {
+  useMemo,
+  useContext,
+  useEffectEvent,
+  useEffect,
+} from 'react';
 import { Button, Skeleton, Table } from 'antd';
 import { useSearchUIContext } from 'search-ui/components/core/SearchUIContext';
 import ClipboardCopy from '../ClipboardCopy';
@@ -6,13 +11,13 @@ import ModalOverComponent from '../ModalOverComponent';
 import SearchResultsMeta from './SearchResultsMeta';
 import log from 'xac-loglevel';
 import { ubkgPredicates, SEARCH_SENOTYPE } from '@/config/search/senotype';
-import ontology from '@/cache/ontology.json' with { type: 'json' };
 import Icon from '@ant-design/icons';
 import URLS from '@/lib/urls';
 import { Col, Row } from 'react-bootstrap';
 import ResultsExport from './ResultsExport';
 import Image from 'next/image';
 import ENVS from '@/lib/envs';
+import AppContext from '@/context/AppContext';
 
 function SearchResults() {
   const {
@@ -22,14 +27,25 @@ function SearchResults() {
     rawResponse,
     pageSize,
     setPageSize,
+    stateProps,
+    setStateProps
   } = useSearchUIContext();
 
   const indexName = ENVS.index.senotype;
+  const { ontology } = useContext(AppContext);
 
   const tableData = useMemo(
     () => rawResponse?.records ? rawResponse?.records[indexName] : [],
     [rawResponse],
   );
+
+  const updateStateProps = useEffectEvent(() => {
+    setStateProps({...stateProps, ontology})
+  })
+
+  useEffect(() => {
+    updateStateProps()
+  }, [ontology])
 
   const isLoading = rawResponse == null;
 
