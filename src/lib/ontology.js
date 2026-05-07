@@ -89,6 +89,7 @@ const ONTOLOGY = {
   },
   writeImport: async (content) => {
     await fs.mkdir(path.dirname(filePath), { recursive: true });
+    console.log('ONTOLOGY.writeImport', filePath);
     await fs.writeFile(filePath, content, 'utf8');
   },
   createImport: async () => {
