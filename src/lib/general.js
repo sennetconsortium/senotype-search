@@ -67,7 +67,7 @@ export const parseOntologyTerm = (val) => {
       return window.ONTOLOGY_CACHE[o].termsFlipped[val];
     }
   }
-  return val.titleCase();
+  return val;
 };
 
 export const organHierarchy = (term) => {

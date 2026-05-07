@@ -1,6 +1,6 @@
 import AUTH from './auth';
 import log from 'xac-loglevel';
-import { ontology } from '@/cache/ontology';
+import ontology from '@/cache/ontology.json' with { type: 'json' };
 
 const SEARCH = {
   organBucketsTransform: (ops) => {
