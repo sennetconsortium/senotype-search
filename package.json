@@ -2,6 +2,7 @@
   "name": "senotype-search",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.32.1",
   "scripts": {
     "all": "npm-run-all --parallel dev css",
     "dev": "next dev --port 3002",
