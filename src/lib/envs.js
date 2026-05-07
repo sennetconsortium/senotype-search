@@ -11,6 +11,7 @@ const ENVS = {
   index: {
     senotype: process.env.NEXT_PUBLIC_INDEX_SENOTYPE,
   },
+  gtm: process.env.NEXT_PUBLIC_GTM,
 };
 
 export default ENVS;
