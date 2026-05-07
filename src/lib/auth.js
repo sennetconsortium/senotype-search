@@ -14,6 +14,14 @@ const AUTH = {
     }
     return {};
   },
+  tokenFromHeader:  async (headers) => {
+    let token = undefined
+    const authHeader = (await headers()).get('authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    }
+    return token
+  },
   token: (cookies) => AUTH.info(cookies).groups_token,
   logout: () => {
     deleteCookie('info', {path: '/', domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN, sameSite: "Lax"})
