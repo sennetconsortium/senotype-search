@@ -94,7 +94,9 @@ function SearchResults() {
   const organIconRender = (terms) => {
     let organs = new Set();
     for (const o of terms) {
-      organs.add(ontology.organ_types.hierarchy[o]);
+      if (ontology?.organ_types?.hierarchy[o]) {
+        organs.add(ontology?.organ_types?.hierarchy[o]);
+      }
     }
     organs = Array.from(organs);
     const list = [];
@@ -230,7 +232,7 @@ function SearchResults() {
   if (!ontology) {
     return <AppSpinner />
   }
-  
+
   return (
     <div className="c-searchResults">
       <div className="c-searchResults__headerTools mb-3">
