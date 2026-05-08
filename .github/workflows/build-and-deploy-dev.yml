@@ -26,6 +26,11 @@ jobs:
           echo "SENOTYPE_LIBRARY_VERSION=$SENOTYPE_LIBRARY_VERSION" >> $GITHUB_ENV
         working-directory: ./docker
 
+      - name: Set AWS Log Group
+        run: |
+          export SENOTYPE_LIBRARY_CLOUDWATCH_LOG_GROUP="/aws/ec2/sennet-dev/portal-ui/next-server"
+          echo "SENOTYPE_LIBRARY_CLOUDWATCH_LOG_GROUP=$SENOTYPE_LIBRARY_CLOUDWATCH_LOG_GROUP" >> $GITHUB_ENV
+
       - name: Make build script executable
         run: chmod +x ./docker.sh
         working-directory: ./docker
@@ -59,6 +64,7 @@ jobs:
           NEXT_PUBLIC_NIH_EUTILS_BASE_URL='https://eutils.ncbi.nlm.nih.gov/'
           NEXT_PUBLIC_OTHER_ORGAN_ICON_URL = 'https://cdn.jsdelivr.net/gh/cns-iu/md-icons@main/other-icons/organs/ico-organs-united.svg'
           NEXT_PUBLIC_COOKIE_DOMAIN=.sennetconsortium.org
+          NEXT_PUBLIC_GTM='GTM-KD56LR2G'
           EOF
         shell: bash
         working-directory: .
