@@ -86,7 +86,7 @@ const API = {
       },
     };
     try {
-      const formatUrl = (url, q) => url.replace('<query>', q);
+      const formatUrl = (url, q) => url?.replace('<query>', q);
       let _query = query;
       let url;
       const hasCode = query.includes(':');
