@@ -18,6 +18,7 @@ import ResultsExport from './ResultsExport';
 import Image from 'next/image';
 import ENVS from '@/lib/envs';
 import AppContext from '@/context/AppContext';
+import AppSpinner from '../AppSpinner';
 
 function SearchResults() {
   const {
@@ -225,6 +226,11 @@ function SearchResults() {
   const pageSizeOptions = getPageSizeOptions();
   const totalRows = rawResponse?.info?.senotypes?.total_result_count;
   const allColumns = getColumns();
+
+  if (!ontology) {
+    return <AppSpinner />
+  }
+  
   return (
     <div className="c-searchResults">
       <div className="c-searchResults__headerTools mb-3">
