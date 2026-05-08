@@ -18,7 +18,7 @@ const API = {
       headers.append('Authorization', `Bearer ${token}`);
     }
     try {
-      //log.debug('API.fetch', url, token)
+      log.debug('API.fetch', url)
       const res = await fetch(url, {
         method,
         headers: headers,
