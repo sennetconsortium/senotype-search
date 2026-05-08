@@ -1,5 +1,6 @@
 import API from '@/lib/api';
 import AUTH from '@/lib/auth';
+import ENVS from '@/lib/envs';
 import URLS from '@/lib/urls';
 import { createContext, useEffect, useState } from 'react';
 import log from 'xac-loglevel';
@@ -80,6 +81,8 @@ export const AppProvider = ({ children }) => {
     fetchOntology();
     fetchAuth();
     fetchBannerContent();
+    // Set browser level loglevel
+    log.setLevel(ENVS.logLevel);
   }, []);
 
   return (
