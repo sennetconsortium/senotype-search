@@ -96,7 +96,7 @@ export const SEARCH_SENOTYPE = {
         bucketsTransform: organBucketsTransform,
         groupByField: 'organ.term.keyword',
         isHierarchyOption: (option) => {
-          return window?.ONTOLOGY_CACHE?.organ_types.laterals.includes(option);
+          return window?.ONTOLOGY_CACHE?.organ_types?.laterals?.includes(option);
         },
         filterSubValues: (value, subValues) => {
           return subValues.filter((subValue) => {
