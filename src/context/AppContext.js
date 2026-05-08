@@ -77,12 +77,17 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const setLoglevel = async () => {
+    // Set browser level loglevel
+    log.setLevel(ENVS.logLevel);
+    console.log('Browser logging in level:', await log.getLevel());
+  };
+
   useEffect(() => {
     fetchOntology();
     fetchAuth();
     fetchBannerContent();
-    // Set browser level loglevel
-    log.setLevel(ENVS.logLevel);
+    setLoglevel()
   }, []);
 
   return (
