@@ -6,7 +6,7 @@ import { FileOutlined } from '@ant-design/icons';
 import HeaderBadges from '@/components/senotype/HeaderBadges';
 
 function ViewSenotypeHeader({ data }) {
-  const { auth } = useContext(AppContext);
+  const { auth, canEdit } = useContext(AppContext);
 
   if (!data) {
     return <Skeleton.Node />;
@@ -21,7 +21,7 @@ function ViewSenotypeHeader({ data }) {
           {auth.isAuthenticated && auth.hasSenotypeEdit && (
             <Button
               disabled={
-                (!auth.isSameUser(data?.created_by_user_sub))
+                (!canEdit(data))
               }
               href={`/senotype/edit/${data.uuid}`}
             >

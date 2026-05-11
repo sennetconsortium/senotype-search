@@ -25,7 +25,7 @@ function SenotypeForm({isEdit = false}) {
   const { notification } = App.useApp();
   const [key, setKey] = useState('main');
   const { senotype, senotypeOntology, formatValue } = useContext(EditContext);
-  const { ontology, auth } = useContext(AppContext);
+  const { ontology, canEdit } = useContext(AppContext);
   const [validated, setValidated] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const senotypeOntologyReducer = useAppReducer(senotypeOntology);
@@ -777,7 +777,7 @@ function SenotypeForm({isEdit = false}) {
           <Button
             disabled={
               isBusy !== false ||
-              (isEdit && !auth.isSameUser(senotype?.created_by_user_sub))
+              (isEdit && !canEdit(senotype))
             }
             type="submit"
           >

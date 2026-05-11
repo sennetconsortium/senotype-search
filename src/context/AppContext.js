@@ -19,6 +19,8 @@ export const AppProvider = ({ children }) => {
     let admin;
     let groups;
     let senotypeEdit;
+    let senotypeCurate;
+    let senotypePublish;
     try {
       admin = await API.fetch({
         url: URLS.api.ingest.privs.admin,
@@ -38,6 +40,24 @@ export const AppProvider = ({ children }) => {
       log.error(error);
     }
     try {
+      senotypeCurate = await API.fetch({
+        url: URLS.api.ingest.privs.senotypeCurate,
+        ...ops,
+      });
+    } catch (error) {
+      senotypeCurate = null;
+      log.error(error);
+    }
+    try {
+      senotypePublish = await API.fetch({
+        url: URLS.api.ingest.privs.senotypePublish,
+        ...ops,
+      });
+    } catch (error) {
+      senotypePublish = null;
+      log.error(error);
+    }
+    try {
       groups = await API.fetch({
         url: URLS.api.ingest.privs.groups,
         ...ops,
@@ -52,6 +72,8 @@ export const AppProvider = ({ children }) => {
       isAuthenticated,
       isAuthorized: isAuthenticated,
       hasSenotypeEdit: senotypeEdit?.has_senotype_edit,
+      hasSenotypeCurate: senotypeCurate?.has_senotype_curate,
+      hasSenotypePublish: senotypePublish?.has_senotype_publish,
       isAdmin: admin?.has_data_admin_privs,
       userGroups: groups?.user_write_groups,
       isSameUser: (userId) => info.globus_id.eq(userId),
@@ -90,12 +112,21 @@ export const AppProvider = ({ children }) => {
     setLoglevel()
   }, []);
 
+  const canEdit = (senotype) => {
+    return (
+      auth.isSameUser(senotype?.created_by_user_sub) ||
+      auth.hasSenotypeCurate ||
+      auth.hasSenotypePublish
+    );
+  };
+
   return (
     <AppContext.Provider
       value={{
         auth,
         ontology,
         bannerContent,
+        canEdit,
       }}
     >
       {children}
