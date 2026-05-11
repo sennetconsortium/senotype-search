@@ -63,8 +63,10 @@ export const flipObj = (obj) => {
 export const parseOntologyTerm = (val) => {
   if (!window.ONTOLOGY_CACHE) return val;
   for (const o in window.ONTOLOGY_CACHE) {
-    if (val in window.ONTOLOGY_CACHE[o].termsFlipped) {
-      return window.ONTOLOGY_CACHE[o].termsFlipped[val];
+    if (window.ONTOLOGY_CACHE[o].termsFlipped) {
+      if (val in window.ONTOLOGY_CACHE[o].termsFlipped) {
+        return window.ONTOLOGY_CACHE[o].termsFlipped[val];
+      }
     }
   }
   return val;
@@ -74,8 +76,11 @@ export const organHierarchy = (term) => {
   if (!window.ONTOLOGY_CACHE || !Object.values(window.ONTOLOGY_CACHE).length)
     return term;
   if (term.contains('Mammary Gland')) return 'Mammary Gland';
-  if (term in window.ONTOLOGY_CACHE?.organ_types?.hierarchy) {
-    return window.ONTOLOGY_CACHE?.organ_types?.hierarchy[term];
+
+  if (window.ONTOLOGY_CACHE.organ_types && window.ONTOLOGY_CACHE.organ_types.hierarchy) {
+    if (term in window.ONTOLOGY_CACHE.organ_types.hierarchy) {
+      return window.ONTOLOGY_CACHE.organ_types.hierarchy[term];
+    }
   }
   const r = new RegExp(/.+?(?=\()/);
   const res = term.match(r);

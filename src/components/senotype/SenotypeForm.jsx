@@ -89,7 +89,7 @@ function SenotypeForm({isEdit = false}) {
   const getOptions = (predicate) => {
     const options = []
     if (predicate?.ontologyKey) {
-      for (const o in ontology[predicate.ontologyKey].terms) {
+      for (const o in (ontology[predicate.ontologyKey]?.terms || {})) {
         options.push({
           value: formatValue({ code: ontology[predicate.ontologyKey].terms[o], term: o}),
           label: o,

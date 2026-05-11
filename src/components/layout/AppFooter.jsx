@@ -14,7 +14,7 @@ function AppFooter() {
             </Col>
             <Col sm={10} className="col--main">
               <Row>
-                <Col sm={4} className="col--logos">
+                <Col sm={3} className="col--logos">
                   <ul
                     className="pb-3 mb-3 nav--org"
                     aria-label="Organization name"
@@ -89,7 +89,7 @@ function AppFooter() {
                     </li>
                   </ul>
                 </Col>
-                <Col sm={2}>
+                <Col sm={3}>
                   <ul className="pb-3 mb-3 nav--menu" aria-label="Funding Menu">
                     <li className="nav-item">
                       <span className="nav-item-h">Funding</span>
@@ -99,7 +99,7 @@ function AppFooter() {
                         className="lnk--ic"
                         href="https://commonfund.nih.gov/senescence"
                       >
-                        NIH Common Fund{' '}
+                        NIH Common Fund&nbsp;
                         <i className="bi bi-box-arrow-up-right" />
                       </a>
                     </li>
