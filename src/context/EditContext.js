@@ -39,7 +39,7 @@ export const EditProvider = ({ children, data }) => {
       }
     }
     return options;
-  }, []);
+  }, [ontology]);
 
   
   const senotype = useMemo(
