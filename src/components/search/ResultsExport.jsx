@@ -34,10 +34,11 @@ function ResultsExport({ data, columns, children }) {
       tableDataCSV += '\n';
     }
     
+    const date = new Date();
     autoBlobDownloader(
       [tableDataCSV],
       'text/comma-separated-values',
-      `senotypes-${new Date().toLocaleString()}.csv`,
+      `senotypes-${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}.csv`,
     );
   };
 
