@@ -25,11 +25,11 @@ function Page() {
     <EditProvider data={data}>
       <BasicLayout>
         {loading ||
-          (auth.isAuthenticated === undefined && (
+          (auth.isAuthenticated === undefined) && (
             <>
               <AppSpinner />
             </>
-          ))}
+          )}
 
         {auth.isAuthenticated === false && <Unauthorized />}
 
@@ -39,9 +39,7 @@ function Page() {
           </>
         )}
 
-        {!loading &&
-          !data &&
-          auth.isAuthenticated && (
+        {(!loading && !data) && auth.isAuthenticated && (
             <NotFound
               subTitle={
                 <span>
@@ -49,7 +47,7 @@ function Page() {
                   <code>{senotype_id}</code> could not be found.
                 </span>
               }
-            />,
+            />
           )}
       </BasicLayout>
     </EditProvider>
