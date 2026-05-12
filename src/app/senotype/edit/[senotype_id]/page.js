@@ -30,23 +30,27 @@ function Page() {
               <AppSpinner />
             </>
           ))}
-        {(!loading && !data) ||
-          (auth.isAuthenticated === false && <Unauthorized />)}
+
+        {auth.isAuthenticated === false && <Unauthorized />}
+
         {data && auth.isAuthenticated && (
           <>
             <CreateEditSenotype isEdit={true} />
           </>
         )}
-        {!loading && !data && (
-          <NotFound
-            subTitle={
-              <span>
-                The <strong>Senotype</strong> with uuid{' '}
-                <code>{senotype_id}</code> could not be found.
-              </span>
-            }
-          />
-        )}
+
+        {!loading &&
+          !data &&
+          auth.isAuthenticated && (
+            <NotFound
+              subTitle={
+                <span>
+                  The <strong>Senotype</strong> with uuid{' '}
+                  <code>{senotype_id}</code> could not be found.
+                </span>
+              }
+            />,
+          )}
       </BasicLayout>
     </EditProvider>
   );
