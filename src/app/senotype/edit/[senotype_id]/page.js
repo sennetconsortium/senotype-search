@@ -14,7 +14,7 @@ import NotFound from '@/components/errors/NotFound';
 function Page() {
   const params = useParams();
   const senotype_id = params.senotype_id;
-  const { auth } = useContext(AppContext);
+  const { auth, canEdit } = useContext(AppContext);
   const { data, loading, error } = useSenotype(senotype_id);
 
   if (error) {
@@ -31,9 +31,9 @@ function Page() {
             </>
           )}
 
-        {auth.isAuthenticated === false && <Unauthorized />}
+        {auth.isAuthenticated === false || !canEdit(data) && <Unauthorized />}
 
-        {data && auth.isAuthenticated && (
+        {data && auth.isAuthenticated && canEdit(data) && (
           <>
             <CreateEditSenotype isEdit={true} />
           </>

@@ -120,6 +120,9 @@ export const AppProvider = ({ children }) => {
     );
   };
 
+  const hasCreatorAccess = () =>
+    auth.hasSenotypeEdit || auth.hasSenotypeCurate || auth.hasSenotypePublish;
+
   return (
     <AppContext.Provider
       value={{
@@ -127,6 +130,7 @@ export const AppProvider = ({ children }) => {
         ontology,
         bannerContent,
         canEdit,
+        hasCreatorAccess,
       }}
     >
       {children}

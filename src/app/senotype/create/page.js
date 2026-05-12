@@ -8,7 +8,7 @@ import AppContext from '@/context/AppContext';
 import CreateEditSenotype from '@/components/senotype/CreateEditSenotype';
 
 function Page() {
-  const { auth } = useContext(AppContext);
+  const { auth, hasCreatorAccess } = useContext(AppContext);
   return (
     <EditProvider>
       <BasicLayout>
@@ -17,8 +17,10 @@ function Page() {
             <AppSpinner />
           </>
         )}
-        {auth.isAuthenticated === false && <Unauthorized />}
-        {auth.isAuthenticated && (
+        {auth.isAuthenticated === false ||
+          (!hasCreatorAccess() && <Unauthorized />)}
+
+        {auth.isAuthenticated && hasCreatorAccess() && (
           <>
             <CreateEditSenotype />
           </>
