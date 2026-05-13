@@ -19,6 +19,7 @@ import Image from 'next/image';
 import ENVS from '@/lib/envs';
 import AppContext from '@/context/AppContext';
 import AppSpinner from '../AppSpinner';
+import PREDICATE from '@/lib/predicate';
 
 function SearchResults() {
   const {
@@ -187,10 +188,10 @@ function SearchResults() {
         render: (_, record) => {
           const { filtered, terms, content } = getTerms(p, record);
 
-          if (p.field === 'organ') {
+          if (PREDICATE.isOrgan(p.field)) {
             return organIconRender(terms);
           }
-          if (p.field === 'cell_type') {
+          if (PREDICATE.isCellType(p.field)) {
             return cellTypesRender(filtered);
           } else {
             return (
