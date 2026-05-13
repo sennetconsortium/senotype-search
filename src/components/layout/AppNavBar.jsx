@@ -39,19 +39,19 @@ function AppNavBar() {
           >
             {auth.hasSenotypeEdit && (
               <Nav>
-                <Nav.Link href={`/senotype/create`}>
-                  Register Senotype
-                </Nav.Link>
+                <Nav.Link href={`/senotype/create`}>Register Senotype</Nav.Link>
               </Nav>
             )}
             <Nav>
-              {/* <Nav.Link href="#home">Home</Nav.Link> */}
               <NavDropdown title={auth.name} id="basic-nav-dropdown">
-                <NavDropdown.Item href="#">
-                  <ClipboardCopy tag="span" text={auth.groups_token} title="Copy Globus Token">
-                    Copy Globus Token
-                  </ClipboardCopy>
-                </NavDropdown.Item>
+                <ClipboardCopy
+                  tag="span"
+                  text={auth.groups_token}
+                  title="Copy Globus Token"
+                  placement="left"
+                >
+                  <span className="dropdown-item">Copy Globus Token</span>
+                </ClipboardCopy>
                 <NavDropdown.Divider />
                 <NavDropdown.Item href="/logout">Log out</NavDropdown.Item>
               </NavDropdown>

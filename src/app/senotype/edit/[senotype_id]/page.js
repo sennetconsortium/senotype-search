@@ -14,7 +14,7 @@ import NotFound from '@/components/errors/NotFound';
 function Page() {
   const params = useParams();
   const senotype_id = params.senotype_id;
-  const { auth } = useContext(AppContext);
+  const { auth, canEdit } = useContext(AppContext);
   const { data, loading, error } = useSenotype(senotype_id);
 
   if (error) {
@@ -25,28 +25,30 @@ function Page() {
     <EditProvider data={data}>
       <BasicLayout>
         {loading ||
-          (auth.isAuthenticated === undefined && (
+          (auth.isAuthenticated === undefined) && (
             <>
               <AppSpinner />
             </>
-          ))}
-        {(!loading && !data) ||
-          (auth.isAuthenticated === false && <Unauthorized />)}
-        {data && auth.isAuthenticated && (
+          )}
+
+        {auth.isAuthenticated === false || !canEdit(data) && <Unauthorized />}
+
+        {data && auth.isAuthenticated && canEdit(data) && (
           <>
             <CreateEditSenotype isEdit={true} />
           </>
         )}
-        {!loading && !data && (
-          <NotFound
-            subTitle={
-              <span>
-                The <strong>Senotype</strong> with uuid{' '}
-                <code>{senotype_id}</code> could not be found.
-              </span>
-            }
-          />
-        )}
+
+        {(!loading && !data) && auth.isAuthenticated && (
+            <NotFound
+              subTitle={
+                <span>
+                  The <strong>Senotype</strong> with uuid{' '}
+                  <code>{senotype_id}</code> could not be found.
+                </span>
+              }
+            />
+          )}
       </BasicLayout>
     </EditProvider>
   );

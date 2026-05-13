@@ -39,25 +39,25 @@ const API = {
     return await API.fetch({ url: `${URLS.api.search}${index}/search`, body, token });
   },
   fetchSenotype: async (senotypeUuid, token) => {
-    let data = {};
-
     const body = simple_query_builder('uuid', senotypeUuid);
 
     let jsonData = await API.search(body, ENVS.index.senotype, token);
-    if (jsonData.hasOwnProperty('error')) {
-      log.error(jsonData.error);
-      return jsonData;
-    } else {
-      let total = jsonData['hits']['total']['value'];
-      if (total !== 0) {
-        let senotype; //result["hits"]["hits"][0]["_source"]
-        jsonData['hits']['hits'].forEach((hit) => {
-          if (hit['_source']['uuid'] === senotypeUuid) {
-            senotype = hit['_source'];
+    if (jsonData) {
+      if (jsonData.hasOwnProperty('error')) {
+        log.error(jsonData.error);
+        return jsonData;
+      } else {
+        let total = jsonData['hits']['total']['value'];
+        if (total !== 0) {
+          let senotype; //result["hits"]["hits"][0]["_source"]
+          jsonData['hits']['hits'].forEach((hit) => {
+            if (hit['_source']['uuid'] === senotypeUuid) {
+              senotype = hit['_source'];
+            }
+          });
+          if (senotype) {
+            return senotype;
           }
-        });
-        if (senotype) {
-          return senotype;
         }
       }
     }
