@@ -233,7 +233,7 @@ function SenotypeForm({isEdit = false}) {
     });
     const list =
       data?.result && Array.isArray(data?.result) ? data?.result : [];
-    log.info('InputField.fetchVocabulary', predicate, query, data, list);
+    log.info('SenotypeForm.fetchVocabulary', predicate, query, data, list);
     if (isCellType(predicate.field)) {
       for (const r of list) {
         options.push({
@@ -450,7 +450,6 @@ function SenotypeForm({isEdit = false}) {
       setIsBusy(isEdit ? false : null); 
     }
 
-    // TODO update notification details
     const title = (
       <span>
         {icon} <span className="mx-2">{res.error || `Senotype ${verb}`}</span>
