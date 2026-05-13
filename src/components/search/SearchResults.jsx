@@ -187,10 +187,10 @@ function SearchResults() {
         render: (_, record) => {
           const { filtered, terms, content } = getTerms(p, record);
 
-          if (p.field === 'located_in') {
+          if (p.field === 'organ') {
             return organIconRender(terms);
           }
-          if (p.field === 'has_cell_type') {
+          if (p.field === 'cell_type') {
             return cellTypesRender(filtered);
           } else {
             return (
