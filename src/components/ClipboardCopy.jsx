@@ -21,6 +21,7 @@ function ClipboardCopy({
   className = '',
   size = 12,
   timeout = 1000,
+  placement = 'top',
   tag = 'sup',
 }) {
   const [open, setOpen] = useState(false);
@@ -48,7 +49,7 @@ function ClipboardCopy({
     <Tooltip
       open={open}
       onOpenChange={handleOpenChange}
-      placement="top"
+      placement={placement}
       trigger="click"
       title={'Copied!'}
       className={`${className} popover-clipboard`}
@@ -58,9 +59,10 @@ function ClipboardCopy({
         role={'button'}
         onClick={copyToClipboard}
       >
-        &nbsp;
         {!children && (
-          <i className="bi bi-clipboard" style={{ fontSize: size }}></i>
+          <>
+            &nbsp;<i className="bi bi-clipboard" style={{ fontSize: size }}></i>
+          </>
         )}
         {children}
       </CustomTag>
