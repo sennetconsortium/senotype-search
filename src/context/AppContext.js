@@ -114,14 +114,14 @@ export const AppProvider = ({ children }) => {
 
   const canEdit = (senotype) => {
     return (
-      auth.isSameUser(senotype?.created_by_user_sub) ||
-      auth.hasSenotypeCurate ||
-      auth.hasSenotypePublish
+      auth?.hasSenotypePublish ||
+      auth?.hasSenotypeCurate ||
+      auth?.isSameUser(senotype?.created_by_user_sub)
     );
   };
 
   const hasCreatorAccess = () =>
-    auth.hasSenotypeEdit || auth.hasSenotypeCurate || auth.hasSenotypePublish;
+    auth?.hasSenotypePublish || auth?.hasSenotypeCurate || auth?.hasSenotypeEdit;
 
   return (
     <AppContext.Provider
