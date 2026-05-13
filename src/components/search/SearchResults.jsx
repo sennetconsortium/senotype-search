@@ -40,6 +40,14 @@ function SearchResults() {
     [rawResponse],
   );
 
+  const totalRows = useMemo(
+    () =>
+      rawResponse?.info
+        ? rawResponse?.info[indexName]?.total_result_count
+        : 0,
+    [rawResponse],
+  );
+
   const updateStateProps = useEffectEvent(() => {
     setStateProps({...stateProps, ontology})
   })
@@ -210,7 +218,7 @@ function SearchResults() {
   };
 
   const getPageSizeOptions = () => {
-    const total = rawResponse?.info?.senotypes?.total_result_count;
+    const total = totalRows;
     let num = 0;
     const ops = [];
     for (let i = 1; i <= 10; i += 2) {
@@ -226,7 +234,6 @@ function SearchResults() {
   };
 
   const pageSizeOptions = getPageSizeOptions();
-  const totalRows = rawResponse?.info?.senotypes?.total_result_count;
   const allColumns = getColumns();
 
   if (!ontology) {
