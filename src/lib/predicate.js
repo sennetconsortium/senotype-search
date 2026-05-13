@@ -1,4 +1,4 @@
-import { flipObj } from "./general";
+import { flipObj } from './general';
 
 const PREDICATE = {
   isTaxon: (p) => p === 'taxon',
@@ -23,10 +23,10 @@ const PREDICATE = {
     down_regulates: '-1',
     inconclusively_regulates: '0',
   },
-  regulatedActionsView: {
+  regulatedActionsTableToCsvValue: {
     up: '1',
     down: '-1',
-    '?': '0',
+    inconclusive: '0',
   },
   prefixIds: {
     diagnosis: 'DOID:',
@@ -72,7 +72,7 @@ const PREDICATE = {
     const prefixIds = flipObj(PREDICATE.prefixIds);
     const regulatedActions = {
       ...PREDICATE.regulatedActions,
-      ...PREDICATE.regulatedActionsView,
+      ...PREDICATE.regulatedActionsTableToCsvValue,
     };
     let parts, code;
     for (const m of markers) {
@@ -81,7 +81,7 @@ const PREDICATE = {
       data.push({
         type: prefixIds[parts[0] + ':'],
         id: parts[1],
-        action: regulatedActions[m.markerType || m.action],
+        action: regulatedActions[m.markerAction || m.action],
       });
     }
 
@@ -89,4 +89,4 @@ const PREDICATE = {
   },
 };
 
-export default PREDICATE
+export default PREDICATE;
