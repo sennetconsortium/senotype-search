@@ -76,7 +76,7 @@ export const AppProvider = ({ children }) => {
       hasSenotypePublish: senotypePublish?.has_senotype_publish,
       isAdmin: admin?.has_data_admin_privs,
       userGroups: groups?.user_write_groups,
-      isSameUser: (userId) => info.globus_id.eq(userId),
+      isSameUser: (userId) => info.globus_id?.eq(userId),
     });
   };
 
