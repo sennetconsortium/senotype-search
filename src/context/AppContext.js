@@ -113,10 +113,11 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   const canEdit = (senotype) => {
+    if (Object.values(auth).length <= 0) return false
     return (
       auth?.hasSenotypePublish ||
       auth?.hasSenotypeCurate ||
-      auth?.isSameUser(senotype?.created_by_user_sub)
+      (auth?.isSameUser && auth?.isSameUser(senotype?.created_by_user_sub))
     );
   };
 
