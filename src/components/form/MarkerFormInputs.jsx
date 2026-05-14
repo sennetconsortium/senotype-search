@@ -406,7 +406,7 @@ function MarkerFormInputs({
                 , and <code>action</code>
               </span>
             )}{' '}
-            columns. file to this area to upload.
+            columns to this area to upload.
           </p>
           <p className="ant-upload-hint">
             Download an{' '}
