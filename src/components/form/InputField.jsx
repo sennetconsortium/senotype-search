@@ -69,6 +69,11 @@ function InputField({
       {selectData && (
         <Select
           key={JSON.stringify(selectData) + _id}
+          classNames={{
+            popup: {
+              root: `c-inputField__selectDropdown--${_id}`
+            }
+          }}
           id={_id}
           suffixIcon={dropIcon || <i className="bi bi-chevron-down"></i>}
           showSearch={{
