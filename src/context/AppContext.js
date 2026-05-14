@@ -1,8 +1,8 @@
+import { createContext, useEffect, useState, useEffectEvent } from 'react';
 import API from '@/lib/api';
 import AUTH from '@/lib/auth';
 import ENVS from '@/lib/envs';
 import URLS from '@/lib/urls';
-import { createContext, useEffect, useState } from 'react';
 import log from 'xac-loglevel';
 
 const AppContext = createContext({});
@@ -11,6 +11,7 @@ export const AppProvider = ({ children }) => {
   const [auth, setAuth] = useState({});
   const [ontology, setOntology] = useState(null);
   const [bannerContent, setBannerContent] = useState({});
+  const [isAuthenticating, setIsAuthenticating] = useState(true);
 
   const fetchAuth = async () => {
     const info = AUTH.info();
@@ -78,6 +79,7 @@ export const AppProvider = ({ children }) => {
       userGroups: groups?.user_write_groups,
       isSameUser: (userId) => info.globus_id?.eq(userId),
     });
+    
   };
 
   const fetchOntology = async () => {
@@ -109,20 +111,30 @@ export const AppProvider = ({ children }) => {
     fetchOntology();
     fetchAuth();
     fetchBannerContent();
-    setLoglevel()
+    setLoglevel();
   }, []);
 
   const canEdit = (senotype) => {
-    if (Object.values(auth).length <= 0) return false
+    if (Object.values(auth).length <= 0) return false;
     return (
       auth?.hasSenotypePublish ||
       auth?.hasSenotypeCurate ||
       (auth?.isSameUser && auth?.isSameUser(senotype?.created_by_user_sub))
     );
-  };
+  }
+
+  const _isAuthenticating = useEffectEvent(() => {
+    setIsAuthenticating(auth.isSameUser === undefined);
+  })
+
+  useEffect(() => {
+    _isAuthenticating()
+  }, [auth])
 
   const hasCreatorAccess = () =>
-    auth?.hasSenotypePublish || auth?.hasSenotypeCurate || auth?.hasSenotypeEdit;
+    auth?.hasSenotypePublish ||
+    auth?.hasSenotypeCurate ||
+    auth?.hasSenotypeEdit;
 
   return (
     <AppContext.Provider
@@ -130,6 +142,7 @@ export const AppProvider = ({ children }) => {
         auth,
         ontology,
         bannerContent,
+        isAuthenticating,
         canEdit,
         hasCreatorAccess,
       }}
