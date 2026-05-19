@@ -318,7 +318,10 @@ function MarkerFormInputs({
   };
 
   return (
-    <div className="c-markerForm">
+    <div
+      className="c-markerForm"
+      id={`c-markerForm--${predicate.fields ? 'regulated' : 'specified'}`}
+    >
       <Flex vertical gap={0}>
         <Form.Label htmlFor={'marker-type'}>
           <strong>Marker type</strong>
