@@ -13,6 +13,10 @@ const PREDICATE = {
   isCitation: (p) => p === 'citation',
   isOrigin: (p) => p === 'origin',
   isDataset: (p) => p === 'dataset',
+  geneType: {
+    HGNC: 'human',
+    MGI: 'mouse',
+  },
   regulatedActionsTable: {
     up_regulates: 'up',
     down_regulates: 'down',
@@ -32,6 +36,7 @@ const PREDICATE = {
     diagnosis: 'DOID:',
     gene: 'HGNC:',
     protein: 'UNIPROTKB:',
+    mouseGene: 'MGI:',
   },
   isRegulatedMarker: (p) => p === 'regulated_marker_set',
   isSpecifiedMarker: (p) => p === 'specified_marker_set',

@@ -81,12 +81,13 @@ const API = {
         byTerm: `${URLS.api.ontology}terms/<query>/codes`,
       },
       specified_marker_set: {
-        genes: `${URLS.api.ontology}genes/<query>`,
+        genes: `${URLS.api.ontology}genes/<query>?organism=<organism>`,
         proteins: `${URLS.api.ontology}proteins/<query>`,
       },
     };
     try {
-      const formatUrl = (url, q) => url?.replace('<query>', q);
+      const formatUrl = (url, q, placeholder = '<query>') =>
+        url?.replace(placeholder, q);
       let _query = query;
       let url;
       const hasCode = query.includes(':');
@@ -142,6 +143,11 @@ const API = {
           url = urls.specified_marker_set.proteins;
         } else {
           url = urls.specified_marker_set.genes;
+          url = formatUrl(
+            url,
+            PREDICATE.geneType[query.split(':')[0]],
+            '<organism>',
+          );
         }
       } else {
         if (isOrigin(predicate)) {
