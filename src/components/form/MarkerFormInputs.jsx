@@ -32,6 +32,7 @@ function MarkerFormInputs({
   const [organism, setOrganism] = useState(PREDICATE.geneType.HGNC);
   const [showOrganismRadio, setShowOrganismRadio] = useState(true);
   const [geneCode, setGeneCode] = useState(PREDICATE.prefixIds.gene);
+  const [markerType, setMarkerType] = useState(PREDICATE.prefixIds.gene);
 
   const getTableId = (row) => {
     const key = `${row.code}-${row.action}`;
@@ -272,11 +273,12 @@ function MarkerFormInputs({
   };
 
   const handleMarkerTypeChange = (data) => {
-    setShowOrganismRadio(
-      data.target.value.eq(
-        PREDICATE.prefixIds.gene || PREDICATE.prefixIds.mouseGene,
-      ),
-    );
+    const value = data.target.value;
+    const isGene =
+      value.eq(PREDICATE.prefixIds.gene) ||
+      value.eq(PREDICATE.prefixIds.mouseGene);
+    setShowOrganismRadio(isGene);
+    setMarkerType(value);
     handleRadioChange(data);
   };
 
@@ -294,6 +296,7 @@ function MarkerFormInputs({
       ? PREDICATE.prefixIds.gene
       : PREDICATE.prefixIds.mouseGene;
     setGeneCode(code);
+    setMarkerType(code);
     handleRadioChange(data);
     onChange({ field: markerTypeFieldName(), value: code });
   };
@@ -364,7 +367,7 @@ function MarkerFormInputs({
         </Form.Label>
         <Radio.Group
           onChange={handleMarkerTypeChange}
-          value={geneCode}
+          value={markerType}
           buttonStyle="solid"
           id="marker-type"
           name={markerTypeFieldName()}
