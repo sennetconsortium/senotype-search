@@ -631,7 +631,7 @@ export default function ViewSenotype({ senotype }) {
                       key: 'markerType',
                       dataIndex: 'markerType',
                       sorter: (a, b) =>
-                        a.markerAction.localeCompare(b.markerAction),
+                        a.markerType.localeCompare(b.markerType),
                     },
                     {
                       title: 'Marker Action',
