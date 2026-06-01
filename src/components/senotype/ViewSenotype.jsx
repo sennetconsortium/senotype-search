@@ -348,11 +348,23 @@ export default function ViewSenotype({ senotype }) {
           ? {
               key: obj.marker.code,
               [dataIndex]: `${obj.marker.name ? obj.marker.name : obj.marker.term} (${obj.marker.code})`,
+              organism: obj.code.toLowerCase().includes('mgi')
+                ? 'Mouse'
+                : 'Human',
+              markerType: obj.code.toLowerCase().includes('uniprotkb')
+                ? 'Protein'
+                : 'Gene',
               markerAction: predicate.regulatedActionsTable[obj.action],
             }
           : {
               key: obj.code,
               [dataIndex]: `${obj.name ? obj.name : obj.term} (${obj.code})`,
+              organism: obj.code.toLowerCase().includes('mgi')
+                ? 'Mouse'
+                : 'Human',
+              markerType: obj.code.toLowerCase().includes('uniprotkb')
+                ? 'Protein'
+                : 'Gene',
             },
       );
     } else {
@@ -571,10 +583,22 @@ export default function ViewSenotype({ senotype }) {
                     showTotal: (total, range) =>
                       tableFooter(total, range, specifiedMarkerData),
                   }}
-                  columns={markerColumns(
-                    'Specified Marker',
-                    'specified_marker',
-                  )}
+                  columns={[
+                    ...markerColumns('Specified Marker', 'specified_marker'),
+                    {
+                      title: 'Organism',
+                      key: 'organism',
+                      dataIndex: 'organism',
+                      sorter: (a, b) => a.organism.localeCompare(b.organism),
+                    },
+                    {
+                      title: 'Marker Type',
+                      key: 'markerType',
+                      dataIndex: 'markerType',
+                      sorter: (a, b) =>
+                        a.markerType.localeCompare(b.markerType),
+                    },
+                  ]}
                   dataSource={specifiedMarkerData}
                 ></Table>
               </AppAccordion>
@@ -596,6 +620,19 @@ export default function ViewSenotype({ senotype }) {
                   }}
                   columns={[
                     ...markerColumns('Regulated Marker', 'regulated_marker'),
+                    {
+                      title: 'Organism',
+                      key: 'organism',
+                      dataIndex: 'organism',
+                      sorter: (a, b) => a.organism.localeCompare(b.organism),
+                    },
+                    {
+                      title: 'Marker Type',
+                      key: 'markerType',
+                      dataIndex: 'markerType',
+                      sorter: (a, b) =>
+                        a.markerAction.localeCompare(b.markerAction),
+                    },
                     {
                       title: 'Marker Action',
                       key: 'markerAction',
