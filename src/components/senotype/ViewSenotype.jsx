@@ -348,10 +348,10 @@ export default function ViewSenotype({ senotype }) {
           ? {
               key: obj.marker.code,
               [dataIndex]: `${obj.marker.name ? obj.marker.name : obj.marker.term} (${obj.marker.code})`,
-              organism: obj.code.toLowerCase().includes('mgi')
+              organism: obj.marker.code.toLowerCase().includes('mgi')
                 ? 'Mouse'
                 : 'Human',
-              markerType: obj.code.toLowerCase().includes('uniprotkb')
+              markerType: obj.marker.code.toLowerCase().includes('uniprotkb')
                 ? 'Protein'
                 : 'Gene',
               markerAction: predicate.regulatedActionsTable[obj.action],
