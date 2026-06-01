@@ -3,7 +3,7 @@ import { Flex, Radio, message, Upload, Table } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 const { Dragger } = Upload;
 import { Form } from 'react-bootstrap';
-import log from 'xac-loglevel'
+import log from 'xac-loglevel';
 import SelectField from './SelectField';
 import PREDICATE from '@/lib/predicate';
 import { Tooltip } from 'antd';
@@ -25,29 +25,37 @@ function MarkerFormInputs({
   const [tableData, setTableData] = useState([]);
   const isValidFile = useRef(null);
   const uploadRows = useRef([]);
-  const hasInit = useRef(false)
+  const hasInit = useRef(false);
   const [tableBusy, setTableBusy] = useState(false);
-  const tableErrors = useRef([])
+  const tableErrors = useRef([]);
   const { formatErrorRow } = useContext(EditContext);
+  const [organism, setOrganism] = useState(PREDICATE.geneType.HGNC);
+  const [showOrganismRadio, setShowOrganismRadio] = useState(true);
+  const [geneCode, setGeneCode] = useState(PREDICATE.prefixIds.gene);
 
-  const updateTable= useEffectEvent(() => {
-    const data = reducer.state[predicate.field] || []
-    const list = []
-    let marker 
+  const getTableId = (row) => {
+    const key = `${row.code}-${row.action}`;
+    return { key, _id: `${crypto.randomUUID()}-${key}` };
+  };
+
+  const updateTable = useEffectEvent(() => {
+    const data = reducer.state[predicate.field] || [];
+    const list = [];
+    let marker;
     for (const d of data) {
-      marker = d.marker || {...d}
+      marker = d.marker || { ...d };
       let { key, _id } = getTableId({ ...marker, action: d.action });
       list.push({ _id, key, ...marker, action: d.action });
     }
     hasInit.current = true;
-    setTableData(list)
+    setTableData(list);
   });
 
   useEffect(() => {
     if (reducer.state && !hasInit.current) {
       updateTable();
     }
-  }, [])
+  }, []);
 
   /**
    * Removes a row from table
@@ -107,7 +115,13 @@ function MarkerFormInputs({
    * @param {string} props.regulatingAction
    * @returns {*}
    */
-  const fetchVocabulary = async ({ predicate, _query, regulatingAction, row, query }) => {
+  const fetchVocabulary = async ({
+    predicate,
+    _query,
+    regulatingAction,
+    row,
+    query,
+  }) => {
     const data = await API.fetch({
       url: URLS.api.local(`ontology/${predicate.field}`),
       token: null,
@@ -115,15 +129,15 @@ function MarkerFormInputs({
         query: _query,
       },
     });
-   
+
     if (Array.isArray(data.result)) {
-       handleMarkers({
-         options: uploadRows.current,
-         predicate,
-         _query,
-         data,
-         regulatingAction,
-       });
+      handleMarkers({
+        options: uploadRows.current,
+        predicate,
+        _query,
+        data,
+        regulatingAction,
+      });
     } else {
       tableErrors.current.push(
         formatErrorRow({
@@ -137,7 +151,6 @@ function MarkerFormInputs({
         }),
       );
     }
-     
   };
 
   const _isRegulatedMarker = predicate.fields;
@@ -158,7 +171,15 @@ function MarkerFormInputs({
       _query = d.id.includes(':') ? d.id : prefix + d.id;
       regulatingAction = regulatedActions[d.action];
       if (prefix && (regulatingAction || !predicate.fields)) {
-        promises.push(fetchVocabulary({ predicate, _query, regulatingAction, row, query: d.id }));
+        promises.push(
+          fetchVocabulary({
+            predicate,
+            _query,
+            regulatingAction,
+            row,
+            query: d.id,
+          }),
+        );
       } else {
         error = !prefix ? (
           <span>
@@ -177,7 +198,7 @@ function MarkerFormInputs({
           }),
         );
       }
-      row++
+      row++;
     }
 
     await Promise.all(promises);
@@ -228,17 +249,17 @@ function MarkerFormInputs({
   };
 
   const updateOptions = (newAction) => {
-    const ontologyReducer = getOptions({})
-    const options = ontologyReducer.state[predicate.field] || []
-    const updatedOptions = []
-    let value
+    const ontologyReducer = getOptions({});
+    const options = ontologyReducer.state[predicate.field] || [];
+    const updatedOptions = [];
+    let value;
     for (const o of options) {
-      value = JSON.parse(o.value)
-      value.action = newAction
-      updatedOptions.push({...o, value: JSON.stringify(value) })
+      value = JSON.parse(o.value);
+      value.action = newAction;
+      updatedOptions.push({ ...o, value: JSON.stringify(value) });
     }
-    ontologyReducer.dispatch({field: predicate.field, value: updatedOptions })
-  }
+    ontologyReducer.dispatch({ field: predicate.field, value: updatedOptions });
+  };
 
   /**
    * Handles a user change from
@@ -250,15 +271,32 @@ function MarkerFormInputs({
     onChange({ field: data.target.name, value: data.target.value });
   };
 
-  const handleActionChange = (data) => {
-    updateOptions(data.target.value);
-    handleRadioChange(data)
+  const handleMarkerTypeChange = (data) => {
+    setShowOrganismRadio(
+      data.target.value.eq(
+        PREDICATE.prefixIds.gene || PREDICATE.prefixIds.mouseGene,
+      ),
+    );
+    handleRadioChange(data);
   };
 
-  const getTableId = (row) => {
-    const key = `${row.code}-${row.action}`;
-    return { key, _id: `${crypto.randomUUID()}-${key}` };
-  }
+  const handleActionChange = (data) => {
+    updateOptions(data.target.value);
+    handleRadioChange(data);
+  };
+
+  const markerTypeFieldName = () =>
+    `marker_type${predicate.fields ? '_regulated' : ''}`;
+
+  const handleOrganismChange = (data) => {
+    setOrganism(data.target.value);
+    const code = data.target.value.eq(PREDICATE.geneType.HGNC)
+      ? PREDICATE.prefixIds.gene
+      : PREDICATE.prefixIds.mouseGene;
+    setGeneCode(code);
+    handleRadioChange(data);
+    onChange({ field: markerTypeFieldName(), value: code });
+  };
 
   /**
    * List of formValue strings
@@ -267,13 +305,11 @@ function MarkerFormInputs({
    */
   const addToTable = (list) => {
     const _tableData = [...tableData];
-    const added = new Set(
-      _tableData.map((t) => `${t.code}-${t.action}`),
-    );
+    const added = new Set(_tableData.map((t) => `${t.code}-${t.action}`));
     let newItem;
     for (const item of list) {
       newItem = typeof item === 'string' ? JSON.parse(item) : item;
-      let {key, _id} = getTableId(newItem);
+      let { key, _id } = getTableId(newItem);
       if (!added.has(key)) {
         added.add(key);
         _tableData.push({ _id, ...newItem });
@@ -289,8 +325,8 @@ function MarkerFormInputs({
   };
 
   const getErrorColumns = () => {
-    const names = ['row', 'error']
-    const columns = []
+    const names = ['row', 'error'];
+    const columns = [];
     for (const n of names) {
       columns.push({
         title: n,
@@ -298,8 +334,8 @@ function MarkerFormInputs({
         key: n,
       });
     }
-    return columns
-  }
+    return columns;
+  };
 
   /**
    * The antd Select is always called on selection of an item.
@@ -327,17 +363,26 @@ function MarkerFormInputs({
           <strong>Marker type</strong>
         </Form.Label>
         <Radio.Group
-          onChange={handleRadioChange}
-          defaultValue={PREDICATE.prefixIds.gene}
+          onChange={handleMarkerTypeChange}
+          value={geneCode}
           buttonStyle="solid"
           id="marker-type"
-          name={`marker_type${predicate.fields ? '_regulated' : ''}`}
+          name={markerTypeFieldName()}
         >
-          <Radio.Button value={PREDICATE.prefixIds.gene}>Gene</Radio.Button>
+          <Radio.Button value={geneCode}>Gene</Radio.Button>
           <Radio.Button value={PREDICATE.prefixIds.protein}>
             Protein
           </Radio.Button>
         </Radio.Group>
+        {showOrganismRadio && (
+          <Radio.Group
+            className="mt-2"
+            options={Object.values(PREDICATE.geneType)}
+            name={`organism${predicate.fields ? '_regulated' : ''}`}
+            onChange={handleOrganismChange}
+            value={organism}
+          />
+        )}
         {predicate.fields && (
           <div className="mt-4">
             <Form.Label htmlFor={'action'}>

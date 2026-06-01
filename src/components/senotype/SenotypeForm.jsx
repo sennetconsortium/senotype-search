@@ -185,14 +185,17 @@ function SenotypeForm({isEdit = false}) {
           Object.keys(PREDICATE.regulatedActions)[0]; // Set the default value of action
       }
       for (const r of _result) {
-        if (_query.includes(PREDICATE.prefixIds.gene)) {
+        if (
+          _query.includes(PREDICATE.prefixIds.gene) ||
+          _query.includes(PREDICATE.prefixIds.mouseGene)
+        ) {
           options.push({
             label: r.approved_name,
             value: formatValue({
               action,
               name: r.approved_name,
               term: r.approved_symbol,
-              code: `${_query.split(':')[0]}:${r.hgnc_id}`,
+              code: `${_query.split(':')[0]}:${r.hgnc_id || r.mgi_id}`,
             }),
           });
         } else {
@@ -462,6 +465,9 @@ function SenotypeForm({isEdit = false}) {
       title,
       description,
       placement: 'top',
+      style: {
+        width: 600
+      }
     });
   }
 
