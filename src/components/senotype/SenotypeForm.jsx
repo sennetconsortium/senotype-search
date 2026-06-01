@@ -465,6 +465,9 @@ function SenotypeForm({isEdit = false}) {
       title,
       description,
       placement: 'top',
+      style: {
+        width: 600
+      }
     });
   }
 
