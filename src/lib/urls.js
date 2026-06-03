@@ -15,9 +15,8 @@ const URLS = {
       privs: {
         admin:
           process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'privs/has-data-admin',
-        senotypeEdit:
-          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL +
-          'privs/has-senotype-edit',
+        senotypePrivs:
+          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'privs/senotype',
         groups:
           process.env.NEXT_PUBLIC_INGEST_API_BASE_URL +
           'privs/user-write-groups',
@@ -52,8 +51,9 @@ const URLS = {
     resolver: `${process.env.NEXT_PUBLIC_SCICRUNCH_BASE_URL}resolver/`,
     higher: `${process.env.NEXT_PUBLIC_SCICRUNCH_BASE_URL}scicrunch/resolver/`,
   },
-  bannerContent: process.env.NEXT_PUBLIC_BANNER_URL ||
-      `${process.env.NEXT_PUBLIC_SENOTYPE_LIB_BASE_URL}content/banner.json`,
+  bannerContent:
+    process.env.NEXT_PUBLIC_BANNER_URL ||
+    `${process.env.NEXT_PUBLIC_SENOTYPE_LIB_BASE_URL}content/banner.json`,
   /**
    * Takes the organ hierarchy term and returns a src img url.
    * @param {string} o
