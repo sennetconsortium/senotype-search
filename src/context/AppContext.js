@@ -17,7 +17,7 @@ export const AppProvider = ({ children }) => {
 
     let admin;
     let groups;
-    let senotypeEdit;
+    let senotypePrivs;
     try {
       admin = await API.fetch({
         url: URLS.api.ingest.privs.admin,
@@ -28,12 +28,12 @@ export const AppProvider = ({ children }) => {
       log.error(error);
     }
     try {
-      senotypeEdit = await API.fetch({
-        url: URLS.api.ingest.privs.senotypeEdit,
+      senotypePrivs = await API.fetch({
+        url: URLS.api.ingest.privs.senotypePrivs,
         ...ops,
       });
     } catch (error) {
-      senotypeEdit = null;
+      senotypePrivs = null;
       log.error(error);
     }
     try {
@@ -50,7 +50,9 @@ export const AppProvider = ({ children }) => {
       ...info,
       isAuthenticated,
       isAuthorized: isAuthenticated,
-      hasSenotypeEdit: senotypeEdit?.has_senotype_edit,
+      hasSenotypeEdit: senotypePrivs?.has_senotype_edit,
+      hasSenotypeCurate: senotypePrivs?.has_senotype_curate,
+      hasSenotypePublish: senotypePrivs?.has_senotype_publish,
       isAdmin: admin?.has_data_admin_privs,
       userGroups: groups?.user_write_groups,
     });
@@ -76,11 +78,11 @@ export const AppProvider = ({ children }) => {
 
   const fetchBannerContent = async () => {
     const url = URLS.api.local('content/banner');
-    const results = await API.fetch({url, method: 'GET'})
+    const results = await API.fetch({ url, method: 'GET' });
     if (Object.values(results).length) {
-      setBannerContent(results)
+      setBannerContent(results);
     }
-  }
+  };
 
   useEffect(() => {
     fetchOntology();
@@ -93,7 +95,7 @@ export const AppProvider = ({ children }) => {
       value={{
         auth,
         ontology,
-        bannerContent
+        bannerContent,
       }}
     >
       {children}
