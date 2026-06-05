@@ -530,9 +530,9 @@ export default function ViewSenotype({ senotype }) {
               ...(regulatingMarkerData.length > 0
                 ? [
                     {
-                      key: 'Regulating Markers',
-                      href: '#regulating-markers',
-                      title: 'Regulating Markers',
+                      key: 'Regulated Markers',
+                      href: '#regulated-markers',
+                      title: 'Regulated Markers',
                     },
                   ]
                 : []),
@@ -617,7 +617,7 @@ export default function ViewSenotype({ senotype }) {
             {regulatingMarkerData.length > 0 && (
               <AppAccordion
                 title={'Regulated Markers'}
-                id={'regulating-markers'}
+                id={'regulated-markers'}
                 tooltipTitle={
                   'These are typically a longer list of gene or protein markers that have been tested for the senotype. The investigator observes these markers to be up-regulated; down-regulated; or tested but inconclusive whether up- or down- regulated (e.g., using log2FC and p-value).'
                 }
