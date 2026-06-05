@@ -577,7 +577,7 @@ function SenotypeForm() {
               )}
             </AppAccordion>
 
-            <AppAccordion title={'Regulating Marker'}>
+            <AppAccordion title={'Regulated Marker'}>
               {loadingPredicates && <Skeleton />}
               {!loadingPredicates && (
                 <MarkerFormInputs
