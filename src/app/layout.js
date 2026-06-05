@@ -6,6 +6,13 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import MountedWrapper from '@/components/MountedWrapper';
 import ENVS from '@/lib/envs';
 
+export const metadata = {
+  title: {
+    default: 'Senoytpe Library',
+    template: '%s | Senoytpe Library',
+  },
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
