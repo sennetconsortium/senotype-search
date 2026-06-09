@@ -1,33 +1,7 @@
 import AUTH from './auth';
 import log from 'xac-loglevel';
-import { ontology } from '@/cache/ontology';
 
 const SEARCH = {
-  organBucketsTransform: (ops) => {
-    const { aggregations, field, component } = ops;
-    const buckets = SEARCH.bucketsTransform(ops);
-    log.debug(
-      'SEARCH.organBucketsTransform',
-      component,
-      field,
-      aggregations[field],
-    );
-
-    let organs = {};
-    let h;
-    for (const b of buckets) {
-      h = ontology.organ_types.hierarchy[b.key] || 'Unknown';
-      organs[h] = organs[h] || {
-        doc_count: 0,
-        key: h,
-        subagg: { buckets: [] },
-      };
-      organs[h].doc_count += b.doc_count;
-      organs[h].subagg.buckets.push(b);
-    }
-
-    return Object.values(organs);
-  },
   bucketsTransform: (ops) => {
     const { aggregations, field } = ops;
     log.debug('SEARCH.bucketsTransform', field, aggregations[field]);
