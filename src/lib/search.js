@@ -4,6 +4,7 @@ import log from 'xac-loglevel';
 const SEARCH = {
   organBucketsTransform: (ops) => {
     const { aggregations, field, stateProps, component } = ops;
+    if (!stateProps) return []
     const buckets = SEARCH.bucketsTransform(ops);
     log.debug(
       'SEARCH.organBucketsTransform',

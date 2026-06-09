@@ -38,7 +38,7 @@ function SearchResults() {
 
   const tableData = useMemo(
     () => rawResponse?.records ? rawResponse?.records[indexName] : [],
-    [rawResponse],
+    [rawResponse, indexName],
   );
 
   const totalRows = useMemo(
@@ -46,7 +46,7 @@ function SearchResults() {
       rawResponse?.info
         ? rawResponse?.info[indexName]?.total_result_count
         : 0,
-    [rawResponse],
+    [rawResponse, indexName],
   );
 
   const updateStateProps = useEffectEvent(() => {
