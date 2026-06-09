@@ -22,8 +22,10 @@ export async function generateMetadata({ params }) {
   pageTitle = pageTitle ? `${pageTitle} ${subTitle} | ${baseTitle}` : baseTitle;
 
   return {
-    title: pageTitle,
-    template: `%s | ${baseTitle}`,
+    title: {
+      default: pageTitle,
+      template: `%s | ${baseTitle}`,
+    },
   };
 }
 
