@@ -5,13 +5,27 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import MountedWrapper from '@/components/MountedWrapper';
 import ENVS from '@/lib/envs';
+import { headers } from 'next/headers';
 
-export const metadata = {
-  title: {
-    default: 'Senoytpe Library',
-    template: '%s | Senoytpe Library',
-  },
-};
+export async function generateMetadata({ params }) {
+  const _headers = await headers();
+  const { senotype_id } = await params;
+  const url = new URL(_headers.get('x-url'));
+  const baseTitle = ENVS.app.name;
+  const pageParts = url.pathname.split('/');
+  let pageTitle = pageParts[1]?.titleCase();
+  let subTitle =
+    ['create', 'edit'].indexOf(pageParts[2]) != -1
+      ? `| ${pageParts[2]?.titleCase()}`
+      : '';
+  
+  pageTitle = pageTitle ? `${pageTitle} ${subTitle} | ${baseTitle}` : baseTitle;
+
+  return {
+    title: pageTitle,
+    template: `%s | ${baseTitle}`,
+  };
+}
 
 export default function RootLayout({ children }) {
   return (
