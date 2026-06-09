@@ -36,7 +36,6 @@ export const ubkgPredicates = [
 const {
   doesAggregationHaveBuckets,
   bucketsTransform,
-  organBucketsTransform,
 } = SEARCH;
 const connector = new SearchAPIConnector({
   indexName: ENVS.index.senotype,
@@ -93,15 +92,9 @@ export const SEARCH_SENOTYPE = {
         filterType: 'any',
         isFilterable: false,
         facetType: 'hierarchy',
-        bucketsTransform: organBucketsTransform,
-        groupByField: 'organ.term.keyword',
+        groupByField: 'organ.category.keyword',
         isHierarchyOption: (option) => {
           return window?.ONTOLOGY_CACHE?.organ_types?.laterals?.includes(option);
-        },
-        filterSubValues: (value, subValues) => {
-          return subValues.filter((subValue) => {
-            return subValue.key.toLowerCase().startsWith(value.toLowerCase());
-          });
         },
         isAggregationActive: true,
         isFacetVisible: doesAggregationHaveBuckets('organ'),
