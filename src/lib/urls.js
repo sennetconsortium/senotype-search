@@ -19,7 +19,7 @@ const URLS = {
           process.env.NEXT_PUBLIC_INGEST_API_BASE_URL +
           'privs/user-write-groups',
         senotypePrivs:
-          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL +'privs/senotype',
+          process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'privs/senotype',
       },
     },
     senotype: {

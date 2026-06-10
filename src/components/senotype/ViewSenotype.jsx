@@ -10,6 +10,7 @@ import ResultsExport from '@/components/search/ResultsExport';
 import PREDICATE from '@/lib/predicate';
 import predicate from '@/lib/predicate';
 import ViewSenotypeHeader from '@/components/senotype/ViewSenotypeHeader';
+import { organHierarchy } from '@/lib/general';
 
 const buildSummary = (senotype) => {
   return [
@@ -89,7 +90,7 @@ const buildSenotype = (senotype) => {
               <a
                 aria-label={`Outgoing link to ontology for ${item.code}`}
                 target={'_blank'}
-                href={`${URLS.portal}organs/${item.term?.toDashedCase()}`}
+                href={`${URLS.portal}organs/${organHierarchy(item.term).toDashedCase()}`}
               >
                 <LinkOutlined />
               </a>
