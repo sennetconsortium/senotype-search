@@ -146,6 +146,12 @@ const URLS = {
     }
     return `${baseURL}${idSubmit}`;
   },
+  getCitationUrl: (data) => {
+    if (data.publication_url) {
+      return data.publication_url;
+    }
+    return `https://commons.datacite.org/doi.org/${getProtocolId(data.doi_url)}`;
+  },
 };
 
 export default URLS;

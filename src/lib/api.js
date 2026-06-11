@@ -174,6 +174,29 @@ const API = {
     } catch (e) {
       log.error('API.fetchForForm.catch', predicate, query, e);
     }
+  },
+  fetchDataCite: (protocolUrl) => {
+    return new Promise((resolve, reject) => {
+        if (!protocolUrl) {
+            reject(null)
+            return
+        }
+        let headers = new Headers()
+        headers.append("Accept", "text/x-bibliography; style=american-medical-association")
+        let requestOptions = {
+            method: 'GET',
+            headers: headers
+        }
+        fetch(protocolUrl, requestOptions).then(async (response) => {
+            if (!response.ok) {
+                reject(null)
+            }
+            resolve(response.text())
+        }).catch((e) => {
+            log.error(e)
+            reject(null)
+        });
+    });
   }
 };
 export default API;
