@@ -6,9 +6,9 @@ import { useEffect } from 'react';
 function Page() {
   useEffect(() => {
     AUTH.logout();
-    window.location = URLS.api.ingest + 'logout';
+    window.location = URLS.api.ingest.base + 'logout';
   }, []);
-  return <div>Logging you out, one moment ...</div>;
+  return <div className='alert alert-info'>Logging you out, one moment ...</div>;
 }
 
 export default Page;
