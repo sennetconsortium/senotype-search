@@ -98,3 +98,11 @@ export function autoBlobDownloader(data, type, filename) {
   a.remove();
   window.URL.revokeObjectURL(url);
 }
+
+export function getProtocolId(protocolUrl) {
+    // The ID is everything after "doi.org/" and before a /{version}
+    const regex = /doi\.org\/([^\/]+\/[^\/]+)/
+    const match = protocolUrl.match(regex);
+
+    return match ? match[1] : null;
+}

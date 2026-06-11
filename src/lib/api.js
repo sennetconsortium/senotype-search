@@ -36,7 +36,28 @@ const API = {
     }
   },
   search: async (body, index = 'entities', token) => {
-    return await API.fetch({ url: `${URLS.api.search}${index}/search`, body, token });
+    return await API.fetch({ url: `${URLS.api.search.byIndex(index)}`, body, token });
+  },
+  fetchReferences: async (senotype) => {
+    if (senotype.dataset) {
+        const uuids = senotype.dataset.map((d) => d.uuid);
+        const datasets = await API.fetchSearchApiByField(uuids);
+        const items = [];
+        for (const d of datasets) {
+          let url = `${URLS.portal}dataset?uuid=${d.uuid}`;
+          if (d.doi_url) {
+            const datacite = await API.fetchDataCite(d.doi_url);
+            items.push({ ...d, datacite, url: URLS.getCitationUrl(d) || url });
+          } else {
+            items.push({
+              ...d,
+              url,
+            });
+          }
+        }
+        senotype.dataset = items;
+    }
+    return senotype
   },
   fetchSenotype: async (senotypeUuid, token) => {
     const body = simple_query_builder('uuid', senotypeUuid);
@@ -56,6 +77,7 @@ const API = {
             }
           });
           if (senotype) {
+            senotype = await API.fetchReferences(senotype)
             return senotype;
           }
         }
@@ -74,7 +96,7 @@ const API = {
         byTerm: `${URLS.nih.pubMed}&term=<query>`,
       },
       origin: `${URLS.sciCrunch.resolver}<query>`,
-      dataset: `${URLS.api.search}entities/search`,
+      dataset: `${URLS.api.search.byIndex()}`,
       cell_type: `${URLS.api.ontology}celltypes/<query>`,
       diagnosis: {
         byCode: `${URLS.api.ontology}codes/<query>/terms`,
@@ -101,7 +123,6 @@ const API = {
           isCitation,
           isOrigin,
           isDataset,
-          isExternalSource,
         } = PREDICATE;
 
       if (isDataset(predicate)) {
@@ -183,6 +204,42 @@ const API = {
     } catch (e) {
       log.error('API.fetchForForm.catch', predicate, query, e);
     }
+  },
+   fetchDataCite: async (protocolUrl) => {
+    let headers = new Headers();
+    headers.append(
+      'Accept',
+      'text/x-bibliography; style=american-medical-association',
+    );
+    let requestOptions = {
+      method: 'GET',
+      headers: headers,
+    };
+    const result = await fetch(protocolUrl, requestOptions);
+    if (result.ok) {
+      return await result.text();
+    } 
+    return null;
+  },
+  fetchSearchApiByField: async (values, field = 'uuid', _source = ['status', 'creation_action', 'doi_url', 'title', 'uuid'], index = 'entities') => {
+    const body = {
+      query: {
+        bool: {
+          filter: [
+            {
+              terms: {
+                [field]: values,
+              },
+            },
+          ],
+        },
+      },
+      _source,
+    };
+    const url = URLS.api.search.byIndex(index);
+    const result = await API.fetch({ url, body });
+    const hits = result?.hits.hits.map((h) => h._source)
+    return hits
   }
 };
 export default API;

@@ -1,5 +1,5 @@
 import AppAccordion from '@/components/AppAccordion';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState} from 'react';
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { Col, Container, Row } from 'react-bootstrap';
 import { Button, Descriptions, Input, Space, Table } from 'antd';
@@ -308,11 +308,8 @@ const buildReferences = (senotype) => {
         <span className={'flex'}>
           {senotype['dataset'].map((item, index) => (
             <div key={`dataset_${index}`} className={'mb-2'}>
-              {item.title}{' '}
-              <a
-                target={'_blank'}
-                href={`${URLS.portal}dataset?uuid=${item.uuid}`}
-              >
+              {item.datacite || item.title}{' '}
+              <a target={'_blank'} href={item.url}>
                 <LinkOutlined />
               </a>
             </div>

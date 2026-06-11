@@ -39,7 +39,7 @@ const {
 } = SEARCH;
 const connector = new SearchAPIConnector({
   indexName: ENVS.index.senotype,
-  indexUrl: URLS.api.search,
+  indexUrl: URLS.api.search.base,
   accessToken: AUTH.token()
 });
 
