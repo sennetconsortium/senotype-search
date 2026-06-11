@@ -50,7 +50,7 @@ const buildSenotype = (senotype) => {
       label: 'Hallmark',
       children: (
         <span className={'flex'}>
-          {senotype['hallmark'].map((item, index) => (
+          {senotype['hallmark']?.map((item, index) => (
             <div key={`hallmark_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -63,7 +63,7 @@ const buildSenotype = (senotype) => {
       label: 'Taxon',
       children: (
         <span className={'flex'}>
-          {senotype['taxon'].map((item, index) => (
+          {senotype['taxon']?.map((item, index) => (
             <div key={`taxon_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -76,7 +76,7 @@ const buildSenotype = (senotype) => {
       label: 'Organ',
       children: (
         <span className={'flex'}>
-          {senotype['organ'].map((item, index) => (
+          {senotype['organ']?.map((item, index) => (
             <div key={`organ_${index}`} className={'mb-1'}>
               {item.term}&nbsp;
               <img
@@ -104,7 +104,7 @@ const buildSenotype = (senotype) => {
       label: 'Celltype',
       children: (
         <span className={'flex'}>
-          {senotype['cell_type'].map((item, index) => (
+          {senotype['cell_type']?.map((item, index) => (
             <div key={`celltype_${index}`} className={'mb-1'}>
               {item.term} ({item.code}){' '}
               <a
@@ -126,7 +126,7 @@ const buildSenotype = (senotype) => {
       label: 'Microenvironment',
       children: (
         <span className={'flex'}>
-          {senotype['microenvironment'].map((item, index) => (
+          {senotype['microenvironment']?.map((item, index) => (
             <div key={`microenvironment_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -143,7 +143,7 @@ const buildSenotype = (senotype) => {
       label: 'Inducer',
       children: (
         <span className={'flex'}>
-          {senotype['inducer'].map((item, index) => (
+          {senotype['inducer']?.map((item, index) => (
             <div key={`inducer_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -160,7 +160,7 @@ const buildSenotype = (senotype) => {
       label: 'Assay',
       children: (
         <span className={'flex'}>
-          {senotype['assay'].map((item, index) => (
+          {senotype['assay']?.map((item, index) => (
             <div key={`assay_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -177,7 +177,7 @@ const buildSenotype = (senotype) => {
       label: 'Diagnosis',
       children: (
         <span className={'flex'}>
-          {senotype['diagnosis'].map((item, index) => (
+          {senotype['diagnosis']?.map((item, index) => (
             <div key={`diagnosis_${index}`} className={'mb-1'}>
               {item.term}{' '}
               <a
@@ -207,7 +207,7 @@ const buildDemographic = (senotype) => {
       label: 'Sex',
       children: (
         <span className={'flex'}>
-          {senotype['sex'].map((item, index) => (
+          {senotype['sex']?.map((item, index) => (
             <div key={`sex_${index}`} className={'mb-1'}>
               {item.term}
             </div>
@@ -260,7 +260,7 @@ const buildReferences = (senotype) => {
       label: 'Citation',
       children: (
         <span className={'flex'}>
-          {senotype['citation'].map((item, index) => (
+          {senotype['citation']?.map((item, index) => (
             <div key={`citation_${index}`} className={'mb-2'}>
               {item.term}{' '}
               <a
@@ -286,7 +286,7 @@ const buildReferences = (senotype) => {
       label: 'Origin',
       children: (
         <span className={'flex'}>
-          {senotype['origin'].map((item, index) => (
+          {senotype['origin']?.map((item, index) => (
             <div key={`origin_${index}`} className={'mb-2'}>
               {item.term}{' '}
               <a target={'_blank'} href={URLS.getSciCrunchUrl(item.code)}>
@@ -306,7 +306,7 @@ const buildReferences = (senotype) => {
       label: 'Dataset',
       children: (
         <span className={'flex'}>
-          {senotype['dataset'].map((item, index) => (
+          {senotype['dataset']?.map((item, index) => (
             <div key={`dataset_${index}`} className={'mb-2'}>
               {item.datacite || item.title}{' '}
               <a target={'_blank'} href={item.url}>
