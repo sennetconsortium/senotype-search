@@ -40,14 +40,16 @@ const API = {
   },
   fetchReferences: async (senotype) => {
     if (senotype.dataset) {
-        const uuids = senotype.dataset.map((d) => d.uuid);
+        const uuids = senotype.dataset
+          .map((d) => d.uuid)
+          .filter((x) => x !== null);
         const datasets = await API.fetchSearchApiByField(uuids);
         const items = [];
         for (const d of datasets) {
           let url = `${URLS.portal}dataset?uuid=${d.uuid}`;
           if (d.doi_url) {
-            const datacite = await API.fetchDataCite(d.doi_url);
-            items.push({ ...d, datacite, url: URLS.getCitationUrl(d) || url });
+            const datacite = {title: await API.fetchDataCite(d.doi_url), url:  URLS.getCitationUrl(d)};
+            items.push({ ...d, datacite, url});
           } else {
             items.push({
               ...d,
@@ -55,7 +57,9 @@ const API = {
             });
           }
         }
-        senotype.dataset = items;
+        if (items.length) {
+          senotype.dataset = items;
+        }
     }
     return senotype
   },
@@ -238,7 +242,7 @@ const API = {
     };
     const url = URLS.api.search.byIndex(index);
     const result = await API.fetch({ url, body });
-    const hits = result?.hits.hits.map((h) => h._source)
+    const hits = result?.hits?.hits?.map((h) => h._source) || []
     return hits
   }
 };
