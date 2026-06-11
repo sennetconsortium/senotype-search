@@ -20,12 +20,12 @@
       box-shadow 0 0 0 .25rem #0d6efd40 !important
 
   &-notification
+    &:has(.ant-notification--middle)
+      transform translate3d(-50%, 20%, 0px) !important
+      width 100%
     &-notice
       &-title 
         font-weight bold
-      &-wrapper
-        &:has(.ant-notification--middle)
-          transform translate3d(-50%, 50%, 0px) !important
     &--middle
       &.ant-notification-notice-error
         width 650px !important
