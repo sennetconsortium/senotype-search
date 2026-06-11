@@ -1,4 +1,5 @@
 import log from 'xac-loglevel';
+import { getProtocolId } from './general';
 
 const URLS = {
   login: process.env.NEXT_PUBLIC_LOGIN_URL,
@@ -22,7 +23,11 @@ const URLS = {
           'privs/user-write-groups',
       },
     },
-    search: process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL,
+    search: {
+      base: process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL,
+      byIndex: (index = 'entities') =>
+        `${process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL}${index}/search`,
+    },
     ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE_URL,
   },
   nih: {

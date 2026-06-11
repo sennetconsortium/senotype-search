@@ -24,7 +24,7 @@ const API = {
         body: body ? JSON.stringify(body) : undefined,
       });
       if (!res.ok) {
-        const errMsg = res.statusText ? res.statusText : await res.text()
+        const errMsg = res.statusText ? res.statusText : await res.text();
         return { error: errMsg, status: res.status };
       }
       return res.json();
@@ -33,7 +33,32 @@ const API = {
     }
   },
   search: async (body, index = 'entities', token) => {
-    return await API.fetch({ url: `${URLS.api.search}${index}/search`, body, token });
+    return await API.fetch({
+      url: URLS.api.search.byIndex(index),
+      body,
+      token,
+    });
+  },
+  fetchReferences: async (senotype) => {
+    if (senotype.has_dataset) {
+      const uuids = senotype.has_dataset.map((d) => d.uuid);
+      const datasets = await API.fetchSearchApiByField(uuids);
+      const items = [];
+      for (const d of datasets) {
+        let url = `${URLS.portal}dataset?uuid=${d.uuid}`;
+        if (d.doi_url) {
+          const datacite = await API.fetchDataCite(d.doi_url);
+          items.push({ ...d, datacite, url: URLS.getCitationUrl(d) || url });
+        } else {
+          items.push({
+            ...d,
+            url,
+          });
+        }
+      }
+      senotype.has_dataset = items;
+    }
+    return senotype;
   },
   fetchSenotype: async (senotypeUuid, token) => {
     let data = {};
@@ -54,6 +79,7 @@ const API = {
           }
         });
         if (senotype) {
+          senotype = await API.fetchReferences(senotype);
           return senotype;
         }
       }
@@ -64,14 +90,13 @@ const API = {
     return API.fetch({ url: `${URLS.api.ontology}${endpoint}`, method: 'GET' });
   },
   fetchForForm: async (predicate, query) => {
-    
     const urls = {
       has_citation: {
         byCode: `${URLS.nih.pubMed}&id=<query>`,
         byTerm: `${URLS.nih.pubMed}&term=<query>`,
       },
       has_origin: `${URLS.sciCrunch.resolver}<query>`,
-      has_dataset: `${URLS.api.entity.base}entities/search`, //TODO: point to search-api
+      has_dataset: URLS.api.search.byIndex(),
       has_cell_type: `${URLS.api.ontology}celltypes/<query>`,
       has_diagnosis: {
         byCode: `${URLS.api.ontology}codes/<query>/terms`,
@@ -97,7 +122,6 @@ const API = {
           isCitation,
           isOrigin,
           isDataset,
-          isExternalSource,
         } = PREDICATE;
 
       if (isDataset(predicate)) {
@@ -109,7 +133,13 @@ const API = {
               fields: ['title', 'description', 'sennet_id', 'dataset_type'],
             },
           },
-          _source: ['title', 'description', 'sennet_id', 'dataset_type', 'uuid'],
+          _source: [
+            'title',
+            'description',
+            'sennet_id',
+            'dataset_type',
+            'uuid',
+          ],
         };
         log.debug('API.fetchForForm.isDataset', url);
         const result = await API.fetch({ url, body });
@@ -175,28 +205,46 @@ const API = {
       log.error('API.fetchForForm.catch', predicate, query, e);
     }
   },
-  fetchDataCite: (protocolUrl) => {
-    return new Promise((resolve, reject) => {
-        if (!protocolUrl) {
-            reject(null)
-            return
-        }
-        let headers = new Headers()
-        headers.append("Accept", "text/x-bibliography; style=american-medical-association")
-        let requestOptions = {
-            method: 'GET',
-            headers: headers
-        }
-        fetch(protocolUrl, requestOptions).then(async (response) => {
-            if (!response.ok) {
-                reject(null)
-            }
-            resolve(response.text())
-        }).catch((e) => {
-            log.error(e)
-            reject(null)
-        });
-    });
-  }
+  fetchDataCite: async (protocolUrl) => {
+    let headers = new Headers();
+    headers.append(
+      'Accept',
+      'text/x-bibliography; style=american-medical-association',
+    );
+    let requestOptions = {
+      method: 'GET',
+      headers: headers,
+    };
+    const result = await fetch(protocolUrl, requestOptions);
+    if (result.ok) {
+      return await result.text();
+    }
+    return null;
+  },
+  fetchSearchApiByField: async (
+    values,
+    field = 'uuid',
+    _source = ['status', 'creation_action', 'doi_url', 'title', 'uuid'],
+    index = 'entities',
+  ) => {
+    const body = {
+      query: {
+        bool: {
+          filter: [
+            {
+              terms: {
+                [field]: values,
+              },
+            },
+          ],
+        },
+      },
+      _source,
+    };
+    const url = URLS.api.search.byIndex(index);
+    const result = await API.fetch({ url, body });
+    const hits = result?.hits.hits.map((h) => h._source);
+    return hits;
+  },
 };
 export default API;
