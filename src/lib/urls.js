@@ -21,6 +21,7 @@ const URLS = {
           process.env.NEXT_PUBLIC_INGEST_API_BASE_URL +
           'privs/user-write-groups',
       },
+      logout: process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'senotype-library-logout',
     },
     search: process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL,
     ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE_URL,
