@@ -306,7 +306,7 @@ const buildReferences = (senotype) => {
         <span className={'flex'}>
           {senotype['has_dataset'].map((item, index) => (
             <div key={`dataset_${index}`} className={'mb-2'}>
-              {item.datacite || item.term}{' '}
+              {item.datacite?.title || item.term}{' '}
               <a
                 target={'_blank'}
                 href={item.url}

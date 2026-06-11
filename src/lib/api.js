@@ -41,22 +41,26 @@ const API = {
   },
   fetchReferences: async (senotype) => {
     if (senotype.has_dataset) {
-      const uuids = senotype.has_dataset.map((d) => d.uuid);
-      const datasets = await API.fetchSearchApiByField(uuids);
-      const items = [];
-      for (const d of datasets) {
-        let url = `${URLS.portal}dataset?uuid=${d.uuid}`;
-        if (d.doi_url) {
-          const datacite = await API.fetchDataCite(d.doi_url);
-          items.push({ ...d, datacite, url: URLS.getCitationUrl(d) || url });
-        } else {
-          items.push({
-            ...d,
-            url,
-          });
+        const uuids = senotype.has_dataset
+          .map((d) => d.uuid)
+          .filter((x) => x !== null);
+        const datasets = await API.fetchSearchApiByField(uuids);
+        const items = [];
+        for (const d of datasets) {
+          let url = `${URLS.portal}dataset?uuid=${d.uuid}`;
+          if (d.doi_url) {
+            const datacite = {title: await API.fetchDataCite(d.doi_url), url:  URLS.getCitationUrl(d)};
+            items.push({ ...d, datacite, url});
+          } else {
+            items.push({
+              ...d,
+              url,
+            });
+          }
         }
-      }
-      senotype.has_dataset = items;
+        if (items.length) {
+          senotype.has_dataset = items;
+        }
     }
     return senotype;
   },
