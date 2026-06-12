@@ -39,18 +39,18 @@ Object.assign(String.prototype, {
     }
     return res;
   },
-  csvToJson(delimiter = ",")  {
-  const [headers, ...rows] = this.split("\n");
-  const headerArray = headers.split(delimiter);
-  
-  return rows.map(row => {
-    const values = row.split(delimiter);
-    return headerArray.reduce((obj, header, index) => {
-      obj[header.trim()] = values[index]?.trim();
-      return obj;
-    }, {});
-  });
-}
+  csvToJson(delimiter = ',') {
+    const [headers, ...rows] = this.split('\n');
+    const headerArray = headers.split(delimiter);
+
+    return rows.map((row) => {
+      const values = row.split(delimiter);
+      return headerArray.reduce((obj, header, index) => {
+        obj[header.trim()] = values[index]?.trim();
+        return obj;
+      }, {});
+    });
+  },
 });
 
 export const flipObj = (obj) => {
@@ -81,7 +81,7 @@ export const organHierarchy = (term) => {
   const res = term.match(r);
 
   return res && res.length ? res[0].trim() : term;
-}
+};
 
 export function autoBlobDownloader(data, type, filename) {
   const a = document.createElement('a');
@@ -92,4 +92,12 @@ export function autoBlobDownloader(data, type, filename) {
   a.click();
   a.remove();
   window.URL.revokeObjectURL(url);
+}
+
+export function getProtocolId(protocolUrl) {
+  // The ID is everything after "doi.org/" and before a /{version}
+  const regex = /doi\.org\/([^\/]+\/[^\/]+)/;
+  const match = protocolUrl.match(regex);
+
+  return match ? match[1] : null;
 }

@@ -1,4 +1,5 @@
 import log from 'xac-loglevel';
+import { getProtocolId } from './general';
 
 const URLS = {
   login: process.env.NEXT_PUBLIC_LOGIN_URL,
@@ -23,7 +24,11 @@ const URLS = {
       },
       logout: process.env.NEXT_PUBLIC_INGEST_API_BASE_URL + 'senotype-library-logout',
     },
-    search: process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL,
+    search: {
+      base: process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL,
+      byIndex: (index = 'entities') =>
+        `${process.env.NEXT_PUBLIC_SEARCH_API_BASE_URL}${index}/search`,
+    },
     ontology: process.env.NEXT_PUBLIC_ONTOLOGY_API_BASE_URL,
   },
   nih: {
@@ -146,6 +151,12 @@ const URLS = {
       return null;
     }
     return `${baseURL}${idSubmit}`;
+  },
+  getCitationUrl: (data) => {
+    if (data.publication_url) {
+      return data.publication_url;
+    }
+    return `https://commons.datacite.org/doi.org/${getProtocolId(data.doi_url)}`;
   },
 };
 
