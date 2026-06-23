@@ -408,6 +408,16 @@ function MarkerFormInputs({
             </div>
           </div>
         )}
+        <SelectField
+          p={predicate}
+          getOptions={getOptions}
+          getSearchBehavior={_getSearchBehavior}
+          reducer={reducer}
+          useSearchIcon={true}
+          mode={'single'}
+          hideSelectedValue={true}
+          isBusy={busy.selectBusyReducer.state[predicate.field]}
+        />
         {tableData.length > 0 && (
           <div className="mt-3">
             <Table
@@ -432,16 +442,6 @@ function MarkerFormInputs({
             />
           </div>
         )}
-        <SelectField
-          p={predicate}
-          getOptions={getOptions}
-          getSearchBehavior={_getSearchBehavior}
-          reducer={reducer}
-          useSearchIcon={true}
-          mode={'single'}
-          hideSelectedValue={true}
-          isBusy={busy.selectBusyReducer.state[predicate.field]}
-        />
       </Flex>
 
       <div className="mt-4">
