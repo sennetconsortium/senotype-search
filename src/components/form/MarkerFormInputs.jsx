@@ -418,33 +418,9 @@ function MarkerFormInputs({
           hideSelectedValue={true}
           isBusy={busy.selectBusyReducer.state[predicate.field]}
         />
-        {tableData.length > 0 && (
-          <div className="mt-3">
-            <Table
-              columns={getTableColumns()}
-              dataSource={tableData}
-              rowKey={'_id'}
-            />
-          </div>
-        )}
-        {tableBusy && <AppSpinner fullscreen={false} />}
-        {tableErrors.current.length > 0 && (
-          <div>
-            <h2 className="p3 text-danger">
-              <i className="bi bi-exclamation-triangle"></i>There were errors in
-              your upload
-            </h2>
-            <Table
-              className="alert alert-danger"
-              columns={getErrorColumns()}
-              dataSource={tableErrors.current}
-              rowKey={'_id'}
-            />
-          </div>
-        )}
       </Flex>
 
-      <div className="mt-4">
+      <div className="c-markerForm__upload mt-4">
         <Dragger {...uploadProps}>
           <p className="ant-upload-drag-icon">
             <InboxOutlined />
@@ -507,6 +483,32 @@ function MarkerFormInputs({
             </Tooltip>
           </p>
         </Dragger>
+      </div>
+      <div className="c-markerForm__table mt-4">
+        {tableData.length > 0 && (
+          <div className="mt-3">
+            <Table
+              columns={getTableColumns()}
+              dataSource={tableData}
+              rowKey={'_id'}
+            />
+          </div>
+        )}
+        {tableBusy && <AppSpinner fullscreen={false} />}
+        {tableErrors.current.length > 0 && (
+          <div>
+            <h2 className="p3 text-danger">
+              <i className="bi bi-exclamation-triangle"></i>There were errors in
+              your upload
+            </h2>
+            <Table
+              className="alert alert-danger"
+              columns={getErrorColumns()}
+              dataSource={tableErrors.current}
+              rowKey={'_id'}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
