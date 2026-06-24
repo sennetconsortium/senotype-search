@@ -510,7 +510,6 @@ function SenotypeForm({ isEdit = false }) {
       document
         .querySelectorAll(`#c-inputField--${p.field} .ant-select`)
         .forEach((el) => {
-          THEME.getTabPaneTab(el).classList.add(THEME.classNames.invalid);
           el.classList.add(THEME.classNames.invalid);
         });
     });

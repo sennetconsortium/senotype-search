@@ -10,7 +10,7 @@ import { Modal } from 'antd';
  * @param {string} props.id
  * @returns {*}
  */
-function AppModal({ modal, setModal, handleModalOk, id }) {
+function AppModal({ modal, setModal, handleModalOk, id, children }) {
   const closeModal = () => {
     setModal({ ...modal, okText: 'OK', open: false });
   };
@@ -31,6 +31,7 @@ function AppModal({ modal, setModal, handleModalOk, id }) {
       okButtonProps={modal.okButtonProps}
     >
       {modal.body}
+      {children}
     </Modal>
   );
 }

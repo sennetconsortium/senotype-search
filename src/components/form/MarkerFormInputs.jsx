@@ -12,6 +12,7 @@ import API from '@/lib/api';
 import URLS from '@/lib/urls';
 import AppSpinner from '../AppSpinner';
 import EditContext from '@/context/EditContext';
+import AppModal from '../AppModal';
 
 function MarkerFormInputs({
   predicate,
@@ -33,6 +34,12 @@ function MarkerFormInputs({
   const [showOrganismRadio, setShowOrganismRadio] = useState(true);
   const [geneCode, setGeneCode] = useState(PREDICATE.prefixIds.gene);
   const [markerType, setMarkerType] = useState(PREDICATE.prefixIds.gene);
+  const [modal, setModal] = useState({
+    title: `${predicate.field.split('_')[0].toTitleCase()} Marker Form`,
+    open: false,
+    width: '80%',
+    cancelCSS: 'none',
+  });
 
   const getTableId = (row) => {
     const key = `${row.code}-${row.action}`;
@@ -361,129 +368,139 @@ function MarkerFormInputs({
       className="c-markerForm"
       id={`c-markerForm--${predicate.fields ? 'regulated' : 'specified'}`}
     >
-      <Flex vertical gap={0}>
-        <Form.Label htmlFor={'marker-type'}>
-          <strong>Marker type</strong>
-        </Form.Label>
-        <Radio.Group
-          onChange={handleMarkerTypeChange}
-          value={markerType}
-          buttonStyle="solid"
-          id="marker-type"
-          name={markerTypeFieldName()}
-        >
-          <Radio.Button value={geneCode}>Gene</Radio.Button>
-          <Radio.Button value={PREDICATE.prefixIds.protein}>
-            Protein
-          </Radio.Button>
-        </Radio.Group>
-        {showOrganismRadio && (
+      <button
+        className="btn btn-primary"
+        onClick={() => setModal({ ...modal, open: true })}
+      >
+        Add marker <i className="bi bi-plus"></i>
+      </button>
+      <AppModal modal={modal} setModal={setModal} id="c-markerForm__modal">
+        <Flex vertical gap={0}>
+          <Form.Label htmlFor={'marker-type'}>
+            <strong>Marker type</strong>
+          </Form.Label>
           <Radio.Group
-            className="mt-2"
-            options={Object.values(PREDICATE.geneType)}
-            name={`organism${predicate.fields ? '_regulated' : ''}`}
-            onChange={handleOrganismChange}
-            value={organism}
-          />
-        )}
-        {predicate.fields && (
-          <div className="mt-4">
-            <Form.Label htmlFor={'action'}>
-              <strong>Action</strong>
-            </Form.Label>
-            <div>
-              <Radio.Group
-                onChange={handleActionChange}
-                defaultValue={predicate.fields[0]}
-                buttonStyle="solid"
-                id="action"
-                name="action"
-              >
-                {predicate.fields.map((p, index) => (
-                  <Radio.Button key={`radio-${index}`} value={p}>
-                    {p}
-                  </Radio.Button>
-                ))}
-              </Radio.Group>
+            onChange={handleMarkerTypeChange}
+            value={markerType}
+            buttonStyle="solid"
+            id="marker-type"
+            name={markerTypeFieldName()}
+          >
+            <Radio.Button value={geneCode}>Gene</Radio.Button>
+            <Radio.Button value={PREDICATE.prefixIds.protein}>
+              Protein
+            </Radio.Button>
+          </Radio.Group>
+          {showOrganismRadio && (
+            <Radio.Group
+              className="mt-2"
+              options={Object.values(PREDICATE.geneType)}
+              name={`organism${predicate.fields ? '_regulated' : ''}`}
+              onChange={handleOrganismChange}
+              value={organism}
+            />
+          )}
+          {predicate.fields && (
+            <div className="mt-4">
+              <Form.Label htmlFor={'action'}>
+                <strong>Action</strong>
+              </Form.Label>
+              <div>
+                <Radio.Group
+                  onChange={handleActionChange}
+                  defaultValue={predicate.fields[0]}
+                  buttonStyle="solid"
+                  id="action"
+                  name="action"
+                >
+                  {predicate.fields.map((p, index) => (
+                    <Radio.Button key={`radio-${index}`} value={p}>
+                      {p}
+                    </Radio.Button>
+                  ))}
+                </Radio.Group>
+              </div>
             </div>
+          )}
+          <div className="mt-2">
+            <SelectField
+              p={predicate}
+              getOptions={getOptions}
+              getSearchBehavior={_getSearchBehavior}
+              reducer={reducer}
+              useSearchIcon={true}
+              mode={'single'}
+              hideSelectedValue={true}
+              isBusy={busy.selectBusyReducer.state[predicate.field]}
+            />
           </div>
-        )}
-        <SelectField
-          p={predicate}
-          getOptions={getOptions}
-          getSearchBehavior={_getSearchBehavior}
-          reducer={reducer}
-          useSearchIcon={true}
-          mode={'single'}
-          hideSelectedValue={true}
-          isBusy={busy.selectBusyReducer.state[predicate.field]}
-        />
-      </Flex>
+        </Flex>
 
-      <div className="c-markerForm__upload mt-4">
-        <Dragger {...uploadProps}>
-          <p className="ant-upload-drag-icon">
-            <InboxOutlined />
-          </p>
-          <p className="ant-upload-text">
-            Click or drag a CSV file with <code>type</code>
-            {_isRegulatedMarker ? ',' : ' and '} <code>id</code>
-            {_isRegulatedMarker && (
-              <span>
-                , and <code>action</code>
-              </span>
-            )}{' '}
-            columns to this area to upload.
-          </p>
-          <p className="ant-upload-hint">
-            Download an{' '}
-            <a
-              href={`/bulk/markers-example${_isRegulatedMarker ? '-regulated' : ''}.csv`}
-            >
-              example file csv
-            </a>
-            .{' '}
-            <Tooltip
-              color={'lightgrey'}
-              styles={{ root: { maxWidth: '500px' } }}
-              title={
-                <ul className="list-group">
-                  <li className="list-group-item">
-                    <code>type</code> must be <code>gene</code> or{' '}
-                    <code>protein</code>.
-                  </li>
-                  <li className="list-group-item">
-                    A <code>gene</code> id must correspond to a HGNC symbol.
-                    Example: <code>BRCA1</code>
-                  </li>
-                  <li className="list-group-item">
-                    A <code>protein</code> id must correspond to a UniProtKB ID.
-                    Example: <code>Q13201</code>
-                  </li>
-                  {predicate.fields && (
+        <div className="c-markerForm__upload mt-4">
+          <Dragger {...uploadProps}>
+            <p className="ant-upload-drag-icon">
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">
+              Click or drag a CSV file with <code>type</code>
+              {_isRegulatedMarker ? ',' : ' and '} <code>id</code>
+              {_isRegulatedMarker && (
+                <span>
+                  , and <code>action</code>
+                </span>
+              )}{' '}
+              columns to this area to upload.
+            </p>
+            <p className="ant-upload-hint">
+              Download an{' '}
+              <a
+                href={`/bulk/markers-example${_isRegulatedMarker ? '-regulated' : ''}.csv`}
+              >
+                example file csv
+              </a>
+              .{' '}
+              <Tooltip
+                color={'lightgrey'}
+                styles={{ root: { maxWidth: '500px' } }}
+                title={
+                  <ul className="list-group">
                     <li className="list-group-item">
-                      The <code>action</code> must be one of the following:
-                      <ul>
-                        <li>
-                          <code>1</code> for upregulation
-                        </li>
-                        <li>
-                          <code>-1</code> for downregulation
-                        </li>
-                        <li>
-                          <code>0</code> for inconclusive regulation
-                        </li>
-                      </ul>
+                      <code>type</code> must be <code>gene</code> or{' '}
+                      <code>protein</code>.
                     </li>
-                  )}
-                </ul>
-              }
-            >
-              <i className="bi bi-question-circle"></i>
-            </Tooltip>
-          </p>
-        </Dragger>
-      </div>
+                    <li className="list-group-item">
+                      A <code>gene</code> id must correspond to a HGNC symbol.
+                      Example: <code>BRCA1</code>
+                    </li>
+                    <li className="list-group-item">
+                      A <code>protein</code> id must correspond to a UniProtKB
+                      ID. Example: <code>Q13201</code>
+                    </li>
+                    {predicate.fields && (
+                      <li className="list-group-item">
+                        The <code>action</code> must be one of the following:
+                        <ul>
+                          <li>
+                            <code>1</code> for upregulation
+                          </li>
+                          <li>
+                            <code>-1</code> for downregulation
+                          </li>
+                          <li>
+                            <code>0</code> for inconclusive regulation
+                          </li>
+                        </ul>
+                      </li>
+                    )}
+                  </ul>
+                }
+              >
+                <i className="bi bi-question-circle"></i>
+              </Tooltip>
+            </p>
+          </Dragger>
+        </div>
+      </AppModal>
       <div className="c-markerForm__table mt-4">
         {tableData.length > 0 && (
           <div className="mt-3">

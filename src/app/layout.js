@@ -13,10 +13,10 @@ export async function generateMetadata({ params }) {
   const url = new URL(_headers.get('x-url'));
   const baseTitle = ENVS.app.name;
   const pageParts = url.pathname.split('/');
-  let pageTitle = pageParts[1]?.titleCase();
+  let pageTitle = pageParts[1]?.toTitleCase();
   let subTitle =
     ['create', 'edit'].indexOf(pageParts[2]) != -1
-      ? `| ${pageParts[2]?.titleCase()}`
+      ? `| ${pageParts[2]?.toTitleCase()}`
       : '';
   
   pageTitle = pageTitle ? `${pageTitle} ${subTitle} | ${baseTitle}` : baseTitle;

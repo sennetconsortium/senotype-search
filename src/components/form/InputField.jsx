@@ -31,13 +31,6 @@ function InputField({
     if (onChange) {
       onChange({ value, field: _id });
     }
-
-    const $io = document.getElementById(`c-inputField--${_id}`)
-    const errorList = THEME.getTabPane($io).querySelectorAll(THEME.selectors.invalid);
-    if (!errorList.length) {
-      THEME.getTabPaneTab($io).classList.remove(THEME.classNames.invalid)
-    }
-    
   };
 
   return (
