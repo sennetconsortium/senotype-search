@@ -1,5 +1,11 @@
 import EditContext from '@/context/EditContext';
-import React, { useState, useContext, useEffect, useEffectEvent, useRef } from 'react';
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useEffectEvent,
+  useRef,
+} from 'react';
 import { Tab, Tabs, Form, Button } from 'react-bootstrap';
 import AppAccordion from '@/components/AppAccordion';
 import InputField from '@/components/form/InputField';
@@ -10,7 +16,7 @@ import log from 'xac-loglevel';
 import FormInputGroup from '@/components/form/FormInputGroup';
 import useAppReducer from '@/reducers/useAppReducer';
 import API from '@/lib/api';
-import PREDICATE from '@/lib/predicate'
+import PREDICATE from '@/lib/predicate';
 import SelectField from '@/components/form/SelectField';
 import MarkerFormInputs from '@/components/form/MarkerFormInputs';
 import URLS from '@/lib/urls';
@@ -21,7 +27,7 @@ import { Divider } from 'antd';
 import THEME from '@/lib/theme';
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
 
-function SenotypeForm({isEdit = false}) {
+function SenotypeForm({ isEdit = false }) {
   const { notification } = App.useApp();
   const [key, setKey] = useState('main');
   const { senotype, senotypeOntology, formatValue } = useContext(EditContext);
@@ -31,32 +37,27 @@ function SenotypeForm({isEdit = false}) {
   const senotypeOntologyReducer = useAppReducer(senotypeOntology);
   const getOpenStates = () => {
     return Object.fromEntries(
-      Object.entries(senotypeOntology).map(([key, value]) => [
-        key,
-        false,
-      ]),
+      Object.entries(senotypeOntology).map(([key, value]) => [key, false]),
     );
-  }
-  const selectVisibleDropdownReducer = useAppReducer(
-    getOpenStates()
-  );
+  };
+  const selectVisibleDropdownReducer = useAppReducer(getOpenStates());
 
   const selectBusyReducer = useAppReducer(getOpenStates());
-  const formValuesReducer = useAppReducer(senotype || {})
+  const formValuesReducer = useAppReducer(senotype || {});
 
   const updateSenotypeOntology = useEffectEvent(() => {
-    const _ontology = {...senotypeOntology}
+    const _ontology = { ...senotypeOntology };
     for (const o of tabPredicates()) {
-      _ontology[o.field] = _ontology[o.field] || []
+      _ontology[o.field] = _ontology[o.field] || [];
     }
-    senotypeOntologyReducer.dispatch({ value: _ontology }); 
+    senotypeOntologyReducer.dispatch({ value: _ontology });
 
     selectVisibleDropdownReducer.dispatch({
       value: getOpenStates(),
-    }); 
+    });
     selectBusyReducer.dispatch({
       value: getOpenStates(),
-    }); 
+    });
   });
 
   const updateSenotypeValues = useEffectEvent(() => {
@@ -64,12 +65,12 @@ function SenotypeForm({isEdit = false}) {
   });
 
   useEffect(() => {
-    updateSenotypeOntology()
-  }, [senotypeOntology])
+    updateSenotypeOntology();
+  }, [senotypeOntology]);
 
   useEffect(() => {
     if (senotype) {
-      log.debug('SenotypeForm > senotype', senotype)
+      log.debug('SenotypeForm > senotype', senotype);
       updateSenotypeValues();
     }
   }, [senotype]);
@@ -87,19 +88,24 @@ function SenotypeForm({isEdit = false}) {
   } = PREDICATE;
 
   const getOptions = (predicate) => {
-    const options = []
+    const options = [];
     if (predicate?.ontologyKey) {
-      for (const o in (ontology[predicate.ontologyKey]?.terms || {})) {
+      for (const o in ontology[predicate.ontologyKey]?.terms || {}) {
         options.push({
-          value: formatValue({ code: ontology[predicate.ontologyKey].terms[o], term: o}),
+          value: formatValue({
+            code: ontology[predicate.ontologyKey].terms[o],
+            term: o,
+          }),
           label: o,
         });
       }
     } else {
-      return !predicate.field ? senotypeOntologyReducer : (senotypeOntologyReducer?.state[predicate.field] || []);
+      return !predicate.field
+        ? senotypeOntologyReducer
+        : senotypeOntologyReducer?.state[predicate.field] || [];
     }
-    return options
-  }
+    return options;
+  };
 
   const tab1Predicates = () => {
     const results = [
@@ -128,8 +134,8 @@ function SenotypeForm({isEdit = false}) {
           'Enter the exact name for the diagnosis from Disease Ontology (e.g. diabetes) or the diagnosis identifier (e.g., DOID:9351, 9351). Use the search button to go to the Disease Ontology site.',
       },
     });
-    return results
-  }
+    return results;
+  };
 
   const tab2Predicates = () => {
     const results = [
@@ -158,7 +164,6 @@ function SenotypeForm({isEdit = false}) {
         },
       },
     ];
-    
 
     return results;
   };
@@ -175,8 +180,17 @@ function SenotypeForm({isEdit = false}) {
     return results;
   };
 
-  const handleMarkers = ({predicate, _query, data, regulatingAction, options}) => {
-    if (isSpecifiedMarker(predicate.field) || isRegulatedMarker(predicate.field)) {
+  const handleMarkers = ({
+    predicate,
+    _query,
+    data,
+    regulatingAction,
+    options,
+  }) => {
+    if (
+      isSpecifiedMarker(predicate.field) ||
+      isRegulatedMarker(predicate.field)
+    ) {
       const _result = Array.isArray(data.result) ? data.result : [];
       let action = regulatingAction || undefined;
       if (isRegulatedMarker(predicate.field) && !action) {
@@ -212,18 +226,21 @@ function SenotypeForm({isEdit = false}) {
       }
     }
 
-    return options
-  }
+    return options;
+  };
 
   const fetchVocabulary = async (predicate, query) => {
     toggleBusy(predicate.field, true);
-    let _query = query
+    let _query = query;
     // Prefix for marker with selected radio or default
-    if (isSpecifiedMarker(predicate.field) || isRegulatedMarker(predicate.field)) {
+    if (
+      isSpecifiedMarker(predicate.field) ||
+      isRegulatedMarker(predicate.field)
+    ) {
       const prefix = isRegulatedMarker(predicate.field)
         ? 'marker_type_regulated'
         : 'marker_type';
-      _query = query.includes(':') ? query.split(':')[1] : query
+      _query = query.includes(':') ? query.split(':')[1] : query;
       _query = `${formValuesReducer?.state?.[prefix] || PREDICATE.prefixIds.gene}${_query}`;
     }
     const options = [];
@@ -305,7 +322,7 @@ function SenotypeForm({isEdit = false}) {
       }
     }
 
-    handleMarkers({predicate, options, data, _query, query});
+    handleMarkers({ predicate, options, data, _query, query });
 
     if (options.length) {
       senotypeOntologyReducer.dispatch({
@@ -319,19 +336,18 @@ function SenotypeForm({isEdit = false}) {
   const toggleOpen = (field, value) => {
     selectVisibleDropdownReducer.dispatch({
       field,
-      value
+      value,
     });
-  }
+  };
 
   const toggleBusy = (field, value) => {
     selectBusyReducer.dispatch({
       field,
       value,
     });
-  }
+  };
 
   const getSearchBehavior = (predicate) => {
-
     if (isExternalSource(predicate.field)) {
       return {
         open: selectVisibleDropdownReducer?.state[predicate.field],
@@ -349,15 +365,15 @@ function SenotypeForm({isEdit = false}) {
           onSearch: (v) => {},
         },
       };
-    } 
-    return {}
-  }
+    }
+    return {};
+  };
 
   const onChange = (data) => {
-    let value = data.value
+    let value = data.value;
     log.info('SenotypeForm.onChange', data.field, value);
-    formValuesReducer.dispatch({field: data.field, value});
-  }
+    formValuesReducer.dispatch({ field: data.field, value });
+  };
 
   const tabPredicates = () =>
     tab1Predicates().concat(tab2Predicates()).concat(tab2bPredicates());
@@ -378,17 +394,19 @@ function SenotypeForm({isEdit = false}) {
         }
       }
     }
-    return body
-  }
+    return body;
+  };
 
   const submissionNotification = (res) => {
-    const verb = isEdit ? 'Edited': 'Created';
+    const verb = isEdit ? 'Edited' : 'Created';
     let icon = (
       <CheckCircleFilled style={{ color: '#198754', fontSize: '22px' }} />
     );
     let description;
     if (res.error) {
-      icon = <CloseCircleFilled style={{ color: '#dc3545', fontSize: '22px' }} />;
+      icon = (
+        <CloseCircleFilled style={{ color: '#dc3545', fontSize: '22px' }} />
+      );
       if (res.description.errors) {
         const errorData = Object.entries(res.description.errors).map(
           (value, i) => {
@@ -420,7 +438,6 @@ function SenotypeForm({isEdit = false}) {
       }
       setIsBusy(false);
     } else {
-     
       description = (
         <>
           <p>Your Senotype has been {verb.toLowerCase()}.</p>
@@ -450,7 +467,7 @@ function SenotypeForm({isEdit = false}) {
           </div>
         </>
       );
-      setIsBusy(isEdit ? false : null); 
+      setIsBusy(isEdit ? false : null);
     }
 
     const title = (
@@ -466,27 +483,27 @@ function SenotypeForm({isEdit = false}) {
       description,
       placement: 'top',
       style: {
-        width: 600
-      }
+        width: 600,
+      },
     });
-  }
+  };
 
   const postPut = () => {
     const url = URLS.api.local('senotype');
-    const method = isEdit ? 'PUT': 'POST';
+    const method = isEdit ? 'PUT' : 'POST';
 
     // Format the request body according to expected API structure
-    const body = formatRequestBody()
+    const body = formatRequestBody();
 
     API.fetch({ url, body, method }).then((res) => {
-      submissionNotification(res.description || res.senotype)
+      submissionNotification(res.description || res.senotype);
     });
 
     log.debug(
       'SenotypeForm.handleSubmit > formValuesReducer',
       formValuesReducer,
     );
-  }
+  };
 
   const toggleErrorStyles = (required) => {
     required.map((p) => {
@@ -497,7 +514,7 @@ function SenotypeForm({isEdit = false}) {
           el.classList.add(THEME.classNames.invalid);
         });
     });
-  }
+  };
 
   const handleSubmit = (e) => {
     try {
@@ -515,15 +532,15 @@ function SenotypeForm({isEdit = false}) {
             !formValuesReducer.state),
       );
 
-      const validationFailed = form.checkValidity() === false || required.length > 0;
+      const validationFailed =
+        form.checkValidity() === false || required.length > 0;
       if (validationFailed) {
-        toggleErrorStyles(required)
+        toggleErrorStyles(required);
         setIsBusy(false);
       } else {
         postPut();
       }
       setValidated(true);
-      
     } catch (errorInfo) {
       log.error(
         'SenotypeForm.handleSubmit > Manual validation failed:',
@@ -531,9 +548,13 @@ function SenotypeForm({isEdit = false}) {
       );
       setIsBusy(null);
     }
-  }
+  };
 
-  const loadingPredicates = !senotypeOntology || !senotypeOntologyReducer.state || !selectBusyReducer.state || (isEdit && !formValuesReducer.state)
+  const loadingPredicates =
+    !senotypeOntology ||
+    !senotypeOntologyReducer.state ||
+    !selectBusyReducer.state ||
+    (isEdit && !formValuesReducer.state);
 
   return (
     <>
@@ -553,14 +574,10 @@ function SenotypeForm({isEdit = false}) {
             'New'
           )}
         </h1>
-        <Tabs
-          id="senotypeForm--Tab"
-          activeKey={key}
-          onSelect={(k) => setKey(k)}
-          className="mb-3"
-        >
-          <Tab eventKey="main" title="Submission">
-            <AppAccordion title={'Overview'}>
+      
+          <AppAccordion title={'Overview'}>
+            <div>
+            
               <InputField
                 label={'Title'}
                 id={'title'}
@@ -581,8 +598,10 @@ function SenotypeForm({isEdit = false}) {
                   rows: 3,
                 }}
               />
-            </AppAccordion>
-            <AppAccordion title={'Senotype'}>
+              </div>
+          </AppAccordion>
+              <AppAccordion title={'Senotype'}>
+            <div className="form-row">
               {loadingPredicates && <Skeleton.Input block={true} />}
               {!loadingPredicates && (
                 <>
@@ -599,138 +618,140 @@ function SenotypeForm({isEdit = false}) {
                   ))}
                 </>
               )}
+              </div>
             </AppAccordion>
-          </Tab>
-          <Tab eventKey="citationDemographics" title="Citation & Demographics">
-            <AppAccordion title={'Citation & Origin'}>
-              {loadingPredicates && <Skeleton.Input block={true} />}
-              {!loadingPredicates && (
-                <>
-                  {tab2Predicates().map((p, index) => (
-                    <SelectField
-                      key={index}
-                      p={p}
-                      getOptions={getOptions}
-                      getSearchBehavior={getSearchBehavior}
-                      reducer={formValuesReducer}
-                      onChange={onChange}
-                      isBusy={selectBusyReducer.state[p.field]}
-                    />
-                  ))}
-                </>
-              )}
-            </AppAccordion>
-            <AppAccordion title={'Demographics'}>
-              {loadingPredicates && <Skeleton.Input block={true} />}
-              {!loadingPredicates && (
-                <>
-                  {tab2bPredicates().map((p, index) => (
-                    <SelectField
-                      key={index}
-                      p={p}
-                      getOptions={getOptions}
-                      getSearchBehavior={getSearchBehavior}
-                      reducer={formValuesReducer}
-                      onChange={onChange}
-                    />
-                  ))}
-                </>
-              )}
-              {loadingPredicates && <Skeleton.Input block={true} />}
-              {!loadingPredicates && (
-                <>
-                  <FormInputGroup
-                    label={'Age'}
-                    id={'age'}
-                    onChange={onChange}
-                    reducer={formValuesReducer}
-                    inputs={[
-                      {
-                        label: 'Value',
-                        id: 'value',
-                        formatter: Number,
-                        controlProps: {
-                          type: 'number',
-                          min: 0,
-                        },
-                      },
-                      {
-                        label: 'Lower',
-                        id: 'lowerbound',
-                        formatter: Number,
-                        controlProps: {
-                          type: 'number',
-                          min: 0,
-                        },
-                      },
-                      {
-                        label: 'Upper',
-                        id: 'upperbound',
-                        formatter: Number,
-                        controlProps: {
-                          type: 'number',
-                          min: 0,
-                        },
-                      },
-                      {
-                        label: 'Unit',
-                        id: 'unit',
-                        controlProps: {
-                          value: 'year',
-                          disabled: true,
-                        },
-                      },
-                    ]}
-                  />
+       
+    
+            <AppAccordion title={'Citation & Demographics'}>
+              <div className="form-row">
+                {loadingPredicates && <Skeleton.Input block={true} />}
+                {!loadingPredicates && (
+                  <>
+                    {tab2Predicates().map((p, index) => (
+                      <SelectField
+                        key={index}
+                        p={p}
+                        getOptions={getOptions}
+                        getSearchBehavior={getSearchBehavior}
+                        reducer={formValuesReducer}
+                        onChange={onChange}
+                        isBusy={selectBusyReducer.state[p.field]}
+                      />
+                    ))}
+                  </>
+                )}
 
-                  <FormInputGroup
-                    label={'BMI'}
-                    id={'bmi'}
-                    onChange={onChange}
-                    reducer={formValuesReducer}
-                    inputs={[
-                      {
-                        label: 'Value',
-                        id: 'value',
-                        formatter: Number,
-                        controlProps: {
-                          type: 'number',
-                          min: 0,
+                {loadingPredicates && <Skeleton.Input block={true} />}
+                {!loadingPredicates && (
+                  <>
+                    {tab2bPredicates().map((p, index) => (
+                      <SelectField
+                        key={index}
+                        p={p}
+                        getOptions={getOptions}
+                        getSearchBehavior={getSearchBehavior}
+                        reducer={formValuesReducer}
+                        onChange={onChange}
+                      />
+                    ))}
+                  </>
+                )}
+                {loadingPredicates && <Skeleton.Input block={true} />}
+                {!loadingPredicates && (
+                  <>
+                    <FormInputGroup
+                      label={'Age'}
+                      id={'age'}
+                      onChange={onChange}
+                      reducer={formValuesReducer}
+                      inputs={[
+                        {
+                          label: 'Value',
+                          id: 'value',
+                          formatter: Number,
+                          controlProps: {
+                            type: 'number',
+                            min: 0,
+                          },
                         },
-                      },
-                      {
-                        label: 'Lower',
-                        id: 'lowerbound',
-                        formatter: Number,
-                        controlProps: {
-                          type: 'number',
-                          min: 0,
+                        {
+                          label: 'Lower',
+                          id: 'lowerbound',
+                          formatter: Number,
+                          controlProps: {
+                            type: 'number',
+                            min: 0,
+                          },
                         },
-                      },
-                      {
-                        label: 'Upper',
-                        id: 'upperbound',
-                        formatter: Number,
-                        controlProps: {
-                          type: 'number',
-                          min: 0,
+                        {
+                          label: 'Upper',
+                          id: 'upperbound',
+                          formatter: Number,
+                          controlProps: {
+                            type: 'number',
+                            min: 0,
+                          },
                         },
-                      },
-                      {
-                        label: 'Unit',
-                        id: 'unit',
-                        controlProps: {
-                          value: 'kg/m^2',
-                          disabled: true,
+                        {
+                          label: 'Unit',
+                          id: 'unit',
+                          controlProps: {
+                            value: 'year',
+                            disabled: true,
+                          },
                         },
-                      },
-                    ]}
-                  />
-                </>
-              )}
+                      ]}
+                    />
+
+                    <FormInputGroup
+                      label={'BMI'}
+                      id={'bmi'}
+                      onChange={onChange}
+                      reducer={formValuesReducer}
+                      inputs={[
+                        {
+                          label: 'Value',
+                          id: 'value',
+                          formatter: Number,
+                          controlProps: {
+                            type: 'number',
+                            min: 0,
+                          },
+                        },
+                        {
+                          label: 'Lower',
+                          id: 'lowerbound',
+                          formatter: Number,
+                          controlProps: {
+                            type: 'number',
+                            min: 0,
+                          },
+                        },
+                        {
+                          label: 'Upper',
+                          id: 'upperbound',
+                          formatter: Number,
+                          controlProps: {
+                            type: 'number',
+                            min: 0,
+                          },
+                        },
+                        {
+                          label: 'Unit',
+                          id: 'unit',
+                          controlProps: {
+                            value: 'kg/m^2',
+                            disabled: true,
+                          },
+                        },
+                      ]}
+                    />
+                  </>
+                )}
+              </div>
             </AppAccordion>
-          </Tab>
-          <Tab eventKey="markers" title="Markers">
+        
+          
             <AppAccordion title={'Specified Marker'}>
               {loadingPredicates && <Skeleton />}
               {!loadingPredicates && (
@@ -775,15 +796,19 @@ function SenotypeForm({isEdit = false}) {
                 />
               )}
             </AppAccordion>
-          </Tab>
-        </Tabs>
+        
         <div className="c-senotypeForm__footer mt-4 text-end">
-          {isEdit && <Button href={`/senotype/${senotype?.uuid}`} className='mx-3' variant='outline-secondary'>Cancel</Button>}
+          {isEdit && (
+            <Button
+              href={`/senotype/${senotype?.uuid}`}
+              className="mx-3"
+              variant="outline-secondary"
+            >
+              Cancel
+            </Button>
+          )}
           <Button
-            disabled={
-              isBusy !== false ||
-              (isEdit && !canEdit(senotype))
-            }
+            disabled={isBusy !== false || (isEdit && !canEdit(senotype))}
             type="submit"
           >
             Submit
