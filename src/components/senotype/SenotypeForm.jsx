@@ -561,7 +561,7 @@ function SenotypeForm({ isEdit = false }) {
         onSubmit={handleSubmit}
         layout="vertical"
       >
-        <h1 className="h2 mb-5">
+        <h1 className="h2 mb-2">
           {senotype ? (
             <span>
               Edit <span className="text-muted">{senotype.sennet_id}</span>

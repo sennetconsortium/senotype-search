@@ -33,7 +33,7 @@ function FormInputGroup({
     <Form.Group
       key={_id}
       id={`c-formInputGroup--${_id}`}
-      className={`c-formInputGroup ${className} mb-4`}
+      className={`c-formInputGroup ${className} mb-2`}
     >
       <Form.Label htmlFor={_id}>
         <strong>{label}</strong>
@@ -47,7 +47,7 @@ function FormInputGroup({
           </Tooltip>
         )}
       </Form.Label>
-      <InputGroup size="sm" className="mb-3">
+      <InputGroup size="sm" className="mb-2">
         {inputs.map((io, index) => (
           <Fragment key={getId(io)}>
             <InputGroup.Text id={getId(io)}>{io.label}</InputGroup.Text>
