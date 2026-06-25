@@ -570,229 +570,228 @@ function SenotypeForm({ isEdit = false }) {
             'New'
           )}
         </h1>
-      
-          <AppAccordion title={'Overview'}>
-            <div>
-            
-              <InputField
-                label={'Title'}
-                id={'title'}
-                onChange={onChange}
-                controlProps={{
-                  defaultValue: senotype?.title,
-                  required: true,
-                }}
-              />
-              <InputField
-                label={'Description'}
-                id={'description'}
-                onChange={onChange}
-                controlProps={{
-                  required: true,
-                  defaultValue: senotype?.description,
-                  as: 'textarea',
-                  rows: 3,
-                }}
-              />
-              </div>
-          </AppAccordion>
-              <AppAccordion title={'Senotype'}>
-            <div className="form-row">
-              {loadingPredicates && <Skeleton.Input block={true} />}
-              {!loadingPredicates && (
-                <>
-                  {tab1Predicates().map((p, index) => (
-                    <SelectField
-                      key={index}
-                      p={p}
-                      getOptions={getOptions}
-                      getSearchBehavior={getSearchBehavior}
-                      reducer={formValuesReducer}
-                      onChange={onChange}
-                      isBusy={selectBusyReducer.state[p.field]}
-                    />
-                  ))}
-                </>
-              )}
-              </div>
-            </AppAccordion>
-       
-    
-            <AppAccordion title={'Citation & Demographics'}>
-              <div className="form-row">
-                {loadingPredicates && <Skeleton.Input block={true} />}
-                {!loadingPredicates && (
-                  <>
-                    {tab2Predicates().map((p, index) => (
-                      <SelectField
-                        key={index}
-                        p={p}
-                        getOptions={getOptions}
-                        getSearchBehavior={getSearchBehavior}
-                        reducer={formValuesReducer}
-                        onChange={onChange}
-                        isBusy={selectBusyReducer.state[p.field]}
-                      />
-                    ))}
-                  </>
-                )}
 
-                {loadingPredicates && <Skeleton.Input block={true} />}
-                {!loadingPredicates && (
-                  <>
-                    {tab2bPredicates().map((p, index) => (
-                      <SelectField
-                        key={index}
-                        p={p}
-                        getOptions={getOptions}
-                        getSearchBehavior={getSearchBehavior}
-                        reducer={formValuesReducer}
-                        onChange={onChange}
-                      />
-                    ))}
-                  </>
-                )}
-                {loadingPredicates && <Skeleton.Input block={true} />}
-                {!loadingPredicates && (
-                  <>
-                    <FormInputGroup
-                      label={'Age'}
-                      id={'age'}
-                      onChange={onChange}
-                      reducer={formValuesReducer}
-                      inputs={[
-                        {
-                          label: 'Value',
-                          id: 'value',
-                          formatter: Number,
-                          controlProps: {
-                            type: 'number',
-                            min: 0,
-                          },
-                        },
-                        {
-                          label: 'Lower',
-                          id: 'lowerbound',
-                          formatter: Number,
-                          controlProps: {
-                            type: 'number',
-                            min: 0,
-                          },
-                        },
-                        {
-                          label: 'Upper',
-                          id: 'upperbound',
-                          formatter: Number,
-                          controlProps: {
-                            type: 'number',
-                            min: 0,
-                          },
-                        },
-                        {
-                          label: 'Unit',
-                          id: 'unit',
-                          controlProps: {
-                            value: 'year',
-                            disabled: true,
-                          },
-                        },
-                      ]}
-                    />
+        <AppAccordion title={'Overview'}>
+          <div>
+            <InputField
+              label={'Title'}
+              id={'title'}
+              onChange={onChange}
+              controlProps={{
+                defaultValue: senotype?.title,
+                required: true,
+              }}
+            />
+            <InputField
+              label={'Description'}
+              id={'description'}
+              onChange={onChange}
+              controlProps={{
+                required: true,
+                defaultValue: senotype?.description,
+                as: 'textarea',
+                rows: 1,
+              }}
+            />
+          </div>
+        </AppAccordion>
+        <AppAccordion title={'Senotype'}>
+          <div className="form-row">
+            {loadingPredicates && <Skeleton.Input block={true} />}
+            {!loadingPredicates && (
+              <>
+                {tab1Predicates().map((p, index) => (
+                  <SelectField
+                    key={index}
+                    p={p}
+                    getOptions={getOptions}
+                    getSearchBehavior={getSearchBehavior}
+                    reducer={formValuesReducer}
+                    onChange={onChange}
+                    isBusy={selectBusyReducer.state[p.field]}
+                  />
+                ))}
+              </>
+            )}
+          </div>
+        </AppAccordion>
 
-                    <FormInputGroup
-                      label={'BMI'}
-                      id={'bmi'}
-                      onChange={onChange}
-                      reducer={formValuesReducer}
-                      inputs={[
-                        {
-                          label: 'Value',
-                          id: 'value',
-                          formatter: Number,
-                          controlProps: {
-                            type: 'number',
-                            min: 0,
-                          },
-                        },
-                        {
-                          label: 'Lower',
-                          id: 'lowerbound',
-                          formatter: Number,
-                          controlProps: {
-                            type: 'number',
-                            min: 0,
-                          },
-                        },
-                        {
-                          label: 'Upper',
-                          id: 'upperbound',
-                          formatter: Number,
-                          controlProps: {
-                            type: 'number',
-                            min: 0,
-                          },
-                        },
-                        {
-                          label: 'Unit',
-                          id: 'unit',
-                          controlProps: {
-                            value: 'kg/m^2',
-                            disabled: true,
-                          },
-                        },
-                      ]}
-                    />
-                  </>
-                )}
-              </div>
-            </AppAccordion>
-        
-          
-            <AppAccordion title={'Specified Marker'}>
-              {loadingPredicates && <Skeleton />}
-              {!loadingPredicates && (
-                <MarkerFormInputs
-                  predicate={{
-                    field: 'specified_marker_set',
-                    label: 'Gene/Protein ID or Symbol',
-                    ui: {
-                      tooltip:
-                        'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
-                    },
-                  }}
-                  busy={{ toggleBusy, selectBusyReducer }}
-                  handleMarkers={handleMarkers}
-                  getOptions={getOptions}
-                  getSearchBehavior={getSearchBehavior}
-                  reducer={formValuesReducer}
+        <AppAccordion title={'Citation & Demographics'}>
+          <div className="form-row">
+            {loadingPredicates && <Skeleton.Input block={true} />}
+            {!loadingPredicates && (
+              <>
+                {tab2Predicates().map((p, index) => (
+                  <SelectField
+                    key={index}
+                    p={p}
+                    getOptions={getOptions}
+                    getSearchBehavior={getSearchBehavior}
+                    reducer={formValuesReducer}
+                    onChange={onChange}
+                    isBusy={selectBusyReducer.state[p.field]}
+                  />
+                ))}
+              </>
+            )}
+          </div>
+          <div className="form-row form-row--ageBmi">
+            {loadingPredicates && <Skeleton.Input block={true} />}
+            {!loadingPredicates && (
+              <>
+                {tab2bPredicates().map((p, index) => (
+                  <SelectField
+                    key={index}
+                    p={p}
+                    getOptions={getOptions}
+                    getSearchBehavior={getSearchBehavior}
+                    reducer={formValuesReducer}
+                    onChange={onChange}
+                  />
+                ))}
+              </>
+            )}
+
+            {loadingPredicates && <Skeleton.Input block={true} />}
+            {!loadingPredicates && (
+              <>
+                <FormInputGroup
+                  label={'Age'}
+                  id={'age'}
                   onChange={onChange}
-                />
-              )}
-            </AppAccordion>
-
-            <AppAccordion title={'Regulated Marker'}>
-              {loadingPredicates && <Skeleton />}
-              {!loadingPredicates && (
-                <MarkerFormInputs
-                  predicate={{
-                    field: 'regulated_marker_set',
-                    label: 'Gene/Protein ID or Symbol',
-                    fields: Object.keys(PREDICATE.regulatedActions),
-                    ui: {
-                      tooltip:
-                        'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
-                    },
-                  }}
-                  busy={{ toggleBusy, selectBusyReducer }}
-                  handleMarkers={handleMarkers}
-                  getOptions={getOptions}
-                  getSearchBehavior={getSearchBehavior}
                   reducer={formValuesReducer}
-                  onChange={onChange}
+                  inputs={[
+                    {
+                      label: 'Value',
+                      id: 'value',
+                      formatter: Number,
+                      controlProps: {
+                        type: 'number',
+                        min: 0,
+                      },
+                    },
+                    {
+                      label: 'Lower',
+                      id: 'lowerbound',
+                      formatter: Number,
+                      controlProps: {
+                        type: 'number',
+                        min: 0,
+                      },
+                    },
+                    {
+                      label: 'Upper',
+                      id: 'upperbound',
+                      formatter: Number,
+                      controlProps: {
+                        type: 'number',
+                        min: 0,
+                      },
+                    },
+                    {
+                      label: 'Unit',
+                      id: 'unit',
+                      controlProps: {
+                        value: 'year',
+                        disabled: true,
+                      },
+                    },
+                  ]}
                 />
-              )}
-            </AppAccordion>
-        
+
+                <FormInputGroup
+                  label={'BMI'}
+                  id={'bmi'}
+                  onChange={onChange}
+                  reducer={formValuesReducer}
+                  inputs={[
+                    {
+                      label: 'Value',
+                      id: 'value',
+                      formatter: Number,
+                      controlProps: {
+                        type: 'number',
+                        min: 0,
+                      },
+                    },
+                    {
+                      label: 'Lower',
+                      id: 'lowerbound',
+                      formatter: Number,
+                      controlProps: {
+                        type: 'number',
+                        min: 0,
+                      },
+                    },
+                    {
+                      label: 'Upper',
+                      id: 'upperbound',
+                      formatter: Number,
+                      controlProps: {
+                        type: 'number',
+                        min: 0,
+                      },
+                    },
+                    {
+                      label: 'Unit',
+                      id: 'unit',
+                      controlProps: {
+                        value: 'kg/m^2',
+                        disabled: true,
+                      },
+                    },
+                  ]}
+                />
+              </>
+            )}
+          </div>
+        </AppAccordion>
+
+        <AppAccordion title={'Specified Marker'}>
+          {loadingPredicates && <Skeleton />}
+          {!loadingPredicates && (
+            <MarkerFormInputs
+              predicate={{
+                field: 'specified_marker_set',
+                label: 'Gene/Protein ID or Symbol',
+                ui: {
+                  tooltip:
+                    'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
+                },
+              }}
+              busy={{ toggleBusy, selectBusyReducer }}
+              handleMarkers={handleMarkers}
+              getOptions={getOptions}
+              getSearchBehavior={getSearchBehavior}
+              reducer={formValuesReducer}
+              onChange={onChange}
+            />
+          )}
+        </AppAccordion>
+
+        <AppAccordion title={'Regulated Marker'}>
+          {loadingPredicates && <Skeleton />}
+          {!loadingPredicates && (
+            <MarkerFormInputs
+              predicate={{
+                field: 'regulated_marker_set',
+                label: 'Gene/Protein ID or Symbol',
+                fields: Object.keys(PREDICATE.regulatedActions),
+                ui: {
+                  tooltip:
+                    'For genes, enter HGNC ID, symbol, alias, or past symbol; for proteins, enter UniprotKB ID or symbol.',
+                },
+              }}
+              busy={{ toggleBusy, selectBusyReducer }}
+              handleMarkers={handleMarkers}
+              getOptions={getOptions}
+              getSearchBehavior={getSearchBehavior}
+              reducer={formValuesReducer}
+              onChange={onChange}
+            />
+          )}
+        </AppAccordion>
+
         <div className="c-senotypeForm__footer mt-4 text-end">
           {isEdit && (
             <Button

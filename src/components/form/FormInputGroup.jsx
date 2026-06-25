@@ -47,7 +47,7 @@ function FormInputGroup({
           </Tooltip>
         )}
       </Form.Label>
-      <InputGroup size="sm" className="mb-2">
+      <InputGroup size="sm">
         {inputs.map((io, index) => (
           <Fragment key={getId(io)}>
             <InputGroup.Text id={getId(io)}>{io.label}</InputGroup.Text>
