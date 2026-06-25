@@ -499,10 +499,7 @@ function SenotypeForm({ isEdit = false }) {
       submissionNotification(res.description || res.senotype);
     });
 
-    log.debug(
-      'SenotypeForm.handleSubmit > formValuesReducer',
-      formValuesReducer,
-    );
+    log.debug('SenotypeForm.postPut > formValuesReducer', formValuesReducer);
   };
 
   const toggleErrorStyles = (required) => {

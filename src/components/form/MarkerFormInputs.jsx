@@ -369,6 +369,7 @@ function MarkerFormInputs({
       id={`c-markerForm--${predicate.fields ? 'regulated' : 'specified'}`}
     >
       <button
+        type="button"
         className="btn btn-primary"
         onClick={() => setModal({ ...modal, open: true })}
       >
@@ -508,6 +509,7 @@ function MarkerFormInputs({
               columns={getTableColumns()}
               dataSource={tableData}
               rowKey={'_id'}
+              scroll={{ x: '100%' }}
             />
           </div>
         )}
@@ -523,6 +525,7 @@ function MarkerFormInputs({
               columns={getErrorColumns()}
               dataSource={tableErrors.current}
               rowKey={'_id'}
+              scroll={{ x: '100%' }}
             />
           </div>
         )}

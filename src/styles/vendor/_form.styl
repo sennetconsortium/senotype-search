@@ -6,3 +6,13 @@
   display grid
   grid-template-columns repeat(3, 1fr)
   gap 20px
+  +md-max()
+    grid-template-columns repeat(2, 1fr)
+  +sm()
+    grid-template-columns 1fr
+  .c-inputField 
+    /* Prevent the chips inside the input from overflowing */
+    min-width 0
+    /* Standard safety rules for text wrap */
+    overflow-wrap break-word
+    word-break break-word
