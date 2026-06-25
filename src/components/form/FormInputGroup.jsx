@@ -33,7 +33,7 @@ function FormInputGroup({
     <Form.Group
       key={_id}
       id={`c-formInputGroup--${_id}`}
-      className={`c-formInputGroup ${className} mt-4`}
+      className={`c-formInputGroup ${className} mb-4`}
     >
       <Form.Label htmlFor={_id}>
         <strong>{label}</strong>

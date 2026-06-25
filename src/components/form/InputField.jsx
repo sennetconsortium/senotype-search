@@ -31,18 +31,11 @@ function InputField({
     if (onChange) {
       onChange({ value, field: _id });
     }
-
-    const $io = document.getElementById(`c-inputField--${_id}`)
-    const errorList = THEME.getTabPane($io).querySelectorAll(THEME.selectors.invalid);
-    if (!errorList.length) {
-      THEME.getTabPaneTab($io).classList.remove(THEME.classNames.invalid)
-    }
-    
   };
 
   return (
     <Form.Group
-      className={`c-inputField ${className} mt-4`}
+      className={`c-inputField ${className} mb-4`}
       id={`c-inputField--${_id}`}
     >
       <Form.Label htmlFor={_id}>
