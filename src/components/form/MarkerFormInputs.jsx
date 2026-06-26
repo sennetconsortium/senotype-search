@@ -123,7 +123,7 @@ function MarkerFormInputs({
     }
 
     columns.push({
-      title: 'Delete',
+      title: 'Remove',
       dataIndex: '',
       key: 'delete',
       render: (row) => (
