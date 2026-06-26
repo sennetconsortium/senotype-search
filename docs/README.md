@@ -3,7 +3,7 @@
 ## User Documentation
 
 * TOC
-  {:toc}
+{:toc}
 
 # Introduction
 
