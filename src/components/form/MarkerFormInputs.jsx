@@ -1,6 +1,6 @@
 import { useState, useRef, useContext, useEffect, useEffectEvent } from 'react';
 import { Flex, Radio, message, Upload, Table } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
+import { InboxOutlined, LinkOutlined } from '@ant-design/icons';
 const { Dragger } = Upload;
 import { Form } from 'react-bootstrap';
 import log from 'xac-loglevel';
@@ -75,11 +75,37 @@ function MarkerFormInputs({
     setTableData(_tableData);
   };
 
+  const nameColumn = `${predicate.field.split('_')[0].toTitleCase()} Name`
+
+  const getRenderMethod = (field, record) => {
+    switch(field) {
+      case nameColumn: 
+      const url = URLS.getMarkerDetailsUrl(record.code);
+      return (
+        <span>
+          {record.name} ({record.code}){' '}
+          {url && <a target={'_blank'} href={url}>
+            <LinkOutlined />
+          </a>}
+        </span>
+      );
+      break;
+      case 'Organism': 
+        return <span>{PREDICATE.organism[record.code.split(':')[0]]}</span>;
+        break;
+      case 'Marker Type':
+        const prefixIds = flipObj(PREDICATE.prefixIds);
+        return  <span>{prefixIds[record.code.split(':')[0]+':']?.replace('mouse', '').toTitleCase()}</span>
+      default:
+        return <span>{PREDICATE.regulatedActionsTable[record.action]}</span>;
+    }
+  }
+
   const getTableColumns = () => {
     const names = [
-      'name',
-      'term',
-      'code',
+      nameColumn,
+      'Organism',
+      'Marker Type',
       ...(predicate.fields ? ['action'] : []),
     ];
 
@@ -90,6 +116,9 @@ function MarkerFormInputs({
         title: n,
         dataIndex: n,
         key: n,
+        render: (_, record) => {
+          return <div>{getRenderMethod(n, record)}</div>
+        }
       });
     }
 

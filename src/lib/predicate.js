@@ -38,6 +38,10 @@ const PREDICATE = {
     protein: 'UNIPROTKB:',
     mouseGene: 'MGI:',
   },
+  organism: {
+    'HGNC': 'Human',
+    'MGI': 'Mouse',
+  },
   isRegulatedMarker: (p) => p === 'regulated_marker_set',
   isSpecifiedMarker: (p) => p === 'specified_marker_set',
   isExternalSource: (p) =>
