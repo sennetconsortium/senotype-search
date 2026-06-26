@@ -10,6 +10,7 @@ import SearchResults from '@/components/search/SearchResults';
 import { useContext, useState } from 'react';
 import AppContext from '@/context/AppContext';
 import dynamic from 'next/dynamic';
+import Draggable from '@/components/Draggable';
 
 const SearchUIContainer = dynamic(
   () => import('@/search-ui/components/core/SearchUIContainer'),
@@ -26,7 +27,18 @@ export default function SearchClientComponent() {
     >
       <SiderLayout
         showSider={showSider}
-        prefixChildren={
+        containerPrefixChildren={
+          <Draggable>
+            <AppFloatingButton
+              show={showSider}
+              freestyle={true}
+              setShow={setShowSider}
+              text={'Search Facets'}
+              buttonStyle={{}}
+            />
+          </Draggable>
+        }
+        firstRowPrefixChildren={
           <>
             <AppBanner />
             <SearchInputField />
@@ -34,12 +46,6 @@ export default function SearchClientComponent() {
           </>
         }
       >
-        <AppFloatingButton
-          show={showSider}
-          setShow={setShowSider}
-          text={'Search Facets'}
-        />
-
         <SearchResults />
       </SiderLayout>
     </SearchUIContainer>

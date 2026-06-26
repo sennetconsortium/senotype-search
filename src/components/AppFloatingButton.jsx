@@ -1,4 +1,4 @@
-import { FloatButton } from 'antd';
+import { FloatButton, Button, Tooltip } from 'antd';
 import { LeftCircleOutlined, RightCircleOutlined } from '@ant-design/icons';
 import THEME from '@/lib/theme';
 
@@ -7,6 +7,7 @@ import THEME from '@/lib/theme';
  *
  * @param {{ show: any; setShow: any; onClick: any; text: any; buttonStyle?: { top: number; left: number; right: string; bottom: string; }; }} props
  * @param {useState.boolean} props.show useState boolean variable
+ * @param {boolean} freestyle whether to use a custom fab unaffected by antd state attribute updates
  * @param {useState.function} props.setShow useState method used to toggle the value of show
  * @param {function(event)} props.onClick A fuction to call on click of button
  * @param {string} props.text Text describing action
@@ -15,6 +16,7 @@ import THEME from '@/lib/theme';
  */
 function AppFloatingButton({
   show,
+  freestyle,
   setShow,
   onClick,
   text,
@@ -32,12 +34,34 @@ function AppFloatingButton({
       }
     }
   };
+
+  const fontStyle = { fontSize: '16px' };
+  const icon = show ? (
+    <LeftCircleOutlined style={fontStyle} />
+  ) : (
+    <RightCircleOutlined style={fontStyle} />
+  );
+  const tooltip = show ? <div>Hide {text}</div> : <div>Show {text}</div>;
+
+  if (freestyle) {
+    return (
+      <div className='c-fab'>
+        <Tooltip placement="left" title={tooltip}>
+          <Button
+            shape="circle"
+            icon={icon}
+            onClick={(e) => handleOnClick(e)}
+          />
+        </Tooltip>
+      </div>
+    );
+  }
   return (
     <FloatButton
       onClick={(e) => handleOnClick(e)}
       style={buttonStyle}
-      tooltip={show ? <div>Hide {text}</div> : <div>Show {text}</div>}
-      icon={show ? <LeftCircleOutlined /> : <RightCircleOutlined />}
+      tooltip={tooltip}
+      icon={icon}
     />
   );
 }
