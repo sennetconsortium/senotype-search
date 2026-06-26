@@ -28,7 +28,7 @@ function AppNavBar() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <Nav>
-              <Nav.Link href="https://sennetconsortium.github.io/senotype_editor/">
+              <Nav.Link href="https://sennetconsortium.github.io/senotype-library/">
                 Documentation
               </Nav.Link>
             </Nav>
