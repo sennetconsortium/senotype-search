@@ -7,7 +7,6 @@ import Image from 'next/image';
 import ENVS from '@/lib/envs';
 import AppContext from '@/context/AppContext';
 import ClipboardCopy from '../ClipboardCopy';
-import URLS from '@/lib/urls';
 
 function AppNavBar() {
   const { auth } = useContext(AppContext);
@@ -26,38 +25,46 @@ function AppNavBar() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
 
-        {auth.isAuthenticated === false && (
-          <Nav>
-            <Nav.Link href="/">Login</Nav.Link>
-          </Nav>
-        )}
-
-        {auth.name && auth.isAuthenticated && (
-          <Navbar.Collapse
-            id="basic-navbar-nav"
-            className="justify-content-end"
-          >
-            {auth.hasSenotypeEdit && (
-              <Nav>
-                <Nav.Link href={`/senotype/create`}>Register Senotype</Nav.Link>
-              </Nav>
-            )}
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
             <Nav>
-              <NavDropdown title={auth.name} id="basic-nav-dropdown">
-                <ClipboardCopy
-                  tag="span"
-                  text={auth.groups_token}
-                  title="Copy Globus Token"
-                  placement="left"
-                >
-                  <span className="dropdown-item">Copy Globus Token</span>
-                </ClipboardCopy>
-                <NavDropdown.Divider />
-                <NavDropdown.Item href="/logout">Log out</NavDropdown.Item>
-              </NavDropdown>
+              <Nav.Link href="https://sennetconsortium.github.io/senotype_editor/">
+                Documentation
+              </Nav.Link>
             </Nav>
-          </Navbar.Collapse>
-        )}
+          </Nav>
+          {auth.isAuthenticated === false && (
+            <Nav>
+              <Nav.Link href="/">Login</Nav.Link>
+            </Nav>
+          )}
+
+          {auth.name && auth.isAuthenticated && (
+            <>
+              {auth.hasSenotypeEdit && (
+                <Nav>
+                  <Nav.Link href={`/senotype/create`}>
+                    Register Senotype
+                  </Nav.Link>
+                </Nav>
+              )}
+              <Nav>
+                <NavDropdown title={auth.name} id="basic-nav-dropdown">
+                  <ClipboardCopy
+                    tag="span"
+                    text={auth.groups_token}
+                    title="Copy Globus Token"
+                    placement="left"
+                  >
+                    <span className="dropdown-item">Copy Globus Token</span>
+                  </ClipboardCopy>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item href="/logout">Log out</NavDropdown.Item>
+                </NavDropdown>
+              </Nav>
+            </>
+          )}
+        </Navbar.Collapse>
       </Container>
     </Navbar>
   );
