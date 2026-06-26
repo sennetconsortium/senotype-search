@@ -1,0 +1,417 @@
+# [Senotype Library](https://senlib.sennetconsortium.org/)
+
+## User Documentation
+
+* TOC
+  {:toc}
+
+# Introduction
+
+## Senotype
+
+A senotype is a senescent cell subtype with distinct transcriptional,
+spatial, and functional characteristics. Each senotype is described by a cellular senescence
+functional definition and associated multidimensional characteristics.
+A senotype refers to the complex interplay of features that associates a cell phenotype
+with other characteristics that vary widely by tissue type, cell lineage, inducing stimulus, and
+senescence hallmarks such as cell cycle arrest, SASP production, DNA damage, and chromatin remodeling.
+
+A senotype associates a phenotype with characteristics that include:
+
+- taxa
+- locations in the body
+- cell types
+- microenvironments
+- inducers
+- hallmarks
+- assays
+- citations
+- origins (RRIDs)
+- SenNet datasets
+- a set of _markers_ (genes or proteins)
+- contextual data, such as age or BMI
+
+A senotype can be represented as a knowledge graph of _assertions_--i.e., discrete relationships between the senotype
+and other entities.
+For example, a senotype can assert a _in_taxon_ relationship with an entity representing "human".
+
+![img.png](img.png)
+
+The entities and relationships of a
+senotype can be _encoded_--i.e., represented with codes from standard biomedical vocabularies.
+
+For example, the gene and protein markers associated with a senotype can be
+identified with codes from HGNC and UniProt, with a relationship encoded by the
+Relations Ontology.
+
+## The SenLib Database
+
+Senotype definitions are maintained in the *Senotype Library* (**SenLib**). Senotype definitions are stored in SenLib in
+JSON format and conform
+to the schema defined in
+the [senlib](https://github.com/sennetconsortium/senlib/blob/main/doc/Senotype_Submission_Schema.md) GitHub repository.
+
+## The Senotype Library
+
+The **[Senotype Library](https://senlib.sennetconsortium.org/)** application allows users to manage senotype definitions
+in the SenLib database.
+Because the majority of the assertions in a senotype definition involve categorical data, most of the work of defining a
+senotype will
+involve the selection of values from lists.
+
+![editor.png](editor.png)
+
+With the Senotype Library, users can:
+
+1. **review** a senotype definition
+2. **create** a new senotype definition
+2. **revise** a senotype definition
+
+# User Authentication
+
+Only users with Globus accounts with proper authentication will be able to use the Senotype Library.
+
+Upon startup, the Senotype Library will display a login page.
+The user will be authenticated in Globus. If the user's Globus account has the necessary privileges,
+the user will be able to continue to the Edit page.
+![authentication.jpg](authentication.jpg)
+
+# Senotype Library faceted search
+
+The **Senotype Library faceted search** allows users to find senotypes either through free text or faceted search
+options.
+
+![library.png](library.png)
+
+# Business Rules of the Senotype Library
+
+**A user can only edit a senotype submission file for which they are authorized.** Authorization is controlled by means
+of the SenNet Consortium's Globus environment.
+
+## Edit state
+
+Only authorized users may edit a senotype.
+If a senotype shows a clickable `Edit` button, the user is authorized to edit the submission file.
+![edit.png](edit.png)
+
+## Creating a new senotype
+
+User can click on `Register Senotype` in the top right corner of the application to define a new senotype. The editor
+will load into the Definition section defaults for the new submission, including:
+
+1. a new SenNet ID
+2. the Globus name and email of the user, as submitter
+
+![register.png](register.png)
+
+# Using the Senotype Definition tools
+
+## Required data
+
+A senotype definition requires a minimal set of data. Data that are
+required for a senotype are indicated with a red asterisk.
+
+## Submission information: name and description
+
+The **title** and **description** of the senotype definition are required data.
+
+Both the **title** and **description** fields are free text.
+
+![overview.jpg](overview.jpg)
+
+## Assertions
+
+The Definition section allows the definition of assertions between a senotype and its characteristics.
+
+Each input in the Definition section corresponds to an assertion in the senotype definition.
+For example, the **Taxon** input corresponds to the senotype definition's  _in_taxon_ assertion.
+
+There are four types of assertions. Each type has its own tool for selection.
+
+## Valueset-based assertions
+
+Most of a senotype definition's assertions will be categorical, in which the possible values for
+the object of the assertion will be in a _valueset_. For example, the categories for a
+senotype definition's **taxon** might be the valueset {_human_, _mouse_}.
+
+The elements of valuesets are codes from biomedical vocabularies.
+
+Valueset-based assertions include:
+
+| type of assertion | source vocabulary |
+|-------------------|-------------------|
+| taxon             | NCBI              |
+| hallmark          | SENOTYPE          |
+| microenvironment  | SENOTYPE          |
+| inducer           | SENOTYPE          |
+| assay             | OBI               |
+| sex               | SNOMED_CT         |
+
+Because there can be multiple assertions of the same type, the inputs for valueset-based assertions are
+lists. For example, a senotype can assert relationships with multiple taxa:
+
+![taxon.png](taxon.png)
+
+## Context assertions
+
+Context assertions are allow the user to define numerical ranges for an assertion.
+![age.jpg](age.jpg)
+
+For example, the **age** assertion can be bounded to apply only to the range of 18 to 89 years.
+
+The current types of context assertions are
+
+- age
+- BMI
+
+## External assertions
+
+A number of the objects of assertions are encoded with codes from large vocabularies or ontologies, such as Cell
+Ontology.
+Instead of using internal valuesets for these inputs, the Senotype Library obtains codes by searching external sources.
+
+| assertion type   | source             | vocabulary              |
+|------------------|:-------------------|-------------------------|
+| location (organ) | UBKG               | Uberon                  |
+| cell type        | UBKG               | Cell Ontology (CL)      |
+| diagnosis        | UBKG               | Disease Ontology (DOID) |
+| citation         | NCBI PubMed        | PMID                    |
+| origin (RRID)    | SciCrunch          | RRID                    |
+| dataset          | SenNet Data Portal | SenNet ID               |
+| gene marker      | UBKG               | HGNC                    |
+| protein marker   | UBKG               | UniProtKB               |
+
+### Edit page
+
+#### Translation of codes
+
+Senotype definitions represent entities with codes. For example,
+if a senotype asserts a relationship with cell type "fibroblast of lung",
+its definition represents the cell type with the code **CL:0002553**.
+
+When the Edit page loads information for an existing senotype,
+it translates codes into terms by searching external sources. The terms are
+only to provide human-readable descriptions: they are not stored in SenLib.
+
+![cell_type.jpg](cell_type.jpg)
+
+#### Details button
+
+The ![link.jpg](link.jpg) button next to an assertion object links to a
+detail page in the source that corresponds to the object.
+
+For example, the details button next to a cell type opens the corresponding
+page for the cell type in EMBL-EBI's Ontology Lookup Service: ![img_34.png](img_34.png)
+
+| assertion object type | reference page                         |
+|-----------------------|----------------------------------------|
+| location              | SenNet Organs detail                   |
+| cell type             | EMBL-EBI Ontology Lookup Service (OLS) |
+| diagnosis             | Disease Ontology                       |
+| citation              | PubMed                                 |
+| origin                | RRID Portal (see below)                |
+| dataset               | SenNet Data Portal                     |
+| gene marker           | HGNC                                   |
+| protein marker        | UniprotKB                              |
+
+### Search window
+
+#### Search box
+
+In the Search window for an external assertion object, entering
+input into the search box triggers a search against an external source.
+The results of a search appear below the search box as a list of links.
+Selecting a link from the result list will add the result to the corresponding
+object list in the Edit page.
+
+![ubkg_search.jpg](ubkg_search.jpg)
+
+The forms of search terms depend on the external source. For example, to search for a cell type, a user
+can enter either the Cell Ontology ID or a portion of the preferred term (e.g,. "fibroblast")
+
+| input type | search source                         | forms of search term                                                          | example                                                      |
+|------------|---------------------------------------|-------------------------------------------------------------------------------|:-------------------------------------------------------------|
+| citation   | NCBI EUtils API                       | exact PMID; portion of publication title                                      | 41247924; predictors                                         |
+| origin     | RRID Portal (SciCrunch)               | exact RRID                                                                    | 4850064                                                      |
+| dataset    | SenNet entity-api; SenNet Data Portal | exact SenNet ID                                                               | SNT699.FVQD.882                                              |
+| location   | hs-ontology API (UBKG API)            | portion of SenNet organ name                                                  | lung                                                         |
+| diagnosis  | hs-ontology API (UBKG API)            | exact DOID; exact match for a preferred term or synonym                       | DOID:3083; 3083; chronic obstructive pulmonary disease; copd |
+| celltype   | hs-ontology API (UBKG API)            | exact CLID; portion of a preferred term                                       | CL:4006000; 4006000; fibroblast                              |
+| gene       | hs-ontology API (UBKG API)            | exact: HGNC ID; approved symbol; alias; prior approved symbol; or prior alias | HGNC:1100; 1100; BRCA1; BRCC1                                |
+| protein    | hs-ontology API (UBKG API)            | exact: UniProtKB ID; UniProtKB entry name                                     | UNPROTKB:Q13201; Q13201; MMRN1_HUMAN                         |
+
+#### Explore button
+
+In an external search window, the button opens the corresponding home page of an external
+site
+to facilitate finding an appropriate identifier. For example, the **Explore** button for the cell type selection opens
+the
+page of the OLS Search for the Cell Ontology.
+
+The Senotype Library is not integrated with these external sites.
+Once the user finds an appropriate identifier or search term, they can enter the id or term into the search box of the
+Select window.
+
+## Details for specific external assertions
+
+### SenNet datasets
+
+The Search feature for datasets will direct to the Senotype Consortium pages, including
+the Data Portal.
+
+By default, the Senotype Data Portal displays only published datasets.
+If the user wishes to associate a senotype with a dataset that is not published, they will need
+to log into the Data Portal again with their SenNet consortium user ID.
+
+### Origin (SciCrunch RRID)
+
+A senotype definition can be associated with an *origin*, or _Research Resource Identifier_ (RRID). RRIDs
+are managed in the [RRID Portal](https://rrid.site/). The RRID Portal uses the SciCrunch API for searches.
+
+RRIDs are organized by resource type:
+
+- Cores, Instruments, and Tools
+- Plasmids
+- Biosamples
+- Cells
+- Antibodies
+- Organisms
+
+The Search feature of the Origin section directs to the RRID Portal.
+Once the user identifies a RRID, they must enter the ID in the search window. The 'RRID:' part of the ID is optional;
+however, any other letters are required (e.g., "SCR", "AddGene", etc.).
+
+Antibodies and cell lines have identifiers with a higher level of resolution than the RRID because they also
+identify vendors. The Search feature displays the names provided by vendors to distinguish different offerings of the
+same origin.
+
+![origin_serach.jpg](origin_search.jpg)
+![origin_results.jpg](origin_results.jpg)
+
+The Details page for an origin will open a link to the SciCrunch detail page for the origin.
+Depending on the type of origin, the SciCrunch detail page may redirect to another site, such as that of a vendor.
+
+### Marker assertions
+
+![markers.jpg](markers.jpg)
+
+A senotype definition can have two types of _markers_.
+The association of a senotype definition with a marker is a statement of tentative expert opinion.
+Associations are not just the result of a single experiment, but also not necessarily clear evidence.
+
+#### Specified markers
+
+These gene or protein markers are a list an investigator might recommend be used to describe the markers that would help
+identify or characterize a senescent cell of this senotype--e.g., to use as a gene panel for a probed assay.
+
+#### Regulating markers
+
+These are typically a longer list of gene or protein markers that have been tested for the senotype.
+The investigator observes these markers to be up-regulated; down-regulated; or tested but inconclusive whether up- or
+down- regulated
+(e.g., using log2FC and p-value).
+
+#### Collapsible section
+
+Because it is anticipated that a senotype will be associated with many markers, the entire Markers section is
+collapsible.
+
+Marker assertion management for both specified and regulating markers is similar:
+Clicking on `Add marker` will open a modal allowing the addition of a single or bulk import of markers.
+
+#### Search windows (individual addition)
+
+A marker Search window searches for gene or protein markers.
+
+The user can enter different types of identifiers for markers, including:
+
+1. HGNC numbers (e.g., 7178)
+2. HGNC approved symbols (e.g., MMRN1)
+3. HGNC aliases (ECM)
+4. HGNC prior symbols (e.g., MMRN)
+5. UniProtKB ID (e.g., Q13201)
+6. UniProtKB entry name (e.g., MMRN1_HUMAN)
+
+Note case for gene identifiers:
+
+1. HGNC identifiers combine uppercase letters and numbers
+2. MGI numbers use mixed case for letters.
+
+![specified_marker.jpg](specified_marker.jpg)
+
+The Search window for regulating markers includes a field for type of regulating:
+
++ upregulation
++ downregulation
++ inconclusive regulation
+
+![regulated_marker.png](regulated_marker.png)
+
+Both of these modals support bulk import which allows the user to load a large number of markers from a local CSV file
+that the user specifies.
+
+The bulk addition windows will only add information from a CSV if:
+
+* the CSV has the expected format
+* all markers in the CSV can be found in an external source
+
+### Specified markers
+
+The CSV used for bulk upload of specified markers must have the following structure:
+
+| column | values                                                                |
+|--------|-----------------------------------------------------------------------|
+| type   | either **gene** or **protein**                                        |
+| id     | * if a _gene_, the HGNC symbol<br/>* if a _protein_, the UniProtKB ID |
+
+Example:
+
+```commandline
+type,id
+gene,BRCA1
+protein,Q13201
+```
+
+### Regulating markers
+
+The CSV used for bulk upload of regulating markers must have the following structure:
+
+| column | values                                                                                                                         |
+|--------|--------------------------------------------------------------------------------------------------------------------------------|
+| type   | either **gene** or **protein**                                                                                                 |
+| id     | * if a _gene_, the HGNC symbol<br/>* if a _protein_, the UniProtKB ID                                                          |
+| action | one of the following:<br/>* **1** for up regulation <br/>* **0** for inconclusive regulation <br/>* **-1** for down regulation |                                                                 
+
+Example:
+
+```commandline
+type,id,action
+gene,BRCA1,1
+protein,Q13201,0
+gene,BRAF,-1
+```
+
+# Validation
+
+When the user clicks the Update/Submit button at the bottom of page, the application sends the form to the Senotype API
+for validation.
+
+If the data is invalid or incomplete, the :
+
+* displays an error message in red at the top of the Library page
+* displays an error message in red next to the field with an issue
+
+![errors.png](errors.png)
+
+The Library verifies that:
+
+1. All required fields have at least one value.
+2. Context assertions are ordered such that **lowerbound** <= **value** <= **upperbound**.
+
+If the data passed validation, the Library:
+
+* writes the data to the SenLib database
+* displays a success message in green at the top of the Library page
+* resets the Navigator to point to the updated submission
+
+
