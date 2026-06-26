@@ -75,7 +75,7 @@ function MarkerFormInputs({
     setTableData(_tableData);
   };
 
-  const nameColumn = `${predicate.field.split('_')[0].toTitleCase()} Name`
+  const nameColumn = `${predicate.field.split('_')[0].toTitleCase()} Marker`
 
   const getRenderMethod = (field, record) => {
     switch(field) {
