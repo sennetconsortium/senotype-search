@@ -25,7 +25,7 @@ const Draggable = ({ children, wrapperSelector = '.container-fluid' }) => {
 
       if (deltaX > THRESHOLD || deltaY > THRESHOLD) {
         realDragging = true;
-        log.debug(
+        log.trace(
           'Draggable.Intentional dragging motion detected!',
           e.clientX,
           e.clientY,
