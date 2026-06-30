@@ -1,8 +1,10 @@
-import React from 'react';
+import { useContext, useState } from 'react';
 import AppNavBar from './AppNavBar';
 import AppFooter from './AppFooter';
 import { Row, Col, Container } from 'react-bootstrap';
 import SiderFacets from '@/components/search/SiderFacets';
+import Draggable from '@/components/Draggable';
+import AppFloatingButton from '@/components/AppFloatingButton';
 
 /**
  * Layout for displaying a left sider content alongside main content
@@ -17,17 +19,25 @@ import SiderFacets from '@/components/search/SiderFacets';
  */
 const SiderLayout = ({
   children,
-  containerPrefixChildren,
+  siderCollapsible = true,
   firstRowPrefixChildren,
   sider,
-  showSider = true,
   classNameMain = '',
 }) => {
+  const [showSider, setShowSider] = useState(true);
   return (
     <div className="body__wrapper bg--dirtyWhite">
       <AppNavBar />
       <Container fluid> 
-        {containerPrefixChildren}
+        {siderCollapsible && <Draggable>
+            <AppFloatingButton
+              show={showSider}
+              freestyle={true}
+              setShow={setShowSider}
+              text={'Search Facets'}
+              buttonStyle={{}}
+            />
+          </Draggable>}
         <Row>
           <Col>{firstRowPrefixChildren}</Col>
         </Row>

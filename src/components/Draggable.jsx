@@ -25,7 +25,7 @@ const Draggable = ({ children, wrapperSelector = '.container-fluid' }) => {
 
       if (deltaX > THRESHOLD || deltaY > THRESHOLD) {
         realDragging = true;
-        log.debug(
+        log.trace(
           'Draggable.Intentional dragging motion detected!',
           e.clientX,
           e.clientY,
@@ -34,12 +34,14 @@ const Draggable = ({ children, wrapperSelector = '.container-fluid' }) => {
         $target.style.top = e.clientY + 'px';
         $target.style.left = e.clientX + 'px';
         $target.classList.add('isActive');
+        document.body.style.cursor = 'move'
       }
     });
 
     window.addEventListener('mouseup', () => {
       isMouseDown = false;
       $target.classList.remove('isActive');
+      document.body.style.cursor = null;
       if (realDragging) {
         log.debug('Draggable.User finished dragging.');
       } else {
