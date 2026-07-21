@@ -572,7 +572,7 @@ function SenotypeForm({ isEdit = false }) {
           )}
         </h1>
 
-        <AppAccordion className='mt-2' title={'Overview'}>
+        <AppAccordion title={'Overview'}>
           <div>
             <InputField
               label={'Title'}
@@ -596,7 +596,7 @@ function SenotypeForm({ isEdit = false }) {
             />
           </div>
         </AppAccordion>
-        <AppAccordion className='mt-2' title={'Senotype'}>
+        <AppAccordion title={'Senotype'}>
           <div className="form-row">
             {loadingPredicates && <Skeleton.Input block={true} />}
             {!loadingPredicates && (
@@ -617,7 +617,7 @@ function SenotypeForm({ isEdit = false }) {
           </div>
         </AppAccordion>
 
-        <AppAccordion className='mt-2' title={'Citation & Demographics'}>
+        <AppAccordion title={'Citation & Demographics'}>
           <div className="form-row">
             {loadingPredicates && <Skeleton.Input block={true} />}
             {!loadingPredicates && (
@@ -752,7 +752,7 @@ function SenotypeForm({ isEdit = false }) {
 
         
         <div className='w-100 w-md-50'>
-          <AppAccordion className='mt-2' title={'Specified Marker'}>
+          <AppAccordion title={'Specified Marker'}>
           {loadingPredicates && <Skeleton />}
           {!loadingPredicates && (
             <MarkerFormInputs
@@ -776,7 +776,7 @@ function SenotypeForm({ isEdit = false }) {
         </div>
 
         <div className='w-100 w-md-50'>
-          <AppAccordion className='mt-2' title={'Regulated Marker'}>
+          <AppAccordion title={'Regulated Marker'}>
           {loadingPredicates && <Skeleton />}
           {!loadingPredicates && (
             <MarkerFormInputs

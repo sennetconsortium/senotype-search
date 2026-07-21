@@ -18,7 +18,7 @@ export default function SenotypeClientComponent({ senotype_id }) {
   }
 
   return (
-    <BasicLayout>
+    <BasicLayout classNameMain='c-main--senotype'>
       {loading && <AppSpinner />}
 
       {!loading && !data && (

@@ -23,7 +23,7 @@ function Page() {
 
   return (
     <EditProvider data={data}>
-      <BasicLayout classNameMain='c-main--senotypeForm'>
+      <BasicLayout classNameMain='c-main--senotype'>
         {loading ||
           (isAuthenticating && (
             <>
