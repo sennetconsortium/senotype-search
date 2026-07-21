@@ -26,6 +26,7 @@ import AppSpinner from '@/components/AppSpinner';
 import { Divider } from 'antd';
 import THEME from '@/lib/theme';
 import { CheckCircleFilled, CloseCircleFilled } from '@ant-design/icons';
+import { Flex } from 'antd';
 
 function SenotypeForm({ isEdit = false }) {
   const { notification } = App.useApp();
@@ -571,7 +572,7 @@ function SenotypeForm({ isEdit = false }) {
           )}
         </h1>
 
-        <AppAccordion title={'Overview'}>
+        <AppAccordion className='mt-2' title={'Overview'}>
           <div>
             <InputField
               label={'Title'}
@@ -595,7 +596,7 @@ function SenotypeForm({ isEdit = false }) {
             />
           </div>
         </AppAccordion>
-        <AppAccordion title={'Senotype'}>
+        <AppAccordion className='mt-2' title={'Senotype'}>
           <div className="form-row">
             {loadingPredicates && <Skeleton.Input block={true} />}
             {!loadingPredicates && (
@@ -616,7 +617,7 @@ function SenotypeForm({ isEdit = false }) {
           </div>
         </AppAccordion>
 
-        <AppAccordion title={'Citation & Demographics'}>
+        <AppAccordion className='mt-2' title={'Citation & Demographics'}>
           <div className="form-row">
             {loadingPredicates && <Skeleton.Input block={true} />}
             {!loadingPredicates && (
@@ -747,7 +748,11 @@ function SenotypeForm({ isEdit = false }) {
           </div>
         </AppAccordion>
 
-        <AppAccordion title={'Specified Marker'}>
+        <Flex gap="small">
+
+        
+        <div className='w-100 w-md-50'>
+          <AppAccordion className='mt-2' title={'Specified Marker'}>
           {loadingPredicates && <Skeleton />}
           {!loadingPredicates && (
             <MarkerFormInputs
@@ -768,8 +773,10 @@ function SenotypeForm({ isEdit = false }) {
             />
           )}
         </AppAccordion>
+        </div>
 
-        <AppAccordion title={'Regulated Marker'}>
+        <div className='w-100 w-md-50'>
+          <AppAccordion className='mt-2' title={'Regulated Marker'}>
           {loadingPredicates && <Skeleton />}
           {!loadingPredicates && (
             <MarkerFormInputs
@@ -791,6 +798,8 @@ function SenotypeForm({ isEdit = false }) {
             />
           )}
         </AppAccordion>
+        </div>
+        </Flex>
 
         <div className="c-senotypeForm__footer mt-4 text-end">
           {isEdit && (

@@ -35,7 +35,7 @@ function InputField({
 
   return (
     <Form.Group
-      className={`c-inputField ${className} mb-2`}
+      className={`c-inputField ${className} mb-1`}
       id={`c-inputField--${_id}`}
     >
       <Form.Label htmlFor={_id}>
