@@ -8,13 +8,13 @@ import InfoTooltip from "./form/InfoTooltip";
  * @param {string} props.title The title of the accordion
  * @param {string} props.id The css id of the accordion
  * @param {node} props.children
- * @param {string} [props.className='mt-4']
+ * @param {string} [props.className='mt-2']
  * @param {string} props.tooltipTitle
  * @param {string} props.toolTipPlacement
  * @param {string} props.toolTipClassName
  * @returns {*}
  */
-function AppAccordion({ title, id, children, className = 'mt-4', tooltipTitle,  toolTipPlacement, toolTipClassName}) {
+function AppAccordion({ title, id, children, className = 'mt-2', tooltipTitle,  toolTipPlacement, toolTipClassName}) {
   return (
     <div className={`c-accordion ${className}`}>
       <Accordion defaultActiveKey={id} id={id}>

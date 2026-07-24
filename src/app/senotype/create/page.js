@@ -12,7 +12,7 @@ function Page() {
   
   return (
     <EditProvider>
-      <BasicLayout>
+      <BasicLayout classNameMain='c-main--senotype'>
         {isAuthenticating && (
           <>
             <AppSpinner />
