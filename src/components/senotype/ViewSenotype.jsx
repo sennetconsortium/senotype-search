@@ -2,7 +2,7 @@ import AppAccordion from '@/components/AppAccordion';
 import React, { useCallback, useMemo, useRef, useState} from 'react';
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { Col, Container, Row } from 'react-bootstrap';
-import { Button, Descriptions, Input, Space, Table } from 'antd';
+import { Button, Descriptions, Input, Space, Table, Flex } from 'antd';
 import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
@@ -567,6 +567,10 @@ export default function ViewSenotype({ senotype }) {
               </AppAccordion>
             )}
 
+          <Flex gap="small">
+
+        
+            <div className='w-100 w-md-50'>
             {specifiedMarkerData.length > 0 && (
               <AppAccordion
                 title={'Specified Markers'}
@@ -601,7 +605,9 @@ export default function ViewSenotype({ senotype }) {
                 ></Table>
               </AppAccordion>
             )}
+            </div>
 
+            <div className='w-100 w-md-50'>
             {regulatedMarkerData.length > 0 && (
               <AppAccordion
                 title={'Regulated Markers'}
@@ -644,6 +650,8 @@ export default function ViewSenotype({ senotype }) {
                 ></Table>
               </AppAccordion>
             )}
+            </div>
+            </Flex>
           </div>
         </Col>
       </Row>
