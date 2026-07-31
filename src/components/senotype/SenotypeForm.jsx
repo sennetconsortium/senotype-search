@@ -132,7 +132,7 @@ function SenotypeForm({ isEdit = false }) {
       label: 'Diagnosis',
       ui: {
         tooltip:
-          'Enter the exact name for the diagnosis from Disease Ontology (e.g. diabetes) or the diagnosis identifier (e.g., DOID:9351, 9351). Use the search button to go to the Disease Ontology site.',
+          'Enter the exact name for the diagnosis from Disease Ontology (e.g. diabetes) or the diagnosis identifier (e.g., DOID:9351, 9351).',
       },
     });
     return results;
