@@ -1,8 +1,8 @@
 import AppAccordion from '@/components/AppAccordion';
-import React, { useCallback, useMemo, useRef, useState} from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { LinkOutlined, SearchOutlined } from '@ant-design/icons';
 import { Col, Container, Row } from 'react-bootstrap';
-import { Button, Descriptions, Input, Space, Table, Flex } from 'antd';
+import { Button, Descriptions, Flex, Input, Space, Table } from 'antd';
 import ClipboardCopy from '@/components/ClipboardCopy';
 import AppAnchor from '@/components/AppAnchor';
 import URLS from '@/lib/urls';
@@ -567,90 +567,96 @@ export default function ViewSenotype({ senotype }) {
               </AppAccordion>
             )}
 
-          <Flex gap="small">
+            <Flex gap="small">
+              {specifiedMarkerData.length > 0 && (
+                <div className="w-100 w-md-50">
+                  <AppAccordion
+                    title={'Specified Markers'}
+                    id={'specified-markers'}
+                    tooltipTitle={
+                      'These gene or protein markers are a list an investigator might recommend be used to describe the markers that would help identify or characterize a senescent cell of this senotype–e.g., to use as a gene panel for a probed assay.'
+                    }
+                  >
+                    <Table
+                      pagination={{
+                        total: specifiedMarkerData.length,
+                        showTotal: (total, range) =>
+                          tableFooter(total, range, specifiedMarkerData),
+                      }}
+                      columns={[
+                        ...markerColumns(
+                          'Specified Marker',
+                          'specified_marker',
+                        ),
+                        {
+                          title: 'Organism',
+                          key: 'organism',
+                          dataIndex: 'organism',
+                          sorter: (a, b) =>
+                            a.organism.localeCompare(b.organism),
+                        },
+                        {
+                          title: 'Marker Type',
+                          key: 'markerType',
+                          dataIndex: 'markerType',
+                          sorter: (a, b) =>
+                            a.markerType.localeCompare(b.markerType),
+                        },
+                      ]}
+                      dataSource={specifiedMarkerData}
+                    ></Table>
+                  </AppAccordion>
+                </div>
+              )}
 
-        
-            <div className='w-100 w-md-50'>
-            {specifiedMarkerData.length > 0 && (
-              <AppAccordion
-                title={'Specified Markers'}
-                id={'specified-markers'}
-                tooltipTitle={
-                  'These gene or protein markers are a list an investigator might recommend be used to describe the markers that would help identify or characterize a senescent cell of this senotype–e.g., to use as a gene panel for a probed assay.'
-                }
-              >
-                <Table
-                  pagination={{
-                    total: specifiedMarkerData.length,
-                    showTotal: (total, range) =>
-                      tableFooter(total, range, specifiedMarkerData),
-                  }}
-                  columns={[
-                    ...markerColumns('Specified Marker', 'specified_marker'),
-                    {
-                      title: 'Organism',
-                      key: 'organism',
-                      dataIndex: 'organism',
-                      sorter: (a, b) => a.organism.localeCompare(b.organism),
-                    },
-                    {
-                      title: 'Marker Type',
-                      key: 'markerType',
-                      dataIndex: 'markerType',
-                      sorter: (a, b) =>
-                        a.markerType.localeCompare(b.markerType),
-                    },
-                  ]}
-                  dataSource={specifiedMarkerData}
-                ></Table>
-              </AppAccordion>
-            )}
-            </div>
-
-            <div className='w-100 w-md-50'>
-            {regulatedMarkerData.length > 0 && (
-              <AppAccordion
-                title={'Regulated Markers'}
-                id={'regulated-markers'}
-                tooltipTitle={
-                  'These are typically a longer list of gene or protein markers that have been tested for the senotype. The investigator observes these markers to be up-regulated; down-regulated; or tested but inconclusive whether up- or down- regulated (e.g., using log2FC and p-value).'
-                }
-              >
-                <Table
-                  pagination={{
-                    total: regulatedMarkerData.length,
-                    showTotal: (total, range) =>
-                      tableFooter(total, range, regulatedMarkerData),
-                  }}
-                  columns={[
-                    ...markerColumns('Regulated Marker', 'regulated_marker'),
-                    {
-                      title: 'Organism',
-                      key: 'organism',
-                      dataIndex: 'organism',
-                      sorter: (a, b) => a.organism.localeCompare(b.organism),
-                    },
-                    {
-                      title: 'Marker Type',
-                      key: 'markerType',
-                      dataIndex: 'markerType',
-                      sorter: (a, b) =>
-                        a.markerType.localeCompare(b.markerType),
-                    },
-                    {
-                      title: 'Marker Action',
-                      key: 'markerAction',
-                      dataIndex: 'markerAction',
-                      sorter: (a, b) =>
-                        a.markerAction.localeCompare(b.markerAction),
-                    },
-                  ]}
-                  dataSource={regulatedMarkerData}
-                  onChange={handleChange}
-                ></Table>
-              </AppAccordion>
-            )}
-            </div>
+              {regulatedMarkerData.length > 0 && (
+                <div className="w-100 w-md-50">
+                  <AppAccordion
+                    title={'Regulated Markers'}
+                    id={'regulated-markers'}
+                    tooltipTitle={
+                      'These are typically a longer list of gene or protein markers that have been tested for the senotype. The investigator observes these markers to be up-regulated; down-regulated; or tested but inconclusive whether up- or down- regulated (e.g., using log2FC and p-value).'
+                    }
+                  >
+                    <Table
+                      pagination={{
+                        total: regulatedMarkerData.length,
+                        showTotal: (total, range) =>
+                          tableFooter(total, range, regulatedMarkerData),
+                      }}
+                      columns={[
+                        ...markerColumns(
+                          'Regulated Marker',
+                          'regulated_marker',
+                        ),
+                        {
+                          title: 'Organism',
+                          key: 'organism',
+                          dataIndex: 'organism',
+                          sorter: (a, b) =>
+                            a.organism.localeCompare(b.organism),
+                        },
+                        {
+                          title: 'Marker Type',
+                          key: 'markerType',
+                          dataIndex: 'markerType',
+                          sorter: (a, b) =>
+                            a.markerType.localeCompare(b.markerType),
+                        },
+                        {
+                          title: 'Marker Action',
+                          key: 'markerAction',
+                          dataIndex: 'markerAction',
+                          sorter: (a, b) =>
+                            a.markerAction.localeCompare(b.markerAction),
+                        },
+                      ]}
+                      dataSource={regulatedMarkerData}
+                      onChange={handleChange}
+                    ></Table>
+                  </AppAccordion>
+                </div>
+              )}
             </Flex>
           </div>
         </Col>
