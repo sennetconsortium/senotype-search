@@ -46,9 +46,11 @@ const API = {
         const datasets = await API.fetchSearchApiByField(uuids);
         const items = [];
         for (const d of datasets) {
-          let url = `${URLS.portal}dataset?uuid=${d.uuid}`;
+          let url = URLS.portal.view(d.uuid);
           if (d.doi_url) {
-            const datacite = {title: await API.fetchDataCite(d.doi_url), url:  URLS.getCitationUrl(d)};
+            const datacite = {title: await API.fetchDataCite(d.doi_url), 
+              // url:  URLS.getCitationUrl(d)
+            }; 
             items.push({ ...d, datacite, url});
           } else {
             items.push({

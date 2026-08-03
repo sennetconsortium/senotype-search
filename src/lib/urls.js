@@ -40,7 +40,15 @@ const URLS = {
     pubMed: `${process.env.NEXT_PUBLIC_NIH_EUTILS_BASE_URL}entrez/eutils/esummary.fcgi?db=pubmed&retmode=json`,
   },
   senotypeEditor: process.env.NEXT_PUBLIC_EDITOR_BASE_URL,
-  portal: process.env.NEXT_PUBLIC_PORTAL_BASE_URL,
+  portal: {
+    base: process.env.NEXT_PUBLIC_PORTAL_BASE_URL,
+    organs: (path) => {
+      return `${URLS.portal.base}organs/${path}`
+    },
+    view: (uuid, entity = 'dataset') => {
+      return `${URLS.portal.base}${entity}?uuid=${uuid}`
+    }
+  },
   ontologyClasses: {
     home: `${process.env.NEXT_PUBLIC_CL_BASE_URL}ols4/ontologies/cl?tab=classes`,
   },
