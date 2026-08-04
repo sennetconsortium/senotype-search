@@ -563,7 +563,7 @@ export default function ViewSenotype({ senotype }) {
 
             {buildReferences(senotype).length > 0 && (
               <AppAccordion title={'References'} id={'references'}>
-                <Descriptions items={buildReferences(senotype)} column={1} />
+                <Descriptions className='c-accordion__gridCol' items={buildReferences(senotype)} column={1} />
               </AppAccordion>
             )}
 
