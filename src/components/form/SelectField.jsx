@@ -46,7 +46,7 @@ function SelectField({
 
   const resolveValueOptions = () => {
     const values = resolveValues()
-    return Array.isArray(values) ? values : [values]
+    return values ? (Array.isArray(values) ? values : [values]) : []
   }
 
   const resolveOptions = () => {
