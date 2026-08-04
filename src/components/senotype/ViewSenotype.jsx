@@ -90,7 +90,7 @@ const buildSenotype = (senotype) => {
               <a
                 aria-label={`Outgoing link to ontology for ${item.code}`}
                 target={'_blank'}
-                href={`${URLS.portal}organs/${organHierarchy(item.term).toDashedCase()}`}
+                href={URLS.portal.organs(organHierarchy(item.term).toDashedCase())}
               >
                 <LinkOutlined />
               </a>
@@ -309,7 +309,7 @@ const buildReferences = (senotype) => {
           {senotype['dataset']?.map((item, index) => (
             <div key={`dataset_${index}`} className={'mb-2'}>
               {item.datacite?.title || item.title}{' '}
-              <a target={'_blank'} href={item.url}>
+              <a target={'_blank'} href={item.url || URLS.portal.view(item.uuid)}>
                 <LinkOutlined />
               </a>
             </div>

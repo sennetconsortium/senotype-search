@@ -114,7 +114,7 @@ function SearchResults() {
     for (const o of organs) {
       if (o) {
         list.push(
-          <a key={o} target='_blank' href={`${URLS.portal}organs/${o?.toDashedCase()}`}>
+          <a key={o} target='_blank' href={URLS.portal.organs(o?.toDashedCase())}>
             <Button
             className='mb-2'
               icon={
