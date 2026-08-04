@@ -1,4 +1,12 @@
 .c-accordion 
+  &__gridCol
+    max-height 500px 
+    overflow-y auto
+    +lg()
+      .flex
+        grid-template-columns repeat(2, 1fr)
+        display grid
+        gap 0 40px
   .accordion-button
     font-weight bold
     &:not(.collapsed)
